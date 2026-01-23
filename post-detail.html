@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세 - 맛집공유</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/post-detail.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="header-logo">
+                <span class="header-logo-icon">🍽️</span>
+                <span>맛집공유</span>
+            </a>
+            
+            <nav class="header-nav">
+                <a href="index.html" class="header-nav-link">홈</a>
+                <a href="post-list.html" class="header-nav-link">게시판</a>
+                <a href="post-create.html" class="header-btn-primary header-btn">맛집 공유하기</a>
+            </nav>
+            
+            <div class="header-user" id="headerUser">
+                <div id="authButtons">
+                    <button class="header-btn" onclick="location.href='login.html'">로그인</button>
+                </div>
+                <div id="userInfo" class="hidden">
+                    <div class="header-user-info" onclick="location.href='profile.html'">
+                        <div class="header-user-avatar" id="userAvatar">U</div>
+                        <span class="header-user-name" id="userName">사용자</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 게시글 상세 -->
+    <main class="post-detail-page">
+        <div class="post-detail-container">
+            <!-- 로딩 -->
+            <div id="loading" class="posts-loading">
+                <div class="loading"></div>
+                <p>게시글을 불러오는 중...</p>
+            </div>
+
+            <!-- 게시글 내용 -->
+            <div id="postContent" class="hidden">
+                <!-- 헤더 -->
+                <div class="post-header">
+                    <span class="post-category-badge" id="postCategory">한식</span>
+                    <h1 class="post-title" id="postTitle">게시글 제목</h1>
+                    <div class="post-meta">
+                        <div class="post-author">
+                            <div class="post-author-avatar" id="authorAvatar">U</div>
+                            <div class="post-author-info">
+                                <div class="post-author-name" id="authorName">작성자</div>
+                                <div class="post-author-date" id="postDate">2024-01-01</div>
+                            </div>
+                        </div>
+                        <div class="post-stats">
+                            <span class="post-stat">👁️ <span id="viewCount">0</span></span>
+                            <span class="post-stat">❤️ <span id="likeCount">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 맛집 정보 -->
+                <div class="restaurant-info">
+                    <h2 class="restaurant-name" id="restaurantName">맛집 이름</h2>
+                    <div class="restaurant-details">
+                        <div class="restaurant-detail">
+                            📍 <span id="restaurantAddress">주소</span>
+                        </div>
+                        <div class="restaurant-rating">
+                            <span class="restaurant-rating-stars" id="ratingStars">⭐⭐⭐⭐⭐</span>
+                            <span class="restaurant-rating-value" id="ratingValue">5.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 게시글 이미지 -->
+                <div class="post-image-container" id="imageContainer" style="display: none;">
+                    <img src="" alt="맛집 이미지" class="post-image" id="postImage">
+                </div>
+
+                <!-- 게시글 내용 -->
+                <div class="post-content">
+                    <div class="post-content-text" id="postContentText"></div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="post-actions">
+                    <button class="post-like-btn" id="likeBtn">
+                        <span>❤️</span>
+                        <span>좋아요</span>
+                        <span id="likeBtnCount">0</span>
+                    </button>
+                    <div class="post-edit-actions" id="editActions" style="display: none;">
+                        <button class="post-edit-btn" id="editBtn">수정</button>
+                        <button class="post-delete-btn" id="deleteBtn">삭제</button>
+                    </div>
+                </div>
+
+                <!-- 댓글 섹션 -->
+                <section class="comments-section">
+                    <h2 class="comments-header">
+                        댓글 <span id="commentCount">0</span>
+                    </h2>
+
+                    <!-- 댓글 작성 폼 -->
+                    <form class="comment-form" id="commentForm">
+                        <textarea 
+                            class="comment-textarea" 
+                            id="commentContent"
+                            placeholder="댓글을 작성하세요..."
+                            rows="3"></textarea>
+                        <button type="submit" class="comment-submit-btn">댓글 작성</button>
+                    </form>
+
+                    <!-- 댓글 목록 -->
+                    <div class="comments-list" id="commentsList">
+                        <!-- 동적 생성 -->
+                    </div>
+
+                    <!-- 빈 상태 -->
+                    <div class="comments-empty hidden" id="commentsEmpty">
+                        <div class="comments-empty-icon">💬</div>
+                        <h3>아직 댓글이 없습니다</h3>
+                        <p>첫 번째 댓글을 작성해보세요!</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { getPost, getComments, createComment, deleteComment, togglePostLike, getPostLikeCount } from './js/api/api.js';
+        
+        let currentPost = null;
+        let currentMemberId = null;
+
+        // 페이지 로드
+        document.addEventListener('DOMContentLoaded', async () => {
+            initUser();
+            await loadPost();
+            initEventListeners();
+        });
+
+        // 사용자 정보 초기화
+        function initUser() {
+            currentMemberId = localStorage.getItem('memberId');
+            const memberNickname = localStorage.getItem('memberNickname');
+            
+            if (currentMemberId && memberNickname) {
+                document.getElementById('authButtons').classList.add('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('userName').textContent = memberNickname;
+                document.getElementById('userAvatar').textContent = memberNickname[0].toUpperCase();
+            }
+        }
+
+        // 게시글 로드
+        async function loadPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            
+            if (!postId) {
+                alert('잘못된 접근입니다.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                currentPost = await getPost(postId);
+                renderPost(currentPost);
+                await loadComments(postId);
+                await loadLikeStatus(postId);
+            } catch (error) {
+                console.error('게시글 로드 실패:', error);
+                alert('게시글을 불러올 수 없습니다.');
+                window.location.href = 'index.html';
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('postContent').classList.remove('hidden');
+            }
+        }
+
+        // 게시글 렌더링
+        function renderPost(post) {
+            document.getElementById('postCategory').textContent = post.foodCategory || '기타';
+            document.getElementById('postTitle').textContent = post.title;
+            document.getElementById('authorName').textContent = post.memberNickname;
+            document.getElementById('authorAvatar').textContent = (post.memberNickname || 'U')[0].toUpperCase();
+            document.getElementById('postDate').textContent = formatDate(post.createdAt);
+            document.getElementById('viewCount').textContent = post.viewCount || 0;
+            
+            document.getElementById('restaurantName').textContent = post.restaurantName || '정보 없음';
+            document.getElementById('restaurantAddress').textContent = post.restaurantAddress || '정보 없음';
+            
+            const stars = '⭐'.repeat(Math.floor(post.rating || 0));
+            document.getElementById('ratingStars').textContent = stars;
+            document.getElementById('ratingValue').textContent = (post.rating || 0).toFixed(1);
+            
+            if (post.imageUrl) {
+                document.getElementById('imageContainer').style.display = 'block';
+                document.getElementById('postImage').src = post.imageUrl;
+            }
+            
+            document.getElementById('postContentText').textContent = post.content;
+            
+            // 작성자 본인이면 수정/삭제 버튼 표시
+            if (currentMemberId && currentMemberId == post.memberId) {
+                document.getElementById('editActions').style.display = 'flex';
+            }
+        }
+
+        // 댓글 로드
+        async function loadComments(postId) {
+            try {
+                const comments = await getComments(postId);
+                const commentsList = Array.isArray(comments) ? comments : [];
+                
+                document.getElementById('commentCount').textContent = commentsList.length;
+                
+                if (commentsList.length === 0) {
+                    document.getElementById('commentsEmpty').classList.remove('hidden');
+                    document.getElementById('commentsList').innerHTML = '';
+                } else {
+                    document.getElementById('commentsEmpty').classList.add('hidden');
+                    renderComments(commentsList);
+                }
+            } catch (error) {
+                console.error('댓글 로드 실패:', error);
+            }
+        }
+
+        // 댓글 렌더링
+        function renderComments(comments) {
+            const html = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <div class="comment-author-avatar">
+                                ${(comment.memberNickname || 'U')[0].toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="comment-author-name">${comment.memberNickname || '익명'}</div>
+                                <div class="comment-date">${formatDate(comment.createdAt)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                    <div class="comment-actions">
+                        ${currentMemberId && currentMemberId == comment.memberId ? 
+                            `<button class="comment-delete-btn" onclick="deleteCommentHandler(${comment.id})">삭제</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('commentsList').innerHTML = html;
+        }
+
+        // 좋아요 상태 로드
+        async function loadLikeStatus(postId) {
+            try {
+                const likeData = await getPostLikeCount(postId);
+                document.getElementById('likeCount').textContent = likeData.likeCount || 0;
+                document.getElementById('likeBtnCount').textContent = likeData.likeCount || 0;
+                
+                if (likeData.isLiked) {
+                    document.getElementById('likeBtn').classList.add('liked');
+                }
+            } catch (error) {
+                console.error('좋아요 상태 로드 실패:', error);
+            }
+        }
+
+        // 이벤트 리스너
+        function initEventListeners() {
+            // 댓글 작성
+            document.getElementById('commentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!currentMemberId) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const content = document.getElementById('commentContent').value.trim();
+                if (!content) {
+                    alert('댓글 내용을 입력하세요.');
+                    return;
+                }
+                
+                try {
+                    await createComment(currentPost.id, { content });
+                    document.getElementById('commentContent').value = '';
+                    await loadComments(currentPost.id);
+                } catch (error) {
+                    console.error('댓글 작성 실패:', error);
+                    alert('댓글 작성에 실패했습니다.');
+                }
+            });
+
+            // 좋아요
+            document.getElementById('likeBtn').addEventListener('click', async () => {
+                if (!currentMemberId) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                try {
+                    await togglePostLike(currentPost.id);
+                    await loadLikeStatus(currentPost.id);
+                } catch (error) {
+                    console.error('좋아요 실패:', error);
+                }
+            });
+
+            // 수정
+            document.getElementById('editBtn').addEventListener('click', () => {
+                window.location.href = `post-edit.html?id=${currentPost.id}`;
+            });
+
+            // 삭제
+            document.getElementById('deleteBtn').addEventListener('click', async () => {
+                if (!confirm('정말 삭제하시겠습니까?')) return;
+                
+                try {
+                    await deletePost(currentPost.id);
+                    alert('게시글이 삭제되었습니다.');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('삭제 실패:', error);
+                    alert('삭제에 실패했습니다.');
+                }
+            });
+        }
+
+        // 댓글 삭제 (전역 함수)
+        window.deleteCommentHandler = async (commentId) => {
+            if (!confirm('댓글을 삭제하시겠습니까?')) return;
+            
+            try {
+                await deleteComment(currentPost.id, commentId);
+                await loadComments(currentPost.id);
+            } catch (error) {
+                console.error('댓글 삭제 실패:', error);
+                alert('댓글 삭제에 실패했습니다.');
+            }
+        };
+
+        // 날짜 포맷
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '방금 전';
+            if (minutes < 60) return `${minutes}분 전`;
+            if (hours < 24) return `${hours}시간 전`;
+            if (days < 7) return `${days}일 전`;
+            
+            return date.toLocaleDateString('ko-KR');
+        }
+    </script>
+</body>
+</html>

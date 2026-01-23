@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 맛집공유</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="header-logo">
+                <span class="header-logo-icon">🍽️</span>
+                <span>맛집공유</span>
+            </a>
+            
+            <nav class="header-nav">
+                <a href="index.html" class="header-nav-link">홈</a>
+                <a href="post-list.html" class="header-nav-link">게시판</a>
+            </nav>
+            
+            <div class="header-user">
+                <button class="header-btn" onclick="location.href='register.html'">회원가입</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 로그인 폼 -->
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">🍽️</div>
+                <h1 class="auth-title">로그인</h1>
+                <p class="auth-subtitle">맛집 공유의 즐거움을 시작하세요</p>
+            </div>
+
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">이메일</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="example@email.com"
+                        required>
+                    <span class="form-error" id="emailError">올바른 이메일을 입력하세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="비밀번호를 입력하세요"
+                        required>
+                    <span class="form-error" id="passwordError">비밀번호를 입력하세요</span>
+                </div>
+
+                <div class="form-checkbox-group">
+                    <input type="checkbox" id="remember" class="form-checkbox">
+                    <label for="remember" class="form-checkbox-label">로그인 상태 유지</label>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">로그인</button>
+
+                <div class="auth-links">
+                    <a href="#" class="auth-link">비밀번호 찾기</a>
+                    <a href="register.html" class="auth-link">회원가입</a>
+                </div>
+            </form>
+
+            <div class="auth-divider">
+                <span class="auth-divider-text">또는</span>
+            </div>
+
+            <div class="auth-social">
+                <button class="auth-social-btn">
+                    <span>🔑</span>
+                    간편 로그인
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                처음이신가요? 
+                <a href="register.html" class="auth-footer-link">회원가입하기</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 로그인 폼 처리
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // 실제 구현에서는 API 호출
+            // 현재는 더미 데이터로 로그인 시뮬레이션
+            
+            // 데모용 로그인 (실제로는 API 호출 필요)
+            if (email && password) {
+                // 더미 사용자 정보 저장
+                localStorage.setItem('memberId', '1');
+                localStorage.setItem('memberNickname', '맛집러버');
+                localStorage.setItem('memberEmail', email);
+                
+                alert('로그인 성공!');
+                window.location.href = 'index.html';
+            } else {
+                alert('이메일과 비밀번호를 입력하세요.');
+            }
+        });
+
+        // 입력 검증
+        document.getElementById('email').addEventListener('blur', function() {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailError = document.getElementById('emailError');
+            
+            if (!emailPattern.test(this.value)) {
+                this.classList.add('error');
+                emailError.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                emailError.classList.remove('show');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const passwordError = document.getElementById('passwordError');
+            
+            if (this.value.length < 8) {
+                this.classList.add('error');
+                passwordError.textContent = '비밀번호는 8자 이상이어야 합니다';
+                passwordError.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                passwordError.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맛집공유 - 당신의 맛집을 공유하세요</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="header-logo">
+                <span class="header-logo-icon">🍽️</span>
+                <span>Food</span>
+            </a>
+            
+            <nav class="header-nav">
+                <a href="index.html" class="header-nav-link active">홈</a>
+                <a href="post-list.html" class="header-nav-link">게시판</a>
+                <a href="post-create.html" class="header-btn-primary header-btn">맛집 공유하기</a>
+            </nav>
+            
+            <div class="header-user" id="headerUser">
+                <!-- 로그인 전 -->
+                <div id="authButtons">
+                    <button class="header-btn" onclick="location.href='login.html'">로그인</button>
+                </div>
+                <!-- 로그인 후 -->
+                <div id="userInfo" class="hidden">
+                    <div class="header-user-info" onclick="location.href='profile.html'">
+                        <div class="header-user-avatar" id="userAvatar">U</div>
+                        <span class="header-user-name" id="userName">사용자</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-page">
+        <div class="container">
+            <!-- 히어로 섹션 -->
+            <section class="hero-section">
+                <h1 class="hero-title">당신의 맛집을 공유하세요 🍴</h1>
+                <p class="hero-subtitle">맛있는 음식과 특별한 순간을 함께 나눠요</p>
+                <div class="hero-search">
+                    <input type="text" 
+                           class="hero-search-input" 
+                           placeholder="맛집 이름, 음식 종류를 검색하세요..."
+                           id="searchInput">
+                    <button class="hero-search-btn" id="searchBtn">🔍</button>
+                </div>
+            </section>
+
+            <!-- 카테고리 필터 -->
+            <section class="category-section">
+                <h2 class="category-title">카테고리</h2>
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all">전체</button>
+                    <button class="category-btn" data-category="한식">🍚 한식</button>
+                    <button class="category-btn" data-category="중식">🥟 중식</button>
+                    <button class="category-btn" data-category="일식">🍱 일식</button>
+                    <button class="category-btn" data-category="양식">🍝 양식</button>
+                    <button class="category-btn" data-category="카페">☕ 카페</button>
+                    <button class="category-btn" data-category="디저트">🍰 디저트</button>
+                    <button class="category-btn" data-category="기타">🍽️ 기타</button>
+                </div>
+            </section>
+
+            <!-- 게시글 목록 -->
+            <section class="posts-section">
+                <div class="posts-header">
+                    <h2 class="posts-title">인기 맛집 🔥</h2>
+                </div>
+                
+                <!-- 로딩 상태 -->
+                <div id="postsLoading" class="posts-loading hidden">
+                    <div class="loading"></div>
+                    <p>맛집 정보를 불러오는 중...</p>
+                </div>
+                
+                <!-- 게시글 그리드 -->
+                <div id="postsGrid" class="posts-grid">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+                
+                <!-- 빈 상태 -->
+                <div id="postsEmpty" class="posts-empty hidden">
+                    <div class="posts-empty-icon">🔍</div>
+                    <h3>게시글이 없습니다</h3>
+                    <p>첫 번째 맛집을 공유해보세요!</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script type="module">
+        import { getAllPosts, getPostsByCategory } from './js/api/api.js';
+        
+        let currentCategory = 'all';
+        let allPosts = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            initUser();
+            await loadPosts();
+            initEventListeners();
+        });
+
+        // 사용자 정보 초기화
+        function initUser() {
+            const memberId = localStorage.getItem('memberId');
+            const memberNickname = localStorage.getItem('memberNickname');
+            
+            if (memberId && memberNickname) {
+                document.getElementById('authButtons').classList.add('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('userName').textContent = memberNickname;
+                document.getElementById('userAvatar').textContent = memberNickname[0].toUpperCase();
+            }
+        }
+
+        // 게시글 로드
+        async function loadPosts(category = 'all') {
+            const loading = document.getElementById('postsLoading');
+            const grid = document.getElementById('postsGrid');
+            const empty = document.getElementById('postsEmpty');
+            
+            loading.classList.remove('hidden');
+            grid.innerHTML = '';
+            empty.classList.add('hidden');
+            
+            try {
+                let posts;
+                if (category === 'all') {
+                    posts = await getAllPosts();
+                } else {
+                    posts = await getPostsByCategory(category);
+                }
+                
+                allPosts = Array.isArray(posts) ? posts : [posts];
+                
+                if (allPosts.length === 0) {
+                    empty.classList.remove('hidden');
+                } else {
+                    renderPosts(allPosts);
+                }
+            } catch (error) {
+                console.error('게시글 로드 실패:', error);
+                empty.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // 게시글 렌더링
+        function renderPosts(posts) {
+            const grid = document.getElementById('postsGrid');
+            grid.innerHTML = posts.map(post => createPostCard(post)).join('');
+        }
+
+        // 게시글 카드 생성
+        function createPostCard(post) {
+            const imageUrl = post.imageUrl || 'https://via.placeholder.com/400x300?text=No+Image';
+            const stars = '⭐'.repeat(Math.floor(post.rating || 0));
+            
+            return `
+                <a href="post-detail.html?id=${post.id}" class="post-card">
+                    <div class="post-card-image-wrapper">
+                        <img src="${imageUrl}" alt="${post.title}" class="post-card-image">
+                        <span class="post-card-category">${post.foodCategory || '기타'}</span>
+                    </div>
+                    <div class="post-card-content">
+                        <h3 class="post-card-title">${post.title}</h3>
+                        <div class="post-card-restaurant">
+                            📍 ${post.restaurantName || '정보 없음'}
+                        </div>
+                        <div class="post-card-rating">
+                            <span class="post-card-rating-stars">${stars}</span>
+                            <span class="post-card-rating-value">${(post.rating || 0).toFixed(1)}</span>
+                        </div>
+                        <div class="post-card-footer">
+                            <div class="post-card-author">
+                                <div class="post-card-author-avatar">
+                                    ${(post.memberNickname || 'U')[0].toUpperCase()}
+                                </div>
+                                <span>${post.memberNickname || '익명'}</span>
+                            </div>
+                            <div class="post-card-stats">
+                                <span class="post-card-stat">👁️ ${post.viewCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // 이벤트 리스너 초기화
+        function initEventListeners() {
+            // 카테고리 필터
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    const category = e.target.dataset.category;
+                    currentCategory = category;
+                    await loadPosts(category);
+                });
+            });
+
+            // 검색
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            const handleSearch = () => {
+                const keyword = searchInput.value.trim().toLowerCase();
+                if (keyword) {
+                    const filtered = allPosts.filter(post => 
+                        post.title.toLowerCase().includes(keyword) ||
+                        post.restaurantName?.toLowerCase().includes(keyword) ||
+                        post.content?.toLowerCase().includes(keyword)
+                    );
+                    renderPosts(filtered);
+                } else {
+                    renderPosts(allPosts);
+                }
+            };
+            
+            searchBtn.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+        }
+    </script>
+</body>
+</html>

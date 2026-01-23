@@ -1,0 +1,201 @@
+/* ========================================
+   CSS 리셋 및 공통 스타일
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 따뜻한 메인 컬러 팔레트 */
+    --primary-color: #FF6B35;        /* 따뜻한 오렌지 */
+    --primary-dark: #E85A2A;         /* 진한 오렌지 */
+    --primary-light: #FF8C5F;        /* 밝은 오렌지 */
+    
+    --secondary-color: #FFB830;      /* 따뜻한 노란색 */
+    --accent-color: #FF4757;         /* 강조 빨강 */
+    
+    /* 중성 컬러 */
+    --bg-color: #FFF8F3;             /* 따뜻한 배경 */
+    --white: #FFFFFF;
+    --light-gray: #F5F5F5;
+    --gray: #CCCCCC;
+    --dark-gray: #666666;
+    --text-color: #333333;
+    
+    /* 그림자 */
+    --shadow-sm: 0 2px 8px rgba(255, 107, 53, 0.1);
+    --shadow-md: 0 4px 16px rgba(255, 107, 53, 0.15);
+    --shadow-lg: 0 8px 24px rgba(255, 107, 53, 0.2);
+    
+    /* 간격 */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* 폰트 크기 */
+    --font-xs: 12px;
+    --font-sm: 14px;
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 24px;
+    --font-xxl: 32px;
+    
+    /* 레이아웃 */
+    --max-width: 1200px;
+    --header-height: 70px;
+    --border-radius: 12px;
+    
+    /* 트랜지션 */
+    --transition: all 0.3s ease;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* 컨테이너 */
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+/* 버튼 공통 스타일 */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-disabled {
+    background-color: var(--gray);
+    color: var(--dark-gray);
+    cursor: not-allowed;
+}
+
+/* 카드 공통 스타일 */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+/* 입력 필드 */
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray);
+    border-radius: 8px;
+    font-size: var(--font-md);
+    transition: var(--transition);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* 로딩 스피너 */
+.loading {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--light-gray);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 유틸리티 클래스 */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.mt-1 { margin-top: var(--spacing-sm); }
+.mt-2 { margin-top: var(--spacing-md); }
+.mt-3 { margin-top: var(--spacing-lg); }
+.mb-1 { margin-bottom: var(--spacing-sm); }
+.mb-2 { margin-bottom: var(--spacing-md); }
+.mb-3 { margin-bottom: var(--spacing-lg); }
+.hidden { display: none; }
+
+/* 반응형 그리드 */
+.grid {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* 플렉스 */
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

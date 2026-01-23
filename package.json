@@ -1,0 +1,12 @@
+{
+  "name": "food-fe",
+  "version": "1.0.0",
+  "description": "음식 맛집 공유 플랫폼",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.2",
+    "bootstrap-icons": "^1.11.2"
+  }
+}

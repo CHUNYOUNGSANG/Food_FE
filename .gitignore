@@ -1,0 +1,177 @@
+# ===========================
+# Dependencies
+# ===========================
+node_modules/
+/.pnp
+.pnp.js
+
+# ===========================
+# Production Build
+# ===========================
+dist/
+build/
+.next/
+out/
+
+# ===========================
+# Environment Variables
+# ===========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===========================
+# Logs
+# ===========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ===========================
+# Editor / IDE
+# ===========================
+# VSCode
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# IntelliJ / WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ===========================
+# macOS (맥 전용!)
+# ===========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ===========================
+# Testing
+# ===========================
+coverage/
+*.lcov
+.nyc_output
+
+# ===========================
+# Misc
+# ===========================
+*.swp
+*.swo
+*~
+.cache/
+.parcel-cache/
+.vite/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Vue 전용
+.vuepress/dist
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Create React App 전용
+/build
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+
+### Vanilla JS + Bootstrap ###
+
+# Node.js (Bootstrap 설치 시)
+node_modules/
+package-lock.json
+
+# 빌드/번들 결과물
+dist/
+build/
+bundle/
+
+# 환경 변수
+.env
+.env.local
+
+# VSCode
+.vscode/
+*.code-workspace
+.history/
+
+# 임시 파일
+*.tmp
+*.temp
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# 로그
+*.log
+logs/
+
+# 사용자 업로드 이미지 (식당 사진 등)
+uploads/
+images/uploads/
+public/uploads/
+
+# CSS 소스맵 (선택적)
+*.css.map
+
+# 백업 파일
+*.bak
+*.backup

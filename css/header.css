@@ -1,0 +1,131 @@
+/* ========================================
+   헤더 스타일
+   ======================================== */
+
+.header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: var(--header-height);
+}
+
+.header-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 로고 */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    color: var(--white);
+    font-size: var(--font-xl);
+    font-weight: 700;
+}
+
+.header-logo-icon {
+    font-size: 32px;
+}
+
+/* 네비게이션 */
+.header-nav {
+    display: flex;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.header-nav-link {
+    color: var(--white);
+    text-decoration: none;
+    font-size: var(--font-md);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.header-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.header-nav-link.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+/* 사용자 메뉴 */
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--white);
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.header-user-info:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.header-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.header-user-name {
+    font-weight: 500;
+}
+
+/* 버튼 */
+.header-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--white);
+    background-color: transparent;
+    color: var(--white);
+    border-radius: 8px;
+    font-size: var(--font-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.header-btn:hover {
+    background-color: var(--white);
+    color: var(--primary-color);
+}
+
+.header-btn-primary {
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: none;
+}
+
+.header-btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
