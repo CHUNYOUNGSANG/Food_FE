@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>내 댓글 - 맛집 리뷰</title>
+  <title>좋아요한 댓글 - 맛집 리뷰</title>
 
   <!-- Favicon -->
   <link rel="icon"
@@ -54,11 +54,11 @@
     <!-- 페이지 헤더 -->
     <div class="page-header">
       <div class="page-header-content">
-        <div class="page-icon">💬</div>
+        <div class="page-icon">❤️</div>
         <div>
-          <h1 class="page-title">내 댓글</h1>
+          <h1 class="page-title">좋아요한 댓글</h1>
           <p class="page-description">
-            내가 작성한 댓글을 관리하세요
+            내가 좋아요를 누른 댓글을 확인하세요
           </p>
         </div>
       </div>
@@ -67,15 +67,15 @@
       </a>
     </div>
 
-    <!-- 댓글 통계 -->
+    <!-- 댓글 좋아요 통계 -->
     <div class="stats-container">
       <div class="stat-card">
-        <div class="stat-number" id="totalComments">0</div>
-        <div class="stat-label">전체 댓글</div>
+        <div class="stat-number" id="totalLikes">0</div>
+        <div class="stat-label">좋아요한 댓글</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number" id="todayComments">0</div>
-        <div class="stat-label">오늘 작성</div>
+        <div class="stat-number" id="todayLikes">0</div>
+        <div class="stat-label">오늘 좋아요</div>
       </div>
     </div>
 
@@ -84,52 +84,23 @@
       <div class="loading-text">로딩중...</div>
     </div>
 
-    <!-- 댓글 목록 -->
-    <div id="commentsList" class="comments-list-container">
+    <!-- 좋아요한 댓글 목록 -->
+    <div id="likedCommentsList" class="comments-list-container">
       <!-- 댓글이 동적으로 추가됩니다 -->
     </div>
 
     <!-- 빈 상태 -->
     <div id="emptyState" class="empty-state" style="display: none;">
-      <div class="empty-state-icon">💬</div>
+      <div class="empty-state-icon">❤️</div>
       <h3 class="empty-state-title">
-        작성한 댓글이 없어요
+        좋아요한 댓글이 없어요
       </h3>
       <p class="empty-state-description">
-        게시글에 첫 댓글을 남겨보세요!
+        마음에 드는 댓글에 좋아요를 눌러보세요!
       </p>
       <a href="/index.html" class="btn btn-primary">
         게시글 둘러보기
       </a>
-    </div>
-    <!-- 댓글 수정 모달 -->
-    <div id="editModal" class="modal" style="display: none;">
-      <div class="modal-overlay"></div>
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">댓글 수정</h3>
-          <button class="modal-close" id="closeModalBtn">✕</button>
-        </div>
-        <div class="modal-body">
-          <form id="editCommentForm">
-            <div class="form-group">
-              <label for="editContent">댓글 내용</label>
-              <textarea id="editContent" class="form-textarea" rows="6" required></textarea>
-              <div id="editContentCount" class="form-help-text">
-                0 / 500자
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">
-                수정 완료
-              </button>
-              <button type="button" class="btn btn-secondary" id="cancelEditBtn">
-                취소
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   </main>
 
@@ -146,7 +117,7 @@
   </footer>
 
   <!-- JavaScript -->
-  <script type="module" src="../../js/pages/my-page/my-comments.js"></script>
+  <script type="module" src="../../js/pages/my-page/liked-comments.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 
   <style>
@@ -214,7 +185,7 @@
     .stats-container .stat-number {
       font-size: var(--font-4xl);
       font-weight: var(--font-bold);
-      color: var(--primary-color);
+      color: var(--error-color);
       margin-bottom: var(--spacing-sm);
     }
 
@@ -254,38 +225,43 @@
       margin-bottom: var(--spacing-md);
     }
 
-    .comment-post-info {
+    .comment-info {
       flex: 1;
     }
 
-    .comment-post-title {
-      font-size: var(--font-lg);
+    .comment-author {
+      font-size: var(--font-md);
       font-weight: var(--font-semibold);
       color: var(--gray-900);
       margin-bottom: var(--spacing-xs);
+    }
+
+    .comment-post-link {
+      font-size: var(--font-sm);
+      color: var(--primary-color);
       cursor: pointer;
       transition: color 0.3s;
     }
 
-    .comment-post-title:hover {
-      color: var(--primary-color);
+    .comment-post-link:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
     }
 
-    .comment-date {
+    .like-info {
+      text-align: right;
+    }
+
+    .like-date {
       font-size: var(--font-sm);
       color: var(--gray-500);
-    }
-
-    .comment-actions {
-      display: flex;
-      gap: var(--spacing-sm);
     }
 
     .comment-content-box {
       background: var(--gray-50);
       padding: var(--spacing-lg);
       border-radius: var(--radius-md);
-      border-left: 3px solid var(--primary-color);
+      border-left: 3px solid var(--error-color);
       margin-bottom: var(--spacing-md);
     }
 
@@ -297,82 +273,14 @@
       word-break: break-word;
     }
 
-    .comment-deleted {
-      opacity: 0.6;
+    .unlike-btn {
+      color: var(--error-color);
+      border-color: var(--error-color);
     }
 
-    .comment-deleted-text {
-      color: var(--gray-500);
-      font-style: italic;
-    }
-
-    /* 모달 */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1000;
-    }
-
-    .modal-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--white);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-xl);
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--spacing-xl);
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    .modal-title {
-      font-size: var(--font-xl);
-      font-weight: var(--font-bold);
-      color: var(--gray-900);
-    }
-
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: var(--gray-100);
-      border-radius: 50%;
-      font-size: var(--font-lg);
-      color: var(--gray-600);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .modal-close:hover {
-      background: var(--gray-200);
-      color: var(--gray-900);
-    }
-
-    .modal-body {
-      padding: var(--spacing-xl);
+    .unlike-btn:hover {
+      background: var(--error-color);
+      color: var(--white);
     }
 
     /* 반응형 */
@@ -394,14 +302,6 @@
       .comment-card-header {
         flex-direction: column;
         gap: var(--spacing-md);
-      }
-
-      .comment-actions {
-        width: 100%;
-      }
-
-      .comment-actions button {
-        flex: 1;
       }
     }
   </style>

@@ -81,7 +81,7 @@ export const getPostLikeCount = async (postId, memberId = null) => {
 export const getLikedPostsByMember = async (memberId) => {
   try {
     const response = await httpClient.get(
-      `/api/posts/likes/member/${memberId}`,
+      API_CONFIG.ENDPOINTS.POST_LIKES_BY_MEMBER(memberId),
     );
     return response;
   } catch (error) {

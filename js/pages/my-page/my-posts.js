@@ -3,6 +3,7 @@
  */
 
 import { getPostsByMember } from '../../services/post-service.js';
+import { getLikedPostsByMember } from '../../services/post-like-service.js';
 import { getMember, updateMember } from '../../services/member-service.js';
 import { getMemberId, getUser, setUser } from '../../utils/storage.js';
 import { createPostCard } from '../../components/post-card.js';
@@ -12,13 +13,31 @@ const profileAvatar = document.getElementById('profileAvatar');
 const profileNickname = document.getElementById('profileNickname');
 const profileEmail = document.getElementById('profileEmail');
 const postCount = document.getElementById('postCount');
+const likedCount = document.getElementById('likedCount');
+const commentsTab = document.getElementById('commentsTab');
+const likedCommentsTab = document.getElementById('likedCommentsTab');
+
+// 탭 버튼
 const postsTab = document.getElementById('postsTab');
+const likedPostsTab = document.getElementById('likedPostsTab');
 const profileTab = document.getElementById('profileTab');
+
+// 탭 컨텐츠
 const postsContent = document.getElementById('postsContent');
+const likedPostsContent = document.getElementById('likedPostsContent');
 const profileContent = document.getElementById('profileContent');
-const loading = document.getElementById('loading');
+
+// 내 게시글 탭
+const postsLoading = document.getElementById('postsLoading');
 const postsGrid = document.getElementById('postsGrid');
-const emptyState = document.getElementById('emptyState');
+const postsEmptyState = document.getElementById('postsEmptyState');
+
+// 좋아요한 게시글 탭
+const likedPostsLoading = document.getElementById('likedPostsLoading');
+const likedPostsGrid = document.getElementById('likedPostsGrid');
+const likedPostsEmptyState = document.getElementById('likedPostsEmptyState');
+
+// 프로필 수정
 const profileForm = document.getElementById('profileForm');
 const nameInput = document.getElementById('name');
 const nicknameInput = document.getElementById('nickname');
@@ -30,6 +49,7 @@ const profileError = document.getElementById('profileError');
 let currentMemberId = null;
 let currentUser = null;
 let myPosts = [];
+let myLikedPosts = [];
 
 /**
  * 초기화
@@ -81,7 +101,7 @@ const loadProfile = async () => {
  */
 const loadMyPosts = async () => {
   try {
-    showLoading();
+    showPostsLoading();
 
     myPosts = await getPostsByMember(currentMemberId);
 
@@ -89,35 +109,150 @@ const loadMyPosts = async () => {
     postCount.textContent = myPosts.length;
 
     // 게시글 렌더링
-    renderPosts(myPosts);
+    renderMyPosts(myPosts);
   } catch (error) {
     console.error('게시글 로드 실패:', error);
-    showEmptyState();
+    showPostsEmptyState();
   } finally {
-    hideLoading();
+    hidePostsLoading();
   }
 };
 
 /**
- * 게시글 렌더링
+ * 좋아요한 게시글 로드
  */
-const renderPosts = (posts) => {
+const loadLikedPosts = async () => {
+  try {
+    showLikedPostsLoading();
+
+    const likedData = await getLikedPostsByMember(currentMemberId);
+
+    // 좋아요 데이터에서 게시글 정보 추출
+    myLikedPosts = likedData.map((like) => ({
+      id: like.postId,
+      title: like.title,
+      memberId: like.memberId,
+      memberNickname: like.nickname,
+      // 추가 정보가 필요하면 별도 API 호출 필요
+      // 하지만 백엔드에서 이미 필요한 정보를 다 주고 있음
+    }));
+
+    // 좋아요 개수 표시
+    likedCount.textContent = myLikedPosts.length;
+
+    // 게시글 렌더링
+    renderLikedPosts(likedData);
+  } catch (error) {
+    console.error('좋아요한 게시글 로드 실패:', error);
+    showLikedPostsEmptyState();
+  } finally {
+    hideLikedPostsLoading();
+  }
+};
+
+/**
+ * 내 게시글 렌더링
+ */
+const renderMyPosts = (posts) => {
   if (posts.length === 0) {
-    showEmptyState();
+    showPostsEmptyState();
     return;
   }
 
   postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
   postsGrid.style.display = 'grid';
-  emptyState.style.display = 'none';
+  postsEmptyState.style.display = 'none';
 };
 
 /**
- * 빈 상태 표시
+ * 좋아요한 게시글 렌더링
  */
-const showEmptyState = () => {
+const renderLikedPosts = (likedData) => {
+  if (likedData.length === 0) {
+    showLikedPostsEmptyState();
+    return;
+  }
+
+  // 좋아요 데이터를 게시글 카드 형식으로 변환
+  likedPostsGrid.innerHTML = likedData
+    .map((like) => {
+      // PostLikeResponseDto 구조를 Post 구조로 변환
+      const postData = {
+        id: like.postId,
+        title: like.title,
+        memberId: like.memberId,
+        memberNickname: like.nickname,
+        createdAt: like.createdAt,
+        // 좋아요 데이터에는 일부 정보만 있으므로 간단한 카드로 표시
+      };
+      return createLikedPostCard(postData);
+    })
+    .join('');
+
+  likedPostsGrid.style.display = 'grid';
+  likedPostsEmptyState.style.display = 'none';
+};
+
+/**
+ * 좋아요한 게시글 카드 생성 (간소화 버전)
+ */
+const createLikedPostCard = (post) => {
+  return `
+        <a href="/pages/posts/post-detail.html?id=${post.id}" class="post-card" style="text-decoration: none; color: inherit; display: block; background: var(--white); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-md);">
+            <div style="padding: var(--spacing-xl);">
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                    <span style="background: var(--error-light); color: var(--error-color); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-md); font-size: var(--font-xs); font-weight: var(--font-semibold);">
+                        ❤️ 좋아요
+                    </span>
+                </div>
+                
+                <h3 style="font-size: var(--font-lg); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-md); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    ${escapeHtml(post.title)}
+                </h3>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: var(--spacing-md); border-top: 1px solid var(--gray-200);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: var(--font-bold); font-size: var(--font-sm);">
+                            ${post.memberNickname ? post.memberNickname.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        <span style="font-size: var(--font-sm); color: var(--gray-600); font-weight: var(--font-medium);">
+                            ${escapeHtml(post.memberNickname || '익명')}
+                        </span>
+                    </div>
+                    
+                    <span style="color: var(--primary-color); font-size: var(--font-sm); font-weight: var(--font-semibold);">
+                        자세히 보기 →
+                    </span>
+                </div>
+            </div>
+        </a>
+    `;
+};
+
+/**
+ * HTML 이스케이프
+ */
+const escapeHtml = (text) => {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+};
+
+/**
+ * 빈 상태 표시 (내 게시글)
+ */
+const showPostsEmptyState = () => {
   postsGrid.style.display = 'none';
-  emptyState.style.display = 'block';
+  postsEmptyState.style.display = 'block';
+};
+
+/**
+ * 빈 상태 표시 (좋아요한 게시글)
+ */
+const showLikedPostsEmptyState = () => {
+  likedPostsGrid.style.display = 'none';
+  likedPostsEmptyState.style.display = 'block';
 };
 
 /**
@@ -126,25 +261,50 @@ const showEmptyState = () => {
 const attachEventListeners = () => {
   // 탭 전환
   postsTab.addEventListener('click', () => switchTab('posts'));
+  likedPostsTab.addEventListener('click', () => switchTab('liked'));
   profileTab.addEventListener('click', () => switchTab('profile'));
 
   // 프로필 수정
   profileForm.addEventListener('submit', handleProfileUpdate);
+
+  // 내 댓글 탭
+  commentsTab.addEventListener('click', () => {
+    window.location.href = '/pages/my-page/my-comments.html';
+  });
+
+  // 좋아요한 댓글 탭
+  likedCommentsTab.addEventListener('click', () => {
+    window.location.href = '/pages/my-page/liked-comments.html';
+  });
 };
 
 /**
  * 탭 전환
  */
-const switchTab = (tab) => {
+const switchTab = async (tab) => {
+  // 탭 버튼 활성화
+  postsTab.classList.remove('active');
+  likedPostsTab.classList.remove('active');
+  profileTab.classList.remove('active');
+
+  // 탭 컨텐츠 표시/숨김
+  postsContent.style.display = 'none';
+  likedPostsContent.style.display = 'none';
+  profileContent.style.display = 'none';
+
   if (tab === 'posts') {
     postsTab.classList.add('active');
-    profileTab.classList.remove('active');
     postsContent.style.display = 'block';
-    profileContent.style.display = 'none';
-  } else {
-    postsTab.classList.remove('active');
+  } else if (tab === 'liked') {
+    likedPostsTab.classList.add('active');
+    likedPostsContent.style.display = 'block';
+
+    // 좋아요한 게시글이 아직 로드되지 않았으면 로드
+    if (myLikedPosts.length === 0 && likedPostsGrid.innerHTML === '') {
+      await loadLikedPosts();
+    }
+  } else if (tab === 'profile') {
     profileTab.classList.add('active');
-    postsContent.style.display = 'none';
     profileContent.style.display = 'block';
   }
 };
@@ -208,19 +368,29 @@ const showProfileError = (message) => {
 };
 
 /**
- * 로딩 표시
+ * 로딩 표시/숨김 (내 게시글)
  */
-const showLoading = () => {
-  loading.style.display = 'block';
+const showPostsLoading = () => {
+  postsLoading.style.display = 'block';
   postsGrid.style.display = 'none';
-  emptyState.style.display = 'none';
+  postsEmptyState.style.display = 'none';
+};
+
+const hidePostsLoading = () => {
+  postsLoading.style.display = 'none';
 };
 
 /**
- * 로딩 숨김
+ * 로딩 표시/숨김 (좋아요한 게시글)
  */
-const hideLoading = () => {
-  loading.style.display = 'none';
+const showLikedPostsLoading = () => {
+  likedPostsLoading.style.display = 'block';
+  likedPostsGrid.style.display = 'none';
+  likedPostsEmptyState.style.display = 'none';
+};
+
+const hideLikedPostsLoading = () => {
+  likedPostsLoading.style.display = 'none';
 };
 
 // 초기화 실행

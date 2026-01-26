@@ -1,0 +1,46 @@
+/**
+ * 푸터 스타일
+ */
+
+.site-footer {
+  background: var(--gray-900);
+  color: var(--white);
+  padding: var(--spacing-2xl) 0;
+  margin-top: var(--spacing-3xl);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+  text-align: center;
+}
+
+.footer-logo {
+  font-size: var(--font-md);
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-semibold);
+}
+
+.footer-copyright {
+  color: var(--gray-400);
+  font-size: var(--font-sm);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.footer-link {
+  color: var(--gray-400);
+  text-decoration: none;
+  font-size: var(--font-sm);
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: var(--white);
+}

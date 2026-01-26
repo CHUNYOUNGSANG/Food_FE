@@ -39,6 +39,8 @@ const API_CONFIG = {
     // 댓글 관련
     COMMENTS: (postId) => `/posts/${postId}/comments`,
     COMMENT_CREATE: (postId) => `/posts/${postId}/comments`,
+    COMMENT_DETAIL: (postId, commentId) =>
+      `/posts/${postId}/comments/${commentId}`,
     COMMENT_UPDATE: (postId, commentId) =>
       `/posts/${postId}/comments/${commentId}`,
     COMMENT_DELETE: (postId, commentId) =>

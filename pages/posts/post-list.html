@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 목록 - 맛집 리뷰</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/card.css">
+  <link rel="stylesheet" href="../../css/components/footer.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html" class="nav-link">
+          홈
+        </a>
+        <a href="/pages/posts/post-list.html" class="nav-link active">
+          게시글
+        </a>
+        <a href="/pages/my-page/my-posts.html" class="nav-link">
+          마이페이지
+        </a>
+      </nav>
+
+      <div class="user-menu" id="userMenu"></div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="container">
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          🍽️ 맛집 리뷰 모아보기
+        </h1>
+        <p class="hero-description">
+          전국 곳곳의 맛집을 발견하고 공유하세요
+        </p>
+      </div>
+    </section>
+
+    <!-- 검색 & 필터 -->
+    <section class="filter-section">
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="맛집 이름이나 메뉴를 검색하세요...">
+        <button id="searchBtn" class="btn btn-primary">
+          🔍 검색
+        </button>
+      </div>
+
+      <div class="category-filter">
+        <button class="category-btn active" data-category="all">
+          전체
+        </button>
+        <button class="category-btn" data-category="한식">
+          🌶️ 한식
+        </button>
+        <button class="category-btn" data-category="중식">
+          🥟 중식
+        </button>
+        <button class="category-btn" data-category="일식">
+          🍱 일식
+        </button>
+        <button class="category-btn" data-category="양식">
+          🍝 양식
+        </button>
+        <button class="category-btn" data-category="카페">
+          ☕ 카페
+        </button>
+      </div>
+    </section>
+
+    <!-- 게시글 통계 -->
+    <section class="stats-section">
+      <div class="stat-item">
+        <span class="stat-label">전체 게시글</span>
+        <span class="stat-value" id="totalPosts">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">오늘의 게시글</span>
+        <span class="stat-value" id="todayPosts">0</span>
+      </div>
+    </section>
+
+    <!-- 로딩 -->
+    <div id="loading" class="loading" style="display: none;">
+      <div class="loading-text">로딩중...</div>
+    </div>
+
+    <!-- 게시글 그리드 -->
+    <section id="postsGrid" class="posts-grid">
+      <!-- 게시글 카드가 동적으로 추가됩니다 -->
+    </section>
+
+    <!-- 빈 상태 -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">🍽️</div>
+      <h3 class="empty-state-title">
+        아직 게시글이 없어요
+      </h3>
+      <p class="empty-state-description">
+        첫 번째 맛집 후기를 작성해보세요!
+      </p>
+      <a href="/pages/posts/post-create.html" class="btn btn-primary btn-large">
+        게시글 작성하기
+      </a>
+    </div>
+
+    <!-- 검색 결과 없음 -->
+    <div id="noResults" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">🔍</div>
+      <h3 class="empty-state-title">
+        검색 결과가 없어요
+      </h3>
+      <p class="empty-state-description">
+        다른 키워드로 검색해보세요
+      </p>
+      <button id="resetSearch" class="btn btn-secondary">
+        전체 보기
+      </button>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-logo">
+        🍽️ 맛집 리뷰
+      </p>
+      <p class="footer-copyright">
+        맛있는 순간을 나누는 공간 © 2025
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/posts/post-list.js"></script>
+  <script type="module" src="../../js/components/header.js"></script>
+
+  <style>
+    /* 히어로 섹션 */
+    .hero-section {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      padding: var(--spacing-3xl) var(--spacing-2xl);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--spacing-2xl);
+      text-align: center;
+      color: var(--white);
+    }
+
+    .hero-title {
+      font-size: var(--font-4xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .hero-description {
+      font-size: var(--font-lg);
+      opacity: 0.9;
+    }
+
+    /* 검색 & 필터 */
+    .filter-section {
+      background: var(--white);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--spacing-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+    }
+
+    .search-container {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .search-input {
+      flex: 1;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-md);
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .category-filter {
+      display: flex;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border: 1.5px solid var(--gray-300);
+      background: var(--white);
+      border-radius: var(--radius-md);
+      font-size: var(--font-sm);
+      font-weight: var(--font-semibold);
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .category-btn:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .category-btn.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: var(--white);
+    }
+
+    /* 통계 */
+    .stats-section {
+      display: flex;
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .stat-item {
+      flex: 1;
+      background: var(--white);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .stat-label {
+      font-size: var(--font-sm);
+      color: var(--gray-600);
+    }
+
+    .stat-value {
+      font-size: var(--font-3xl);
+      font-weight: var(--font-bold);
+      color: var(--primary-color);
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: var(--font-2xl);
+      }
+
+      .search-container {
+        flex-direction: column;
+      }
+
+      .stats-section {
+        flex-direction: column;
+      }
+    }
+  </style>
+</body>
+
+</html>

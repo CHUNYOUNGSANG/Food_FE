@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>내 게시글 - 맛집 리뷰</title>
+  <title>마이페이지 - 맛집 리뷰</title>
 
   <!-- Favicon -->
   <link rel="icon"
@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="../../css/components/header.css">
   <link rel="stylesheet" href="../../css/components/button.css">
   <link rel="stylesheet" href="../../css/components/card.css">
+  <link rel="stylesheet" href="../../css/components/form.css">
+  <link rel="stylesheet" href="../../css/components/footer.css">
+  <link rel="stylesheet" href="../../css/pages/my-page.css">
 </head>
 
 <body>
@@ -50,72 +53,80 @@
   <!-- 메인 컨텐츠 -->
   <main class="container">
     <!-- 프로필 섹션 -->
-    <div
-      style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); padding: var(--spacing-3xl); border-radius: var(--radius-xl); margin: var(--spacing-2xl) 0; color: var(--white); box-shadow: var(--shadow-lg);">
-      <div style="display: flex; align-items: center; gap: var(--spacing-xl);">
-        <div id="profileAvatar"
-          style="width: 80px; height: 80px; border-radius: 50%; background: var(--white); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: var(--font-3xl); font-weight: var(--font-bold); box-shadow: var(--shadow-xl);">
+    <div class="profile-header">
+      <div class="profile-content">
+        <div id="profileAvatar" class="profile-avatar">
           U
         </div>
-        <div style="flex: 1;">
-          <h1 id="profileNickname"
-            style="font-size: var(--font-3xl); font-weight: var(--font-bold); margin-bottom: var(--spacing-sm);">
+        <div class="profile-info">
+          <h1 id="profileNickname" class="profile-nickname">
             닉네임
           </h1>
-          <p id="profileEmail" style="font-size: var(--font-md); opacity: 0.9;">
+          <p id="profileEmail" class="profile-email">
             email@example.com
           </p>
         </div>
-        <div
-          style="text-align: center; padding: var(--spacing-lg); background: rgba(255,255,255,0.2); border-radius: var(--radius-lg); backdrop-filter: blur(10px);">
-          <div style="font-size: var(--font-3xl); font-weight: var(--font-bold); margin-bottom: var(--spacing-xs);"
-            id="postCount">
-            0
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="postCount">
+              0
+            </div>
+            <div class="stat-label">
+              내 게시글
+            </div>
           </div>
-          <div style="font-size: var(--font-sm); opacity: 0.9;">
-            작성한 게시글
+          <div class="stat-card">
+            <div class="stat-number" id="likedCount">
+              0
+            </div>
+            <div class="stat-label">
+              좋아요
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 탭 메뉴 -->
-    <div
-      style="background: var(--white); padding: var(--spacing-lg); border-radius: var(--radius-xl); margin-bottom: var(--spacing-xl); border: 1px solid var(--gray-200); box-shadow: var(--shadow-md);">
-      <div style="display: flex; gap: var(--spacing-lg); border-bottom: 2px solid var(--gray-200);">
-        <button id="postsTab" class="tab-button active"
-          style="padding: var(--spacing-md) var(--spacing-lg); border: none; background: none; cursor: pointer; font-size: var(--font-md); font-weight: var(--font-semibold); color: var(--gray-600); border-bottom: 3px solid transparent; transition: all 0.3s;">
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button id="postsTab" class="tab-button active">
           📝 내 게시글
         </button>
-        <button id="profileTab" class="tab-button"
-          style="padding: var(--spacing-md) var(--spacing-lg); border: none; background: none; cursor: pointer; font-size: var(--font-md); font-weight: var(--font-semibold); color: var(--gray-600); border-bottom: 3px solid transparent; transition: all 0.3s;">
+        <button id="likedPostsTab" class="tab-button">
+          ❤️ 좋아요한 게시글
+        </button>
+        <button id="commentsTab" class="tab-button">
+          💬 내 댓글
+        </button>
+        <button id="likedCommentsTab" class="tab-button">
+          💕 좋아요한 댓글
+        </button>
+        <button id="profileTab" class="tab-button">
           ⚙️ 프로필 수정
         </button>
       </div>
     </div>
 
     <!-- 내 게시글 탭 -->
-    <div id="postsContent">
+    <div id="postsContent" class="tab-content active">
       <!-- 로딩 -->
-      <div id="loading" class="loading" style="display: none;">
+      <div id="postsLoading" class="loading" style="display: none;">
         <div class="loading-text">로딩중...</div>
       </div>
 
       <!-- 게시글 그리드 -->
-      <div id="postsGrid" class="posts-grid"
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-xl);">
+      <div id="postsGrid" class="posts-grid">
         <!-- 게시글 카드가 동적으로 추가됩니다 -->
       </div>
 
       <!-- 빈 상태 -->
-      <div id="emptyState"
-        style="display: none; text-align: center; padding: var(--spacing-3xl); background: var(--white); border-radius: var(--radius-xl); border: 2px dashed var(--gray-300);">
-        <div style="font-size: 4rem; margin-bottom: var(--spacing-lg);">📝</div>
-        <h3
-          style="font-size: var(--font-2xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-md);">
+      <div id="postsEmptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">📝</div>
+        <h3 class="empty-state-title">
           작성한 게시글이 없어요
         </h3>
-        <p style="color: var(--gray-600); margin-bottom: var(--spacing-xl);">
+        <p class="empty-state-description">
           첫 맛집 후기를 작성해보세요!
         </p>
         <a href="/pages/posts/post-create.html" class="btn btn-primary">
@@ -124,12 +135,37 @@
       </div>
     </div>
 
+    <!-- 좋아요한 게시글 탭 -->
+    <div id="likedPostsContent" class="tab-content" style="display: none;">
+      <!-- 로딩 -->
+      <div id="likedPostsLoading" class="loading" style="display: none;">
+        <div class="loading-text">로딩중...</div>
+      </div>
+
+      <!-- 게시글 그리드 -->
+      <div id="likedPostsGrid" class="posts-grid">
+        <!-- 좋아요한 게시글 카드가 동적으로 추가됩니다 -->
+      </div>
+
+      <!-- 빈 상태 -->
+      <div id="likedPostsEmptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">❤️</div>
+        <h3 class="empty-state-title">
+          좋아요한 게시글이 없어요
+        </h3>
+        <p class="empty-state-description">
+          마음에 드는 맛집을 발견하면<br>좋아요 버튼을 눌러보세요!
+        </p>
+        <a href="/index.html" class="btn btn-primary">
+          게시글 둘러보기
+        </a>
+      </div>
+    </div>
+
     <!-- 프로필 수정 탭 -->
-    <div id="profileContent" style="display: none;">
-      <div
-        style="background: var(--white); padding: var(--spacing-3xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--gray-200);">
-        <h2
-          style="font-size: var(--font-2xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-2xl);">
+    <div id="profileContent" class="tab-content" style="display: none;">
+      <div class="profile-form-container">
+        <h2 class="profile-form-title">
           프로필 수정
         </h2>
 
@@ -161,16 +197,21 @@
     </div>
   </main>
 
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-logo">
+        🍽️ 맛집 리뷰
+      </p>
+      <p class="footer-copyright">
+        맛있는 순간을 나누는 공간 © 2025
+      </p>
+    </div>
+  </footer>
+
   <!-- JavaScript -->
   <script type="module" src="../../js/pages/my-page/my-posts.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
-
-  <style>
-    .tab-button.active {
-      color: var(--primary-color) !important;
-      border-bottom-color: var(--primary-color) !important;
-    }
-  </style>
 </body>
 
 </html>

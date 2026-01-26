@@ -2,20 +2,28 @@
  * 게시글 목록 페이지 로직
  */
 
-import httpClient from '../../utils/http-client.js';
-import API_CONFIG from '../../config/api-config.js';
-import { createPostCards } from '../../components/post-card.js';
+import {
+  getAllPosts,
+  getPostsByCategory,
+  searchPosts,
+} from '../../services/post-service.js';
+import { createPostCard } from '../../components/post-card.js';
 
 // DOM 요소
-const postContainer = document.getElementById('postContainer');
-const emptyState = document.getElementById('emptyState');
 const loading = document.getElementById('loading');
+const postsGrid = document.getElementById('postsGrid');
+const emptyState = document.getElementById('emptyState');
+const noResults = document.getElementById('noResults');
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
+const resetSearchBtn = document.getElementById('resetSearch');
 const categoryBtns = document.querySelectorAll('.category-btn');
+const totalPostsSpan = document.getElementById('totalPosts');
+const todayPostsSpan = document.getElementById('todayPosts');
 
 // 상태
 let allPosts = [];
+let filteredPosts = [];
 let currentCategory = 'all';
 
 /**
@@ -27,19 +35,23 @@ const init = async () => {
 };
 
 /**
- * 게시글 목록 로드
+ * 게시글 로드
  */
 const loadPosts = async () => {
   try {
     showLoading();
 
-    const posts = await httpClient.get(API_CONFIG.ENDPOINTS.POSTS);
-    allPosts = posts;
+    allPosts = await getAllPosts();
+    filteredPosts = allPosts;
 
-    renderPosts(posts);
+    // 통계 업데이트
+    updateStats();
+
+    // 게시글 렌더링
+    renderPosts(filteredPosts);
   } catch (error) {
     console.error('게시글 로드 실패:', error);
-    showError('게시글을 불러오는데 실패했습니다.');
+    showEmptyState();
   } finally {
     hideLoading();
   }
@@ -49,36 +61,76 @@ const loadPosts = async () => {
  * 게시글 렌더링
  */
 const renderPosts = (posts) => {
-  if (!posts || posts.length === 0) {
-    showEmptyState();
+  // 검색/필터 결과 숨김
+  noResults.style.display = 'none';
+  emptyState.style.display = 'none';
+
+  if (posts.length === 0) {
+    // 전체 게시글이 없는 경우
+    if (allPosts.length === 0) {
+      showEmptyState();
+    } else {
+      // 검색/필터 결과가 없는 경우
+      showNoResults();
+    }
+    postsGrid.style.display = 'none';
     return;
   }
 
-  hideEmptyState();
-  postContainer.innerHTML = createPostCards(posts);
+  postsGrid.style.display = 'grid';
+  postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+};
+
+/**
+ * 통계 업데이트
+ */
+const updateStats = () => {
+  // 전체 게시글 수
+  totalPostsSpan.textContent = allPosts.length;
+
+  // 오늘 작성된 게시글 수
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayPosts = allPosts.filter((post) => {
+    const postDate = new Date(post.createdAt);
+    postDate.setHours(0, 0, 0, 0);
+    return postDate.getTime() === today.getTime();
+  });
+
+  todayPostsSpan.textContent = todayPosts.length;
 };
 
 /**
  * 카테고리 필터링
  */
-const filterByCategory = (category) => {
-  currentCategory = category;
+const filterByCategory = async (category) => {
+  try {
+    showLoading();
 
-  // 버튼 활성화 상태 변경
-  categoryBtns.forEach((btn) => {
-    if (btn.dataset.category === category) {
-      btn.classList.add('active');
+    currentCategory = category;
+
+    if (category === 'all') {
+      filteredPosts = allPosts;
     } else {
-      btn.classList.remove('active');
+      filteredPosts = await getPostsByCategory(category);
     }
-  });
 
-  // 필터링
-  if (category === 'all') {
-    renderPosts(allPosts);
-  } else {
-    const filtered = allPosts.filter((post) => post.foodCategory === category);
-    renderPosts(filtered);
+    // 검색어가 있으면 추가 필터링
+    const keyword = searchInput.value.trim();
+    if (keyword) {
+      filteredPosts = filteredPosts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          post.restaurantName.toLowerCase().includes(keyword.toLowerCase()),
+      );
+    }
+
+    renderPosts(filteredPosts);
+  } catch (error) {
+    console.error('카테고리 필터링 실패:', error);
+  } finally {
+    hideLoading();
   }
 };
 
@@ -89,24 +141,50 @@ const handleSearch = async () => {
   const keyword = searchInput.value.trim();
 
   if (!keyword) {
-    renderPosts(allPosts);
+    // 검색어가 없으면 현재 카테고리로 필터링
+    filterByCategory(currentCategory);
     return;
   }
 
   try {
     showLoading();
 
-    const results = await httpClient.get(
-      `${API_CONFIG.ENDPOINTS.POSTS_SEARCH}?keyword=${encodeURIComponent(keyword)}`,
-    );
+    // 백엔드 검색 API 사용
+    const searchResults = await searchPosts(keyword);
 
-    renderPosts(results);
+    // 현재 카테고리 필터 적용
+    if (currentCategory !== 'all') {
+      filteredPosts = searchResults.filter(
+        (post) => post.foodCategory === currentCategory,
+      );
+    } else {
+      filteredPosts = searchResults;
+    }
+
+    renderPosts(filteredPosts);
   } catch (error) {
     console.error('검색 실패:', error);
-    showError('검색에 실패했습니다.');
+    showNoResults();
   } finally {
     hideLoading();
   }
+};
+
+/**
+ * 검색 초기화
+ */
+const resetSearch = () => {
+  searchInput.value = '';
+  currentCategory = 'all';
+
+  // 카테고리 버튼 초기화
+  categoryBtns.forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.category === 'all');
+  });
+
+  // 전체 게시글 표시
+  filteredPosts = allPosts;
+  renderPosts(filteredPosts);
 };
 
 /**
@@ -126,10 +204,36 @@ const attachEventListeners = () => {
   // 카테고리 버튼
   categoryBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
+      // 활성화 상태 변경
+      categoryBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // 필터링
       const category = btn.dataset.category;
       filterByCategory(category);
     });
   });
+
+  // 검색 초기화 버튼
+  resetSearchBtn.addEventListener('click', resetSearch);
+};
+
+/**
+ * 빈 상태 표시
+ */
+const showEmptyState = () => {
+  postsGrid.style.display = 'none';
+  noResults.style.display = 'none';
+  emptyState.style.display = 'block';
+};
+
+/**
+ * 검색 결과 없음 표시
+ */
+const showNoResults = () => {
+  postsGrid.style.display = 'none';
+  emptyState.style.display = 'none';
+  noResults.style.display = 'block';
 };
 
 /**
@@ -137,8 +241,9 @@ const attachEventListeners = () => {
  */
 const showLoading = () => {
   loading.style.display = 'block';
-  postContainer.style.display = 'none';
+  postsGrid.style.display = 'none';
   emptyState.style.display = 'none';
+  noResults.style.display = 'none';
 };
 
 /**
@@ -146,29 +251,6 @@ const showLoading = () => {
  */
 const hideLoading = () => {
   loading.style.display = 'none';
-  postContainer.style.display = 'grid';
-};
-
-/**
- * 빈 상태 표시
- */
-const showEmptyState = () => {
-  postContainer.style.display = 'none';
-  emptyState.style.display = 'block';
-};
-
-/**
- * 빈 상태 숨김
- */
-const hideEmptyState = () => {
-  emptyState.style.display = 'none';
-};
-
-/**
- * 에러 메시지 표시
- */
-const showError = (message) => {
-  alert(message);
 };
 
 // 초기화 실행
