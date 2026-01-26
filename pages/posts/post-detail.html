@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 상세 - 맛집 리뷰</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/form.css">
+  <link rel="stylesheet" href="../../css/components/card.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html" class="nav-link">
+          홈
+        </a>
+        <a href="/pages/posts/post-list.html" class="nav-link">
+          게시글
+        </a>
+        <a href="/pages/my-page/my-posts.html" class="nav-link">
+          마이페이지
+        </a>
+      </nav>
+
+      <div class="user-menu" id="userMenu"></div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="container">
+    <!-- 로딩 -->
+    <div id="loading" class="loading" style="display: none;">
+      <div class="loading-text">로딩중...</div>
+    </div>
+
+    <!-- 게시글 상세 -->
+    <div id="postDetail" style="display: none;">
+      <!-- 게시글 헤더 -->
+      <div
+        style="background: var(--white); padding: var(--spacing-2xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); margin: var(--spacing-2xl) 0; border: 1px solid var(--gray-200);">
+        <!-- 카테고리 & 평점 -->
+        <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+          <span id="categoryBadge" class="category-badge" style="position: static;"></span>
+          <span id="ratingBadge" class="rating-badge" style="position: static;"></span>
+        </div>
+
+        <!-- 제목 -->
+        <h1 id="postTitle"
+          style="font-size: var(--font-4xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-lg); line-height: 1.3;">
+        </h1>
+
+        <!-- 맛집 정보 -->
+        <div
+          style="background: var(--gray-50); padding: var(--spacing-lg); border-radius: var(--radius-md); margin-bottom: var(--spacing-lg);">
+          <div id="restaurantName"
+            style="font-size: var(--font-xl); font-weight: var(--font-semibold); color: var(--primary-color); margin-bottom: var(--spacing-sm);">
+          </div>
+          <div id="restaurantAddress" style="font-size: var(--font-sm); color: var(--gray-600);"></div>
+        </div>
+
+        <!-- 작성자 & 메타 정보 -->
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--gray-200);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+            <div id="authorAvatar" class="author-avatar" style="width: 48px; height: 48px; font-size: var(--font-lg);">
+            </div>
+            <div>
+              <div id="authorName"
+                style="font-size: var(--font-md); font-weight: var(--font-semibold); color: var(--gray-900);"></div>
+              <div id="postDate" style="font-size: var(--font-sm); color: var(--gray-500); margin-top: 2px;"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: var(--spacing-md); font-size: var(--font-sm); color: var(--gray-500);">
+            <span id="viewCount">👁️ 0</span>
+          </div>
+        </div>
+
+        <!-- 작성자 버튼 (본인만 보임) -->
+        <div id="authorActions"
+          style="display: none; margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm);">
+          <button id="editBtn" class="btn btn-secondary btn-small">
+            수정
+          </button>
+          <button id="deleteBtn" class="btn btn-outline btn-small"
+            style="color: var(--error-color); border-color: var(--error-color);">
+            삭제
+          </button>
+        </div>
+      </div>
+
+      <!-- 게시글 이미지 -->
+      <div id="postImageContainer"
+        style="display: none; background: var(--white); padding: var(--spacing-xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); margin-bottom: var(--spacing-xl); border: 1px solid var(--gray-200);">
+        <img id="postImage" style="width: 100%; border-radius: var(--radius-lg); object-fit: cover; max-height: 600px;">
+      </div>
+
+      <!-- 게시글 내용 -->
+      <div
+        style="background: var(--white); padding: var(--spacing-3xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); margin-bottom: var(--spacing-2xl); border: 1px solid var(--gray-200);">
+        <div id="postContent"
+          style="font-size: var(--font-md); line-height: 1.8; color: var(--gray-800); white-space: pre-wrap; word-break: break-word;">
+        </div>
+      </div>
+
+      <!-- 좋아요 & 공유 -->
+      <div
+        style="background: var(--white); padding: var(--spacing-xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); margin-bottom: var(--spacing-2xl); border: 1px solid var(--gray-200); display: flex; justify-content: center; gap: var(--spacing-lg);">
+        <button id="likeBtn" class="btn btn-outline" style="min-width: 120px;">
+          <span id="likeIcon">🤍</span>
+          <span id="likeCount">0</span>
+        </button>
+        <button id="shareBtn" class="btn btn-secondary">
+          📤 공유하기
+        </button>
+      </div>
+
+      <!-- 댓글 섹션 -->
+      <div
+        style="background: var(--white); padding: var(--spacing-3xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--gray-200);">
+        <!-- 댓글 헤더 -->
+        <h2
+          style="font-size: var(--font-2xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-xl); display: flex; align-items: center; gap: var(--spacing-sm);">
+          💬 댓글 <span id="commentCount" style="color: var(--primary-color);">0</span>
+        </h2>
+
+        <!-- 댓글 작성 폼 -->
+        <div id="commentFormContainer" style="margin-bottom: var(--spacing-2xl);">
+          <form id="commentForm">
+            <div class="form-group" style="margin-bottom: var(--spacing-md);">
+              <textarea id="commentInput" class="form-textarea" placeholder="댓글을 입력하세요..." rows="4"
+                style="resize: vertical;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-primary">
+                댓글 작성
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 댓글 목록 -->
+        <div id="commentList">
+          <!-- 댓글이 동적으로 추가됩니다 -->
+        </div>
+
+        <!-- 댓글 없음 -->
+        <div id="noComments"
+          style="display: none; text-align: center; padding: var(--spacing-3xl); color: var(--gray-500);">
+          <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">💬</div>
+          <p style="font-size: var(--font-md);">아직 댓글이 없어요.<br>첫 댓글을 남겨보세요!</p>
+        </div>
+      </div>
+
+      <!-- 목록으로 버튼 -->
+      <div style="text-align: center; margin: var(--spacing-2xl) 0;">
+        <a href="/index.html" class="btn btn-secondary btn-large">
+          목록으로 돌아가기
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer
+    style="background: var(--gray-900); color: var(--white); padding: var(--spacing-2xl) 0; margin-top: var(--spacing-3xl);">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: var(--font-md); margin-bottom: var(--spacing-sm); font-weight: var(--font-semibold);">
+        🍽️ 맛집 리뷰
+      </p>
+      <p style="color: var(--gray-400); font-size: var(--font-sm);">
+        맛있는 순간을 나누는 공간 © 2025
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/posts/post-detail.js"></script>
+  <script type="module" src="../../js/components/header.js"></script>
+</body>
+
+</html>

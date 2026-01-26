@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 수정 - 맛집 리뷰</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/form.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html" class="nav-link">
+          홈
+        </a>
+        <a href="/pages/posts/post-list.html" class="nav-link">
+          게시글
+        </a>
+        <a href="/pages/my-page/my-posts.html" class="nav-link">
+          마이페이지
+        </a>
+      </nav>
+
+      <div class="user-menu" id="userMenu"></div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="container-sm">
+    <!-- 로딩 -->
+    <div id="loading" class="loading" style="display: none;">
+      <div class="loading-text">로딩중...</div>
+    </div>
+
+    <div id="editContent" style="display: none;">
+      <div
+        style="background: var(--white); padding: var(--spacing-3xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); margin: var(--spacing-2xl) 0; border: 1px solid var(--gray-200);">
+        <!-- 헤더 -->
+        <div
+          style="margin-bottom: var(--spacing-2xl); border-bottom: 2px solid var(--gray-200); padding-bottom: var(--spacing-lg);">
+          <h1
+            style="font-size: var(--font-3xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-sm);">
+            게시글 수정하기 ✏️
+          </h1>
+          <p style="color: var(--gray-600); font-size: var(--font-md);">
+            내용을 수정하고 저장해주세요
+          </p>
+        </div>
+
+        <form id="postEditForm">
+          <!-- 제목 -->
+          <div class="form-group">
+            <label for="title">
+              제목 <span class="required">*</span>
+            </label>
+            <input type="text" id="title" class="form-input" placeholder="예) 압구정 숨은 맛집! 진짜 맛있어요" required
+              maxlength="200">
+          </div>
+
+          <!-- 맛집 이름 -->
+          <div class="form-group">
+            <label for="restaurantName">
+              맛집 이름 <span class="required">*</span>
+            </label>
+            <input type="text" id="restaurantName" class="form-input" placeholder="예) 홍대 김밥천국" required maxlength="100">
+          </div>
+
+          <!-- 맛집 주소 -->
+          <div class="form-group">
+            <label for="restaurantAddress">
+              맛집 주소
+            </label>
+            <input type="text" id="restaurantAddress" class="form-input" placeholder="예) 서울시 마포구 홍대입구역 3번 출구"
+              maxlength="300">
+          </div>
+
+          <!-- 음식 카테고리 -->
+          <div class="form-group">
+            <label for="foodCategory">
+              음식 카테고리
+            </label>
+            <select id="foodCategory" class="form-select"
+              style="width: 100%; padding: var(--spacing-md); border: 1.5px solid var(--gray-300); border-radius: var(--radius-md); font-size: var(--font-sm);">
+              <option value="">카테고리 선택</option>
+              <option value="한식">🌶️ 한식</option>
+              <option value="중식">🥟 중식</option>
+              <option value="일식">🍱 일식</option>
+              <option value="양식">🍝 양식</option>
+              <option value="카페">☕ 카페</option>
+            </select>
+          </div>
+
+          <!-- 평점 -->
+          <div class="form-group">
+            <label for="rating">
+              평점 (0.0 ~ 5.0)
+            </label>
+            <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+              <input type="number" id="rating" class="form-input" placeholder="4.5" min="0" max="5" step="0.5"
+                style="width: 150px;">
+              <div id="ratingStars" style="font-size: var(--font-2xl);">
+                ⭐⭐⭐⭐⭐
+              </div>
+            </div>
+          </div>
+
+          <!-- 이미지 URL -->
+          <div class="form-group">
+            <label for="imageUrl">
+              이미지 URL
+            </label>
+            <input type="url" id="imageUrl" class="form-input" placeholder="https://example.com/food-image.jpg">
+            <div class="form-help-text">
+              맛집 사진 URL을 입력하세요 (선택사항)
+            </div>
+          </div>
+
+          <!-- 리뷰 내용 -->
+          <div class="form-group">
+            <label for="content">
+              리뷰 내용 <span class="required">*</span>
+            </label>
+            <textarea id="content" class="form-textarea" placeholder="맛집에 대한 솔직한 후기를 작성해주세요." required
+              rows="10"></textarea>
+            <div id="contentCount"
+              style="text-align: right; margin-top: var(--spacing-xs); font-size: var(--font-sm); color: var(--gray-500);">
+              0자
+            </div>
+          </div>
+
+          <!-- 에러 메시지 -->
+          <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+          <!-- 버튼 -->
+          <div class="form-actions" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-2xl);">
+            <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">
+              수정 완료
+            </button>
+            <button type="button" id="cancelBtn" class="btn btn-secondary" style="flex: 1;">
+              취소
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/posts/post-edit.js"></script>
+  <script type="module" src="../../js/components/header.js"></script>
+</body>
+
+</html>

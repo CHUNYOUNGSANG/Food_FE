@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 - 맛집 리뷰</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/form.css">
+  <link rel="stylesheet" href="../../css/pages/auth.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html" class="nav-link">
+          홈
+        </a>
+      </nav>
+
+      <div class="user-menu">
+        <a href="./login.html" class="btn btn-outline btn-small">
+          로그인
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="container-sm">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1>회원가입</h1>
+        <p>맛있는 순간을 함께 나눠요 🍽️</p>
+      </div>
+
+      <form id="signupForm" class="auth-form">
+        <!-- 이메일 -->
+        <div class="form-group">
+          <label for="email">
+            이메일 <span class="required">*</span>
+          </label>
+          <div class="form-inline-group">
+            <input type="email" id="email" class="form-input" placeholder="example@email.com" required
+              autocomplete="email">
+            <button type="button" id="checkEmailBtn" class="btn btn-secondary btn-small">
+              중복확인
+            </button>
+          </div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+          <label for="password">
+            비밀번호 <span class="required">*</span>
+          </label>
+          <input type="password" id="password" class="form-input" placeholder="8자 이상, 영문+숫자 조합" required
+            autocomplete="new-password">
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form-group">
+          <label for="passwordConfirm">
+            비밀번호 확인 <span class="required">*</span>
+          </label>
+          <input type="password" id="passwordConfirm" class="form-input" placeholder="비밀번호를 다시 입력하세요" required
+            autocomplete="new-password">
+        </div>
+
+        <!-- 이름 -->
+        <div class="form-group">
+          <label for="name">
+            이름 <span class="required">*</span>
+          </label>
+          <input type="text" id="name" class="form-input" placeholder="홍길동" required autocomplete="name">
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="form-group">
+          <label for="nickname">
+            닉네임 <span class="required">*</span>
+          </label>
+          <div class="form-inline-group">
+            <input type="text" id="nickname" class="form-input" placeholder="맛집탐험가" required autocomplete="username">
+            <button type="button" id="checkNicknameBtn" class="btn btn-secondary btn-small">
+              중복확인
+            </button>
+          </div>
+        </div>
+
+        <!-- 프로필 이미지 URL (선택) -->
+        <div class="form-group">
+          <label for="profileImage">
+            프로필 이미지 URL (선택)
+          </label>
+          <input type="url" id="profileImage" class="form-input" placeholder="https://example.com/profile.jpg">
+          <div class="form-help-text">
+            이미지 URL을 입력하지 않으면 기본 프로필이 사용됩니다
+          </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="form-actions">
+          <button type="submit" id="signupBtn" class="btn btn-primary btn-large" disabled>
+            회원가입
+          </button>
+        </div>
+
+        <!-- 로그인 링크 -->
+        <div class="auth-footer">
+          <p>이미 계정이 있으신가요? <a href="./login.html">로그인</a></p>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/auth/signup.js"></script>
+</body>
+
+</html>

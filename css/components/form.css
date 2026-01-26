@@ -1,0 +1,159 @@
+/**
+ * 폼 컴포넌트 스타일 - 깔끔한 미니멀 디자인
+ */
+
+/* 폼 그룹 */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-medium);
+  color: var(--gray-700);
+  font-size: var(--font-sm);
+}
+
+.form-group label .required {
+  color: var(--error-color);
+  margin-left: 2px;
+}
+
+/* 입력 필드 */
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  transition: all var(--transition-base);
+  background-color: var(--white);
+  color: var(--gray-900);
+  font-family: inherit;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--gray-400);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* 입력 필드 상태 */
+.form-input.valid,
+.form-textarea.valid {
+  border-color: var(--success-color);
+}
+
+.form-input.invalid,
+.form-textarea.invalid {
+  border-color: var(--error-color);
+}
+
+/* 검증 메시지 */
+.validation-message {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.validation-message.success {
+  color: var(--success-color);
+}
+
+.validation-message.error {
+  color: var(--error-color);
+}
+
+/* 비밀번호 검증 리스트 */
+.password-validation {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+}
+
+.password-validation-title {
+  font-size: var(--font-xs);
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-semibold);
+}
+
+.password-validation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.password-validation-item {
+  font-size: var(--font-xs);
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--gray-600);
+}
+
+.password-validation-item::before {
+  content: '○';
+  color: var(--gray-400);
+  font-size: var(--font-sm);
+}
+
+.password-validation-item.valid {
+  color: var(--success-color);
+}
+
+.password-validation-item.valid::before {
+  content: '✓';
+  color: var(--success-color);
+}
+
+/* 도움말 텍스트 */
+.form-help-text {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-xs);
+  color: var(--gray-500);
+}
+
+/* 버튼 그룹 */
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+/* 인라인 그룹 */
+.form-inline-group {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.form-inline-group .form-input {
+  flex: 1;
+}

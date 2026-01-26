@@ -1,0 +1,123 @@
+/* CSS Variables - 깔끔한 미니멀 디자인 */
+:root {
+  /* Primary Colors - 차분하고 깔끔한 블루 */
+  --primary-color: #2563eb; /* 깔끔한 블루 */
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+
+  --secondary-color: #10b981; /* 차분한 그린 */
+  --secondary-light: #34d399;
+  --secondary-dark: #059669;
+  --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+
+  --accent-color: #f59e0b; /* 포인트 오렌지 */
+  --accent-light: #fbbf24;
+  --accent-dark: #d97706;
+  --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+  /* Status Colors - 차분한 톤 */
+  --success-color: #10b981;
+  --success-light: #34d399;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+
+  /* Neutral Colors - 깔끔한 그레이스케일 */
+  --white: #ffffff;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+  --black: #000000;
+
+  /* Food Category Colors - 깔끔한 버전 */
+  --korean-food: #ef4444; /* 한식 - 선명한 빨강 */
+  --chinese-food: #f59e0b; /* 중식 - 골드 */
+  --japanese-food: #ec4899; /* 일식 - 핑크 */
+  --western-food: #3b82f6; /* 양식 - 블루 */
+  --cafe-color: #8b5cf6; /* 카페 - 퍼플 */
+
+  /* Spacing */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+
+  /* Border Radius - 적당한 둥글기 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows - 부드럽고 깔끔한 섀도우 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+
+  /* Font Sizes */
+  --font-xs: 0.75rem; /* 12px */
+  --font-sm: 0.875rem; /* 14px */
+  --font-md: 1rem; /* 16px */
+  --font-lg: 1.125rem; /* 18px */
+  --font-xl: 1.25rem; /* 20px */
+  --font-2xl: 1.5rem; /* 24px */
+  --font-3xl: 1.875rem; /* 30px */
+  --font-4xl: 2.25rem; /* 36px */
+  --font-5xl: 3rem; /* 48px */
+  --font-6xl: 3.75rem; /* 60px */
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* 폰트 import - 깔끔한 폰트 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}

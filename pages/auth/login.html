@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - 맛집 리뷰</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/form.css">
+  <link rel="stylesheet" href="../../css/pages/auth.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+
+      <nav class="site-nav">
+        <a href="/index.html" class="nav-link">
+          홈
+        </a>
+      </nav>
+
+      <div class="user-menu">
+        <a href="./signup.html" class="btn btn-primary btn-small">
+          회원가입
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="container-sm">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1>로그인</h1>
+        <p>다시 만나서 반가워요! 👋</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <!-- 이메일 -->
+        <div class="form-group">
+          <label for="email">
+            이메일 <span class="required">*</span>
+          </label>
+          <input type="email" id="email" class="form-input" placeholder="example@email.com" required
+            autocomplete="email" autofocus>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+          <label for="password">
+            비밀번호 <span class="required">*</span>
+          </label>
+          <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required
+            autocomplete="current-password">
+        </div>
+
+        <!-- 로그인 유지 -->
+        <div class="form-group" style="margin-bottom: var(--spacing-md);">
+          <label
+            style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; font-weight: var(--font-normal);">
+            <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px; cursor: pointer;">
+            <span style="font-size: var(--font-sm); color: var(--gray-600);">
+              로그인 상태 유지
+            </span>
+          </label>
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <!-- 버튼 -->
+        <div class="form-actions">
+          <button type="submit" id="loginBtn" class="btn btn-primary btn-large">
+            로그인
+          </button>
+        </div>
+
+        <!-- 링크 -->
+        <div class="auth-footer">
+          <p>아직 회원이 아니신가요? <a href="./signup.html">회원가입</a></p>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/auth/login.js"></script>
+</body>
+
+</html>
