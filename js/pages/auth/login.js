@@ -3,13 +3,12 @@
  */
 
 import { login } from '../../services/auth-service.js';
-import { validateEmail } from '../../utils/validator.js';
+import { validateEmail, validatePassword } from '../../utils/validator.js';
 
 // DOM 요소
 const loginForm = document.getElementById('loginForm');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
-const rememberMeCheckbox = document.getElementById('rememberMe');
 const loginBtn = document.getElementById('loginBtn');
 const errorMessage = document.getElementById('errorMessage');
 
@@ -24,7 +23,8 @@ const init = () => {
  * 이벤트 리스너 등록
  */
 const attachEventListeners = () => {
-  loginForm.addEventListener('submit', handleLogin);
+  // 폼 제출
+  loginForm.addEventListener('submit', handleSubmit);
 
   // 입력 시 에러 메시지 숨김
   emailInput.addEventListener('input', hideError);
@@ -32,22 +32,24 @@ const attachEventListeners = () => {
 };
 
 /**
- * 로그인 처리
+ * 폼 제출 처리
  */
-const handleLogin = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+  const password = passwordInput.value;
 
   // 유효성 검사
-  if (!email || !password) {
-    showError('이메일과 비밀번호를 모두 입력해주세요.');
+  if (!validateEmail(email)) {
+    showError('올바른 이메일 형식이 아닙니다.');
+    emailInput.focus();
     return;
   }
 
-  if (!validateEmail(email)) {
-    showError('올바른 이메일 형식이 아닙니다.');
+  if (!validatePassword(password)) {
+    showError('비밀번호는 8자 이상이어야 합니다.');
+    passwordInput.focus();
     return;
   }
 
@@ -56,30 +58,19 @@ const handleLogin = async (e) => {
     loginBtn.disabled = true;
     loginBtn.textContent = '로그인 중...';
 
-    // 🔥 실제 로그인 API 호출
-    const userData = await login({
-      email,
-      password,
-    });
+    // 로그인 API 호출 (auth-service.js에서 자동으로 localStorage 저장)
+    const response = await login({ email, password });
 
-    console.log('로그인 성공:', userData);
+    console.log('로그인 성공:', response);
 
-    // 성공 메시지
-    alert(`환영합니다, ${userData.nickname}님!`);
+    // 로그인 성공 메시지
+    alert(`${response.nickname}님, 환영합니다! 🎉`);
 
     // 메인 페이지로 이동
     window.location.href = '/index.html';
   } catch (error) {
     console.error('로그인 실패:', error);
-
-    // 에러 메시지 표시
-    if (error.message) {
-      showError(error.message);
-    } else if (error.response?.message) {
-      showError(error.response.message);
-    } else {
-      showError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-    }
+    showError(error.message || '이메일 또는 비밀번호가 일치하지 않습니다.');
   } finally {
     // 버튼 활성화
     loginBtn.disabled = false;

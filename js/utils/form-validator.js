@@ -191,48 +191,36 @@ export const validatePasswordInput = (input, options = {}) => {
  * @param {Object} options - 옵션
  */
 export const validateNicknameInput = (input, options = {}) => {
-  const {
-    showSuccess = true,
-    emptyMessage = '닉네임을 입력해주세요',
-    invalidMessage = '닉네임은 2-50자 사이여야 합니다',
-    successMessage = '사용 가능한 닉네임 형식입니다',
-  } = options;
+  const { showSuccess = true } = options;
 
-  input.addEventListener('input', () => {
-    const value = input.value.trim();
+  input.addEventListener('input', (e) => {
+    // ✅ trim 제거 - 입력 중에는 trim하지 않음
+    const value = e.target.value;
 
-    // 빈 값
+    // 빈 값일 때는 검증 메시지 제거
     if (value === '') {
-      if (options.allowEmpty) {
-        clearValidationMessage(input);
-      } else {
-        showValidationMessage(input, emptyMessage, 'error');
-      }
+      clearValidationMessage(input);
       return;
     }
 
-    // 닉네임 검증
-    if (validator.validateNickname(value)) {
-      if (showSuccess) {
-        showValidationMessage(input, successMessage, 'success');
-      } else {
-        clearValidationMessage(input);
-      }
-    } else {
-      showValidationMessage(input, invalidMessage, 'error');
+    // 1글자일 때 에러 표시
+    if (value.length < 2) {
+      showValidationMessage(input, '닉네임은 2자 이상이어야 합니다', 'error');
+      return;
     }
-  });
 
-  // 글자 수 표시
-  const counterEl = document.createElement('div');
-  counterEl.className = 'form-help-text';
-  input.parentElement.appendChild(counterEl);
+    // 50자 초과 시 에러 표시
+    if (value.length > 50) {
+      showValidationMessage(input, '닉네임은 50자 이하여야 합니다', 'error');
+      return;
+    }
 
-  input.addEventListener('input', () => {
-    const length = input.value.length;
-    counterEl.textContent = `${length}/50자`;
-    counterEl.style.color =
-      length > 50 ? 'var(--error-color)' : 'var(--gray-500)';
+    // 유효성 검사 통과
+    if (showSuccess) {
+      showValidationMessage(input, '사용 가능한 형식입니다', 'success');
+    } else {
+      clearValidationMessage(input);
+    }
   });
 };
 

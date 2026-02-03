@@ -13,7 +13,7 @@ import {
 import * as validator from '../../utils/validator.js';
 import httpClient from '../../utils/http-client.js';
 import API_CONFIG from '../../config/api-config.js';
-import { saveMemberId, saveUser } from '../../utils/storage.js';
+import { setMemberId, setMemberNickname } from '../../utils/storage.js';
 
 // DOM 요소
 const signupForm = document.getElementById('signupForm');
@@ -104,7 +104,7 @@ const setupRealtimeValidation = () => {
     showSuccess: false,
   });
 
-  // 닉네임 실시간 검증
+  // 닉네임 실시간 검증 (trim 제거)
   validateNicknameInput(nicknameInput, {
     showSuccess: false,
   });
@@ -239,19 +239,9 @@ const handleSubmit = async (e) => {
 
     console.log('회원가입 성공:', response);
 
-    // 로컬 스토리지에 저장
-    saveMemberId(response.id);
-    saveUser({
-      id: response.id,
-      email: response.email,
-      name: response.name,
-      nickname: response.nickname,
-      profileImage: response.profileImage,
-    });
-
-    // 성공 알림 및 리다이렉트
-    alert('회원가입이 완료되었습니다!');
-    window.location.href = '/index.html';
+    // 성공 알림 및 로그인 페이지로 이동
+    alert('회원가입이 완료되었습니다! 로그인 해주세요. 🎉');
+    window.location.href = '/pages/auth/login.html';
   } catch (error) {
     console.error('회원가입 실패:', error);
     alert(error.message || '회원가입에 실패했습니다. 다시 시도해주세요.');

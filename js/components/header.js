@@ -16,73 +16,54 @@ export const renderHeader = () => {
   const user = getUser();
 
   const headerHTML = `
-        <div class="header-container">
-            <a href="/index.html" class="site-logo">
-                맛집 리뷰
-            </a>
-            
-            <nav class="site-nav" id="siteNav">
-                <a href="/index.html" class="nav-link ${isCurrentPage('/index.html') ? 'active' : ''}">
-                    🏠 홈
-                </a>
-                <a href="/pages/posts/post-list.html" class="nav-link ${isCurrentPage('/pages/posts/post-list.html') ? 'active' : ''}">
-                    📝 게시글
-                </a>
-                ${
-                  loggedIn
-                    ? `
-                    <a href="/pages/my-page/my-posts.html" class="nav-link ${isCurrentPage('/pages/my-page/') ? 'active' : ''}">
-                        💼 마이페이지
-                    </a>
-                `
-                    : ''
-                }
-            </nav>
-            
-            <div class="user-menu">
-                ${
-                  loggedIn
-                    ? `
-                    <a href="/pages/posts/post-create.html" class="btn btn-primary">
-                        ✍️ 글쓰기
-                    </a>
-                    <div class="user-profile" id="userProfile">
-                        <div class="user-avatar">
-                            ${user.nickname ? user.nickname.charAt(0).toUpperCase() : '😊'}
-                        </div>
-                        <span class="user-name">${user.nickname || '사용자'}</span>
-                    </div>
-                    <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <a href="/pages/auth/profile.html" class="dropdown-item">
-                            👤 프로필
-                        </a>
-                        <a href="/pages/my-page/my-posts.html" class="dropdown-item">
-                            📝 내 게시글
-                        </a>
-                        <a href="/pages/my-page/liked-posts.html" class="dropdown-item">
-                            ❤️ 좋아요한 글
-                        </a>
-                        <button id="logoutBtn" class="dropdown-item">
-                            🚪 로그아웃
-                        </button>
-                    </div>
-                `
-                    : `
-                    <a href="/pages/auth/login.html" class="btn btn-outline">
-                        로그인
-                    </a>
-                    <a href="/pages/auth/signup.html" class="btn btn-primary">
-                        회원가입
-                    </a>
-                `
-                }
-            </div>
-            
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                ☰
-            </button>
-        </div>
-    `;
+    <div class="header-container">
+      <a href="/index.html" class="site-logo">
+        🍽️ 맛집 리뷰
+      </a>
+      
+      <nav class="site-nav" id="siteNav">
+        <a href="/index.html" class="nav-link ${isCurrentPage('/index.html') ? 'active' : ''}">
+          홈
+        </a>
+        <a href="/pages/posts/post-list.html" class="nav-link ${isCurrentPage('/pages/posts/post-list.html') ? 'active' : ''}">
+          게시글
+        </a>
+        ${
+          loggedIn
+            ? `
+          <a href="/pages/my-page/my-posts.html" class="nav-link ${isCurrentPage('/pages/my-page/') ? 'active' : ''}">
+            마이페이지
+          </a>
+        `
+            : ''
+        }
+      </nav>
+      
+      <div class="user-menu">
+        ${
+          loggedIn
+            ? `
+          <span class="user-nickname">👤 ${user.nickname}님</span>
+          <button id="logoutBtn" class="btn btn-outline btn-small">
+            로그아웃
+          </button>
+        `
+            : `
+          <a href="/pages/auth/login.html" class="btn btn-outline btn-small">
+            로그인
+          </a>
+          <a href="/pages/auth/signup.html" class="btn btn-primary btn-small">
+            회원가입
+          </a>
+        `
+        }
+      </div>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        ☰
+      </button>
+    </div>
+  `;
 
   headerElement.innerHTML = headerHTML;
   headerElement.className = 'site-header';
@@ -109,24 +90,6 @@ const attachEventListeners = () => {
   if (mobileMenuBtn && siteNav) {
     mobileMenuBtn.addEventListener('click', () => {
       siteNav.classList.toggle('active');
-    });
-  }
-
-  // 사용자 드롭다운 토글
-  const userProfile = document.getElementById('userProfile');
-  const userDropdown = document.getElementById('userDropdown');
-
-  if (userProfile && userDropdown) {
-    userProfile.addEventListener('click', () => {
-      userDropdown.style.display =
-        userDropdown.style.display === 'none' ? 'block' : 'none';
-    });
-
-    // 외부 클릭 시 드롭다운 닫기
-    document.addEventListener('click', (e) => {
-      if (!userProfile.contains(e.target) && !userDropdown.contains(e.target)) {
-        userDropdown.style.display = 'none';
-      }
     });
   }
 

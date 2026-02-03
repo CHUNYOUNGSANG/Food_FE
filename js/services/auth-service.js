@@ -4,7 +4,7 @@
 
 import httpClient from '../utils/http-client.js';
 import API_CONFIG from '../config/api-config.js';
-import { saveUser, saveMemberId } from '../utils/storage.js';
+import { setMemberId, setMemberNickname } from '../utils/storage.js';
 
 /**
  * 회원가입
@@ -37,8 +37,8 @@ export const login = async (credentials) => {
     );
 
     // 로그인 성공 시 로컬스토리지에 저장
-    saveUser(response);
-    saveMemberId(response.id);
+    setMemberId(response.id);
+    setMemberNickname(response.nickname);
 
     return response;
   } catch (error) {

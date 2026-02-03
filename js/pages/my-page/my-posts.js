@@ -4,7 +4,11 @@
 
 import { getPostsByMember } from '../../services/post-service.js';
 import { getLikedPostsByMember } from '../../services/post-like-service.js';
-import { getMember, updateMember } from '../../services/member-service.js';
+import {
+  getMember,
+  updateMember,
+  deleteMember,
+} from '../../services/member-service.js';
 import { getMemberId, getUser, setUser } from '../../utils/storage.js';
 import { createPostCard } from '../../components/post-card.js';
 
@@ -16,6 +20,13 @@ const postCount = document.getElementById('postCount');
 const likedCount = document.getElementById('likedCount');
 const commentsTab = document.getElementById('commentsTab');
 const likedCommentsTab = document.getElementById('likedCommentsTab');
+const passwordForm = document.getElementById('passwordForm');
+const oldPassword = document.getElementById('oldPassword');
+const newPassword = document.getElementById('newPassword');
+const confirmPassword = document.getElementById('confirmPassword');
+const passwordError = document.getElementById('passwordError');
+const passwordSubmitBtn = document.getElementById('passwordSubmitBtn');
+const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
 // 탭 버튼
 const postsTab = document.getElementById('postsTab');
@@ -276,6 +287,16 @@ const attachEventListeners = () => {
   likedCommentsTab.addEventListener('click', () => {
     window.location.href = '/pages/my-page/liked-comments.html';
   });
+
+  // 비밀번호 변경 폼
+  if (passwordForm) {
+    passwordForm.addEventListener('submit', handlePasswordChange);
+  }
+
+  // 회원 탈퇴
+  if (deleteAccountBtn) {
+    deleteAccountBtn.addEventListener('click', handleDeleteAccount);
+  }
 };
 
 /**
@@ -356,6 +377,116 @@ const handleProfileUpdate = async (e) => {
   } finally {
     profileSubmitBtn.disabled = false;
     profileSubmitBtn.textContent = '저장하기';
+  }
+};
+
+/**
+ * 비밀번호 변경
+ */
+const handlePasswordChange = async (e) => {
+  e.preventDefault();
+
+  const old = oldPassword.value.trim();
+  const newPwd = newPassword.value.trim();
+  const confirm = confirmPassword.value.trim();
+
+  // 에러 메시지 초기화
+  passwordError.style.display = 'none';
+
+  // 유효성 검사
+  if (newPwd !== confirm) {
+    passwordError.textContent = '새 비밀번호가 일치하지 않습니다.';
+    passwordError.style.display = 'block';
+    return;
+  }
+
+  if (newPwd.length < 8) {
+    passwordError.textContent = '비밀번호는 8자 이상이어야 합니다.';
+    passwordError.style.display = 'block';
+    return;
+  }
+
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+  if (!passwordPattern.test(newPwd)) {
+    passwordError.textContent = '비밀번호는 영문과 숫자를 포함해야 합니다.';
+    passwordError.style.display = 'block';
+    return;
+  }
+
+  try {
+    passwordSubmitBtn.disabled = true;
+    passwordSubmitBtn.textContent = '변경 중...';
+
+    // 비밀번호 변경 API 호출
+    const response = await fetch(
+      `http://localhost:8080/api/members/${memberId}/password`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          oldPassword: old,
+          newPassword: newPwd,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '비밀번호 변경에 실패했습니다.');
+    }
+
+    alert('비밀번호가 변경되었습니다.');
+    passwordForm.reset();
+  } catch (error) {
+    console.error('비밀번호 변경 실패:', error);
+    passwordError.textContent =
+      error.message || '비밀번호 변경에 실패했습니다.';
+    passwordError.style.display = 'block';
+  } finally {
+    passwordSubmitBtn.disabled = false;
+    passwordSubmitBtn.textContent = '비밀번호 변경';
+  }
+};
+
+/**
+ * 회원 탈퇴
+ */
+const handleDeleteAccount = async () => {
+  const confirmed = confirm(
+    '정말로 탈퇴하시겠습니까?\n\n' +
+      '탈퇴 시 다음 정보가 모두 삭제됩니다:\n' +
+      '- 내 게시글\n' +
+      '- 내 댓글\n' +
+      '- 좋아요 정보\n' +
+      '- 프로필 정보\n\n' +
+      '이 작업은 되돌릴 수 없습니다.',
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const doubleCheck = prompt('탈퇴하시려면 "탈퇴"를 입력해주세요.');
+
+  if (doubleCheck !== '탈퇴') {
+    alert('탈퇴가 취소되었습니다.');
+    return;
+  }
+
+  try {
+    await deleteMember(memberId);
+
+    alert('회원 탈퇴가 완료되었습니다.\n그동안 이용해주셔서 감사합니다.');
+
+    // 로그아웃 처리
+    localStorage.removeItem('memberId');
+    localStorage.removeItem('memberNickname');
+    window.location.href = '/index.html';
+  } catch (error) {
+    console.error('회원 탈퇴 실패:', error);
+    alert(error.message || '회원 탈퇴에 실패했습니다.');
   }
 };
 

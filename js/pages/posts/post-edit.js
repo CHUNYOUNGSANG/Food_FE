@@ -18,7 +18,6 @@ const restaurantNameInput = document.getElementById('restaurantName');
 const restaurantAddressInput = document.getElementById('restaurantAddress');
 const foodCategorySelect = document.getElementById('foodCategory');
 const ratingInput = document.getElementById('rating');
-const ratingStars = document.getElementById('ratingStars');
 const imageUrlInput = document.getElementById('imageUrl');
 const contentTextarea = document.getElementById('content');
 const contentCount = document.getElementById('contentCount');
@@ -117,9 +116,6 @@ const attachEventListeners = () => {
   // 취소 버튼
   cancelBtn.addEventListener('click', handleCancel);
 
-  // 평점 입력 시 별 표시
-  ratingInput.addEventListener('input', updateRatingStars);
-
   // 내용 글자 수 카운트
   contentTextarea.addEventListener('input', updateContentCount);
 
@@ -210,22 +206,6 @@ const handleCancel = () => {
   if (confirm('수정을 취소하시겠습니까?')) {
     window.location.href = `/pages/posts/post-detail.html?id=${currentPostId}`;
   }
-};
-
-/**
- * 평점 별 표시 업데이트
- */
-const updateRatingStars = () => {
-  const rating = parseFloat(ratingInput.value) || 0;
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  let stars = '⭐'.repeat(fullStars);
-  if (hasHalfStar) stars += '⭐';
-  stars += '☆'.repeat(emptyStars);
-
-  ratingStars.textContent = stars;
 };
 
 /**

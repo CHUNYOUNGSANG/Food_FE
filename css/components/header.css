@@ -18,6 +18,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 /* 로고 - 깔끔한 텍스트 */
@@ -68,79 +69,19 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  position: relative;
 }
 
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+/* 사용자 닉네임 스타일 */
+.user-nickname {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--gray-50);
   border-radius: var(--radius-md);
-  background: var(--gray-50);
-  cursor: pointer;
-  transition: all var(--transition-base);
   border: 1px solid var(--gray-200);
-}
-
-.user-profile:hover {
-  background: var(--gray-100);
-  border-color: var(--gray-300);
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-full);
-  background: var(--primary-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  font-weight: var(--font-bold);
-  font-size: var(--font-sm);
-}
-
-.user-name {
-  font-weight: var(--font-medium);
-  color: var(--gray-800);
-  font-size: var(--font-sm);
-}
-
-/* 드롭다운 */
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + var(--spacing-sm));
-  right: 0;
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  min-width: 200px;
-  padding: var(--spacing-sm);
-  z-index: var(--z-dropdown);
-  border: 1px solid var(--gray-200);
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--gray-700);
-  text-decoration: none;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-  font-size: var(--font-sm);
-  font-weight: var(--font-medium);
-  width: 100%;
-  border: none;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-}
-
-.dropdown-item:hover {
-  background: var(--gray-50);
-  color: var(--primary-color);
 }
 
 /* 모바일 메뉴 */
@@ -154,6 +95,7 @@
   color: var(--gray-700);
 }
 
+/* 모바일 반응형 */
 @media (max-width: 768px) {
   .site-nav {
     display: none;
@@ -174,5 +116,21 @@
 
   .mobile-menu-btn {
     display: block;
+  }
+
+  /* 모바일 사용자 메뉴 */
+  .user-menu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+
+  .user-nickname {
+    text-align: center;
+  }
+
+  .user-menu .btn {
+    width: 100%;
+    justify-content: center;
   }
 }

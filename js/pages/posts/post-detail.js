@@ -1,19 +1,25 @@
 /**
- * 게시글 상세 페이지 로직
+ * 게시글 상세 페이지 로직 (대댓글 기능 추가)
  */
 
-import { getPost, deletePost } from '../../services/post-service.js';
+import { getPost } from '../../services/post-service.js';
 import {
   getCommentsByPost,
   createComment,
   deleteComment,
 } from '../../services/comment-service.js';
 import {
-  togglePostLike,
+  addPostLike,
+  removePostLike,
   getPostLikeCount,
 } from '../../services/post-like-service.js';
-import { getMemberId } from '../../utils/storage.js';
-import { formatDateTime, getRelativeTime } from '../../utils/date-formatter.js';
+import {
+  addCommentLike,
+  removeCommentLike,
+  getCommentLikeCount,
+} from '../../services/comment-like-service.js';
+import { getMemberId } from '../../utils/auth.js';
+import { formatDate } from '../../utils/date-formatter.js';
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -27,51 +33,57 @@ const authorAvatar = document.getElementById('authorAvatar');
 const authorName = document.getElementById('authorName');
 const postDate = document.getElementById('postDate');
 const viewCount = document.getElementById('viewCount');
-const authorActions = document.getElementById('authorActions');
-const editBtn = document.getElementById('editBtn');
-const deleteBtn = document.getElementById('deleteBtn');
 const postImageContainer = document.getElementById('postImageContainer');
 const postImage = document.getElementById('postImage');
 const postContent = document.getElementById('postContent');
+const authorActions = document.getElementById('authorActions');
+const editBtn = document.getElementById('editBtn');
+const deleteBtn = document.getElementById('deleteBtn');
 const likeBtn = document.getElementById('likeBtn');
 const likeIcon = document.getElementById('likeIcon');
 const likeCount = document.getElementById('likeCount');
 const shareBtn = document.getElementById('shareBtn');
-const commentCount = document.getElementById('commentCount');
+const commentFormContainer = document.getElementById('commentFormContainer');
 const commentForm = document.getElementById('commentForm');
 const commentInput = document.getElementById('commentInput');
 const commentList = document.getElementById('commentList');
+const commentCount = document.getElementById('commentCount');
 const noComments = document.getElementById('noComments');
 
 // 상태
-let currentPostId = null;
-let currentPost = null;
-let currentMemberId = null;
+let postId = null;
+let memberId = null;
+let post = null;
+let comments = [];
 let isLiked = false;
 
 /**
  * 초기화
  */
 const init = async () => {
-  // URL에서 게시글 ID 가져오기
+  // URL에서 postId 가져오기
   const urlParams = new URLSearchParams(window.location.search);
-  currentPostId = urlParams.get('id');
+  postId = urlParams.get('id');
 
-  if (!currentPostId) {
-    alert('게시글을 찾을 수 없습니다.');
+  if (!postId) {
+    alert('잘못된 접근입니다.');
     window.location.href = '/index.html';
     return;
   }
 
-  // 현재 로그인 사용자 ID
-  currentMemberId = getMemberId();
+  // 로그인 확인
+  memberId = getMemberId();
 
-  // 데이터 로드
+  // 게시글 로드
   await loadPost();
-  await loadComments();
-  await loadLikeInfo();
 
-  // 이벤트 리스너
+  // 댓글 로드
+  await loadComments();
+
+  // 좋아요 상태 로드
+  await loadLikeStatus();
+
+  // 이벤트 리스너 등록
   attachEventListeners();
 };
 
@@ -82,9 +94,9 @@ const loadPost = async () => {
   try {
     showLoading();
 
-    const post = await getPost(currentPostId);
-    currentPost = post;
+    post = await getPost(postId);
 
+    // 게시글 렌더링
     renderPost(post);
   } catch (error) {
     console.error('게시글 로드 실패:', error);
@@ -104,74 +116,41 @@ const renderPost = (post) => {
 
   // 카테고리
   if (post.foodCategory) {
-    const categoryEmoji =
-      {
-        한식: '🌶️',
-        중식: '🥟',
-        일식: '🍱',
-        양식: '🍝',
-        카페: '☕',
-      }[post.foodCategory] || '🍽️';
-
-    const categoryClass =
-      {
-        한식: 'korean',
-        중식: 'chinese',
-        일식: 'japanese',
-        양식: 'western',
-        카페: 'cafe',
-      }[post.foodCategory] || '';
-
-    categoryBadge.textContent = `${categoryEmoji} ${post.foodCategory}`;
-    categoryBadge.className = `category-badge ${categoryClass}`;
-    categoryBadge.style.display = 'inline-flex';
-  } else {
-    categoryBadge.style.display = 'none';
+    categoryBadge.textContent = post.foodCategory;
+    categoryBadge.className = `category-badge category-${post.foodCategory}`;
   }
 
   // 평점
   if (post.rating) {
-    ratingBadge.textContent = `⭐ ${post.rating}`;
-    ratingBadge.style.display = 'inline-flex';
-  } else {
-    ratingBadge.style.display = 'none';
+    const stars = '⭐'.repeat(Math.round(post.rating));
+    ratingBadge.textContent = `${stars} ${post.rating}`;
+    ratingBadge.className = 'rating-badge';
   }
 
   // 맛집 정보
-  restaurantName.textContent = `📍 ${post.restaurantName}`;
-  if (post.restaurantAddress) {
-    restaurantAddress.textContent = post.restaurantAddress;
-    restaurantAddress.style.display = 'block';
-  } else {
-    restaurantAddress.style.display = 'none';
-  }
+  restaurantName.textContent = post.restaurantName;
+  restaurantAddress.textContent = post.restaurantAddress || '주소 정보 없음';
 
   // 작성자 정보
   authorAvatar.textContent = post.memberNickname.charAt(0).toUpperCase();
   authorName.textContent = post.memberNickname;
-  postDate.textContent = `${formatDateTime(post.createdAt)} (${getRelativeTime(post.createdAt)})`;
-
-  // 조회수
-  viewCount.textContent = `👁️ ${post.viewCount || 0}`;
-
-  // 작성자 버튼 (본인만 표시)
-  if (currentMemberId && currentMemberId === post.memberId.toString()) {
-    authorActions.style.display = 'flex';
-  }
+  postDate.textContent = formatDate(post.createdAt);
+  viewCount.textContent = `👁️ ${post.viewCount}`;
 
   // 이미지
   if (post.imageUrl) {
     postImage.src = post.imageUrl;
-    postImage.alt = post.title;
     postImageContainer.style.display = 'block';
-  } else {
-    postImageContainer.style.display = 'none';
   }
 
   // 내용
   postContent.textContent = post.content;
 
-  // 표시
+  // 작성자 버튼 (본인만 보임)
+  if (memberId && memberId === post.memberId) {
+    authorActions.style.display = 'flex';
+  }
+
   postDetail.style.display = 'block';
 };
 
@@ -180,7 +159,12 @@ const renderPost = (post) => {
  */
 const loadComments = async () => {
   try {
-    const comments = await getCommentsByPost(currentPostId);
+    comments = await getCommentsByPost(postId);
+
+    // 댓글 개수 업데이트
+    commentCount.textContent = comments.length;
+
+    // 댓글 렌더링
     renderComments(comments);
   } catch (error) {
     console.error('댓글 로드 실패:', error);
@@ -191,75 +175,304 @@ const loadComments = async () => {
  * 댓글 렌더링
  */
 const renderComments = (comments) => {
-  commentCount.textContent = comments.length;
-
   if (comments.length === 0) {
-    commentList.innerHTML = '';
+    commentList.style.display = 'none';
     noComments.style.display = 'block';
     return;
   }
 
+  commentList.style.display = 'block';
   noComments.style.display = 'none';
 
-  commentList.innerHTML = comments
-    .map(
-      (comment) => `
-        <div class="comment-item" style="padding: var(--spacing-lg); border-bottom: 1px solid var(--gray-200); ${comment.deleted ? 'opacity: 0.6;' : ''}">
-            <div style="display: flex; align-items: start; gap: var(--spacing-md);">
-                <div class="author-avatar" style="width: 40px; height: 40px; flex-shrink: 0;">
-                    ${comment.memberNickname ? comment.memberNickname.charAt(0).toUpperCase() : '?'}
+  // 댓글을 부모 댓글과 대댓글로 분류
+  const parentComments = comments.filter((c) => !c.parentCommentId);
+  const repliesMap = {};
+
+  comments.forEach((comment) => {
+    if (comment.parentCommentId) {
+      if (!repliesMap[comment.parentCommentId]) {
+        repliesMap[comment.parentCommentId] = [];
+      }
+      repliesMap[comment.parentCommentId].push(comment);
+    }
+  });
+
+  // HTML 생성
+  let html = '';
+  parentComments.forEach((comment) => {
+    html += createCommentHTML(comment, false);
+
+    // 대댓글이 있으면 추가
+    const replies = repliesMap[comment.id] || [];
+    replies.forEach((reply) => {
+      html += createCommentHTML(reply, true);
+    });
+  });
+
+  commentList.innerHTML = html;
+
+  // 이벤트 리스너 재등록
+  attachCommentEventListeners();
+};
+
+/**
+ * 댓글 HTML 생성 (좋아요 기능 포함)
+ */
+const createCommentHTML = (comment, isReply) => {
+  const isDeleted = comment.content === '삭제된 댓글입니다.';
+  const isMyComment = memberId && memberId === comment.memberId;
+
+  return `
+        <div class="comment-item ${isReply ? 'reply' : ''} ${isDeleted ? 'comment-deleted' : ''}" 
+             data-comment-id="${comment.id}">
+            ${
+              isReply
+                ? `
+                <div class="reply-indicator">
+                    ↳ 답글
                 </div>
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+            `
+                : ''
+            }
+            
+            <div class="comment-content-wrapper">
+                <div class="comment-avatar">
+                    ${comment.memberNickname.charAt(0).toUpperCase()}
+                </div>
+                <div class="comment-main">
+                    <div class="comment-meta">
                         <div>
-                            <span style="font-weight: var(--font-semibold); color: var(--gray-900); font-size: var(--font-sm);">
-                                ${comment.memberNickname || '익명'}
-                            </span>
-                            <span style="color: var(--gray-500); font-size: var(--font-xs); margin-left: var(--spacing-sm);">
-                                ${getRelativeTime(comment.createdAt)}
-                            </span>
+                            <span class="comment-author">${comment.memberNickname}</span>
+                            <span class="comment-date">${formatDate(comment.createdAt)}</span>
                         </div>
-                        ${
-                          currentMemberId &&
-                          currentMemberId === comment.memberId.toString() &&
-                          !comment.deleted
-                            ? `
-                            <button class="btn btn-ghost btn-small comment-delete-btn" data-comment-id="${comment.id}" style="padding: var(--spacing-xs) var(--spacing-sm); color: var(--error-color);">
-                                삭제
-                            </button>
-                        `
-                            : ''
-                        }
                     </div>
-                    <p style="color: var(--gray-700); font-size: var(--font-sm); line-height: 1.6; white-space: pre-wrap; word-break: break-word;">
-                        ${escapeHtml(comment.content)}
-                    </p>
+                    <div class="comment-content ${isDeleted ? 'comment-deleted' : ''}">
+                        ${comment.content}
+                    </div>
+                    
+                    ${
+                      !isDeleted
+                        ? `
+                        <div class="comment-actions-row">
+                            <button class="comment-like-btn" data-comment-id="${comment.id}">
+                                <span class="like-icon">🤍</span>
+                                <span class="comment-like-count">0</span>
+                            </button>
+                            <button class="reply-btn" data-comment-id="${comment.id}" data-author="${comment.memberNickname}">
+                                💬 답글
+                            </button>
+                            ${
+                              isMyComment
+                                ? `
+                                <button class="reply-btn delete-comment-btn" 
+                                        data-comment-id="${comment.id}"
+                                        style="color: var(--error-color);">
+                                    🗑️ 삭제
+                                </button>
+                            `
+                                : ''
+                            }
+                        </div>
+                        
+                        <!-- 답글 작성 폼 (숨김 상태) -->
+                        <div class="reply-form" id="replyForm-${comment.id}" style="display: none;">
+                            <div class="reply-form-header">
+                                @${comment.memberNickname}님에게 답글 작성
+                            </div>
+                            <form class="reply-form-content" data-parent-id="${comment.id}">
+                                <textarea 
+                                    class="form-textarea" 
+                                    placeholder="답글을 입력하세요..."
+                                    rows="3"
+                                    required></textarea>
+                                <div style="display: flex; justify-content: flex-end; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+                                    <button type="button" class="btn btn-secondary btn-small cancel-reply-btn">
+                                        취소
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-small">
+                                        답글 작성
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    `
+                        : ''
+                    }
                 </div>
             </div>
         </div>
-    `,
-    )
-    .join('');
+    `;
+};
 
-  // 댓글 삭제 버튼 이벤트
-  document.querySelectorAll('.comment-delete-btn').forEach((btn) => {
-    btn.addEventListener('click', handleCommentDelete);
+/**
+ * 댓글 이벤트 리스너
+ */
+const attachCommentEventListeners = () => {
+  // 댓글 좋아요 버튼
+  document.querySelectorAll('.comment-like-btn').forEach((btn) => {
+    const commentId = btn.dataset.commentId;
+
+    // 좋아요 상태 로드
+    loadCommentLikeStatus(commentId, btn);
+
+    // 좋아요 클릭 이벤트
+    btn.addEventListener('click', async () => {
+      await handleCommentLikeToggle(commentId, btn);
+    });
+  });
+
+  // 답글 버튼
+  document.querySelectorAll('.reply-btn').forEach((btn) => {
+    if (!btn.classList.contains('delete-comment-btn')) {
+      btn.addEventListener('click', () => {
+        const commentId = btn.dataset.commentId;
+        toggleReplyForm(commentId);
+      });
+    }
+  });
+
+  // 답글 취소 버튼
+  document.querySelectorAll('.cancel-reply-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const form = e.target.closest('.reply-form');
+      form.style.display = 'none';
+      form.querySelector('textarea').value = '';
+    });
+  });
+
+  // 답글 작성 폼 제출
+  document.querySelectorAll('.reply-form-content').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const parentId = form.dataset.parentId;
+      const content = form.querySelector('textarea').value.trim();
+      await handleReplySubmit(parentId, content, form);
+    });
+  });
+
+  // 댓글 삭제 버튼
+  document.querySelectorAll('.delete-comment-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const commentId = btn.dataset.commentId;
+      await handleDeleteComment(commentId);
+    });
   });
 };
 
 /**
- * 좋아요 정보 로드
+ * 댓글 좋아요 상태 로드
  */
-const loadLikeInfo = async () => {
+const loadCommentLikeStatus = async (commentId, btn) => {
   try {
-    const likeInfo = await getPostLikeCount(currentPostId, currentMemberId);
+    const likeData = await getCommentLikeCount(memberId, commentId);
 
-    likeCount.textContent = likeInfo.likeCount;
-    isLiked = likeInfo.isLiked;
+    const likeIcon = btn.querySelector('.like-icon');
+    const likeCount = btn.querySelector('.comment-like-count');
 
+    likeCount.textContent = likeData.likeCount;
+
+    if (likeData.isLiked) {
+      likeIcon.textContent = '❤️';
+      btn.classList.add('liked');
+    } else {
+      likeIcon.textContent = '🤍';
+      btn.classList.remove('liked');
+    }
+  } catch (error) {
+    console.error('댓글 좋아요 상태 로드 실패:', error);
+  }
+};
+
+/**
+ * 댓글 좋아요 토글
+ */
+const handleCommentLikeToggle = async (commentId, btn) => {
+  if (!memberId) {
+    alert('로그인이 필요합니다.');
+    window.location.href = '/pages/auth/login.html';
+    return;
+  }
+
+  try {
+    const isLiked = btn.classList.contains('liked');
+
+    if (isLiked) {
+      await removeCommentLike(memberId, commentId);
+    } else {
+      await addCommentLike(memberId, commentId);
+    }
+
+    // 좋아요 상태 새로고침
+    await loadCommentLikeStatus(commentId, btn);
+  } catch (error) {
+    console.error('댓글 좋아요 처리 실패:', error);
+    alert(error.message || '좋아요 처리에 실패했습니다.');
+  }
+};
+
+/**
+ * 답글 폼 토글
+ */
+const toggleReplyForm = (commentId) => {
+  if (!memberId) {
+    alert('로그인이 필요합니다.');
+    window.location.href = '/pages/auth/login.html';
+    return;
+  }
+
+  // 모든 답글 폼 숨기기
+  document.querySelectorAll('.reply-form').forEach((form) => {
+    form.style.display = 'none';
+    form.querySelector('textarea').value = '';
+  });
+
+  // 해당 답글 폼 표시
+  const replyForm = document.getElementById(`replyForm-${commentId}`);
+  replyForm.style.display = 'block';
+  replyForm.querySelector('textarea').focus();
+};
+
+/**
+ * 답글 작성
+ */
+const handleReplySubmit = async (parentCommentId, content, form) => {
+  if (!content) {
+    alert('답글 내용을 입력해주세요.');
+    return;
+  }
+
+  try {
+    await createComment(postId, memberId, {
+      content,
+      parentCommentId: parseInt(parentCommentId),
+    });
+
+    // 폼 초기화 및 숨김
+    form.querySelector('textarea').value = '';
+    form.closest('.reply-form').style.display = 'none';
+
+    // 댓글 목록 새로고침
+    await loadComments();
+  } catch (error) {
+    console.error('답글 작성 실패:', error);
+    alert(error.message || '답글 작성에 실패했습니다.');
+  }
+};
+
+/**
+ * 좋아요 상태 로드
+ */
+const loadLikeStatus = async () => {
+  try {
+    const likeData = await getPostLikeCount(memberId, postId);
+
+    isLiked = likeData.isLiked;
+    likeCount.textContent = likeData.likeCount;
+
+    // 좋아요 아이콘 업데이트
     updateLikeButton();
   } catch (error) {
-    console.error('좋아요 정보 로드 실패:', error);
+    console.error('좋아요 상태 로드 실패:', error);
   }
 };
 
@@ -279,101 +492,27 @@ const updateLikeButton = () => {
 };
 
 /**
- * 이벤트 리스너 등록
- */
-const attachEventListeners = () => {
-  // 수정 버튼
-  if (editBtn) {
-    editBtn.addEventListener('click', handleEdit);
-  }
-
-  // 삭제 버튼
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', handleDelete);
-  }
-
-  // 좋아요 버튼
-  likeBtn.addEventListener('click', handleLike);
-
-  // 공유 버튼
-  shareBtn.addEventListener('click', handleShare);
-
-  // 댓글 작성
-  commentForm.addEventListener('submit', handleCommentSubmit);
-};
-
-/**
- * 게시글 수정
- */
-const handleEdit = () => {
-  window.location.href = `/pages/posts/post-edit.html?id=${currentPostId}`;
-};
-
-/**
- * 게시글 삭제
- */
-const handleDelete = async () => {
-  if (!confirm('정말 삭제하시겠습니까?')) {
-    return;
-  }
-
-  try {
-    await deletePost(currentPostId);
-    alert('게시글이 삭제되었습니다.');
-    window.location.href = '/index.html';
-  } catch (error) {
-    console.error('게시글 삭제 실패:', error);
-    alert('게시글 삭제에 실패했습니다.');
-  }
-};
-
-/**
  * 좋아요 토글
  */
-const handleLike = async () => {
-  if (!currentMemberId) {
+const handleLikeToggle = async () => {
+  if (!memberId) {
     alert('로그인이 필요합니다.');
     window.location.href = '/pages/auth/login.html';
     return;
   }
 
   try {
-    const result = await togglePostLike(currentPostId);
-    isLiked = result;
+    if (isLiked) {
+      await removePostLike(memberId, postId);
+    } else {
+      await addPostLike(memberId, postId);
+    }
 
-    // 좋아요 수 다시 로드
-    await loadLikeInfo();
+    // 좋아요 상태 새로고침
+    await loadLikeStatus();
   } catch (error) {
-    console.error('좋아요 실패:', error);
-    alert('좋아요 처리에 실패했습니다.');
-  }
-};
-
-/**
- * 공유하기
- */
-const handleShare = async () => {
-  const url = window.location.href;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: currentPost.title,
-        text: `${currentPost.restaurantName} - ${currentPost.title}`,
-        url: url,
-      });
-    } catch (error) {
-      console.log('공유 취소:', error);
-    }
-  } else {
-    // 클립보드 복사
-    try {
-      await navigator.clipboard.writeText(url);
-      alert('링크가 클립보드에 복사되었습니다!');
-    } catch (error) {
-      console.error('복사 실패:', error);
-      alert('링크 복사에 실패했습니다.');
-    }
+    console.error('좋아요 처리 실패:', error);
+    alert(error.message || '좋아요 처리에 실패했습니다.');
   }
 };
 
@@ -383,7 +522,7 @@ const handleShare = async () => {
 const handleCommentSubmit = async (e) => {
   e.preventDefault();
 
-  if (!currentMemberId) {
+  if (!memberId) {
     alert('로그인이 필요합니다.');
     window.location.href = '/pages/auth/login.html';
     return;
@@ -396,54 +535,110 @@ const handleCommentSubmit = async (e) => {
     return;
   }
 
-  if (content.length > 500) {
-    alert('댓글은 500자 이하로 입력해주세요.');
-    return;
-  }
-
   try {
-    await createComment(currentPostId, { content });
+    await createComment(postId, memberId, { content });
 
-    // 댓글 입력창 초기화
+    // 입력 폼 초기화
     commentInput.value = '';
 
-    // 댓글 목록 다시 로드
+    // 댓글 목록 새로고침
     await loadComments();
   } catch (error) {
     console.error('댓글 작성 실패:', error);
-    alert('댓글 작성에 실패했습니다.');
+    alert(error.message || '댓글 작성에 실패했습니다.');
   }
 };
 
 /**
  * 댓글 삭제
  */
-const handleCommentDelete = async (e) => {
-  const commentId = e.target.dataset.commentId;
-
+const handleDeleteComment = async (commentId) => {
   if (!confirm('댓글을 삭제하시겠습니까?')) {
     return;
   }
 
   try {
-    await deleteComment(currentPostId, commentId);
+    await deleteComment(postId, commentId, memberId);
 
-    // 댓글 목록 다시 로드
+    // 댓글 목록 새로고침
     await loadComments();
   } catch (error) {
     console.error('댓글 삭제 실패:', error);
-    alert('댓글 삭제에 실패했습니다.');
+    alert(error.message || '댓글 삭제에 실패했습니다.');
   }
 };
 
 /**
- * HTML 이스케이프
+ * 게시글 수정
  */
-const escapeHtml = (text) => {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+const handleEdit = () => {
+  window.location.href = `/pages/posts/post-edit.html?id=${postId}`;
+};
+
+/**
+ * 게시글 삭제
+ */
+const handleDelete = async () => {
+  if (!confirm('게시글을 삭제하시겠습니까?')) {
+    return;
+  }
+
+  try {
+    const { deletePost } = await import('../../services/post-service.js');
+    await deletePost(postId, memberId);
+
+    alert('게시글이 삭제되었습니다.');
+    window.location.href = '/index.html';
+  } catch (error) {
+    console.error('게시글 삭제 실패:', error);
+    alert(error.message || '게시글 삭제에 실패했습니다.');
+  }
+};
+
+/**
+ * 공유하기
+ */
+const handleShare = () => {
+  const url = window.location.href;
+
+  if (navigator.share) {
+    navigator
+      .share({
+        title: post.title,
+        text: `${post.restaurantName} - ${post.title}`,
+        url: url,
+      })
+      .catch((err) => console.log('공유 취소:', err));
+  } else {
+    // 클립보드에 복사
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        alert('링크가 복사되었습니다!');
+      })
+      .catch((err) => {
+        console.error('복사 실패:', err);
+        alert('링크 복사에 실패했습니다.');
+      });
+  }
+};
+
+/**
+ * 이벤트 리스너 등록
+ */
+const attachEventListeners = () => {
+  // 게시글 수정/삭제
+  if (editBtn) editBtn.addEventListener('click', handleEdit);
+  if (deleteBtn) deleteBtn.addEventListener('click', handleDelete);
+
+  // 좋아요
+  likeBtn.addEventListener('click', handleLikeToggle);
+
+  // 공유
+  shareBtn.addEventListener('click', handleShare);
+
+  // 댓글 작성
+  commentForm.addEventListener('submit', handleCommentSubmit);
 };
 
 /**
@@ -459,7 +654,6 @@ const showLoading = () => {
  */
 const hideLoading = () => {
   loading.style.display = 'none';
-  postDetail.style.display = 'block';
 };
 
 // 초기화 실행

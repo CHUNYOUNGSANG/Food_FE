@@ -310,3 +310,115 @@
     flex: 1;
   }
 }
+
+/* ===== 대댓글 (답글) 스타일 ===== */
+.comment-item.reply {
+  margin-left: 48px;
+  border-left: 3px solid var(--primary-light);
+  padding-left: var(--spacing-md);
+}
+
+.reply-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-xs);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-semibold);
+}
+
+.comment-actions-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--gray-100);
+}
+
+.reply-btn {
+  font-size: var(--font-sm);
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s;
+  font-weight: var(--font-medium);
+}
+
+.reply-btn:hover {
+  background: var(--primary-light);
+}
+
+/* 답글 작성 폼 */
+.reply-form {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reply-form-header {
+  font-size: var(--font-sm);
+  color: var(--primary-color);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.reply-form-content {
+  /* 폼 스타일은 기존 form 스타일 사용 */
+}
+
+/* 반응형 - 대댓글 */
+@media (max-width: 768px) {
+  .comment-item.reply {
+    margin-left: 24px;
+  }
+}
+
+/* ===== 댓글 좋아요 ===== */
+.comment-like-btn {
+  font-size: var(--font-sm);
+  color: var(--gray-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.comment-like-btn:hover {
+  background: var(--gray-100);
+}
+
+.comment-like-btn.liked {
+  color: var(--error-color);
+}
+
+.comment-like-btn .like-icon {
+  font-size: var(--font-md);
+}
+
+.comment-like-count {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+}

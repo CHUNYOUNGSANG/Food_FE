@@ -16,13 +16,17 @@ const restaurantNameInput = document.getElementById('restaurantName');
 const restaurantAddressInput = document.getElementById('restaurantAddress');
 const foodCategorySelect = document.getElementById('foodCategory');
 const ratingInput = document.getElementById('rating');
-const ratingStars = document.getElementById('ratingStars');
-const imageUrlInput = document.getElementById('imageUrl');
+const imageFilesInput = document.getElementById('imageFiles');
+const imagePreview = document.getElementById('imagePreview');
 const contentTextarea = document.getElementById('content');
 const contentCount = document.getElementById('contentCount');
 const submitBtn = document.getElementById('submitBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const errorMessage = document.getElementById('errorMessage');
+
+// 이미지 파일 관리
+let selectedFiles = [];
+const MAX_IMAGES = 10;
 
 /**
  * 초기화
@@ -53,8 +57,8 @@ const attachEventListeners = () => {
   // 취소 버튼
   cancelBtn.addEventListener('click', handleCancel);
 
-  // 평점 입력 시 별 표시
-  ratingInput.addEventListener('input', updateRatingStars);
+  // 이미지 파일 선택
+  imageFilesInput.addEventListener('change', handleImageSelect);
 
   // 내용 글자 수 카운트
   contentTextarea.addEventListener('input', updateContentCount);
@@ -62,6 +66,85 @@ const attachEventListeners = () => {
   // 입력 시 에러 메시지 숨김
   titleInput.addEventListener('input', hideError);
   contentTextarea.addEventListener('input', hideError);
+};
+
+/**
+ * 이미지 파일 선택 처리
+ */
+const handleImageSelect = (e) => {
+  const files = Array.from(e.target.files);
+
+  // 최대 10장 체크
+  if (selectedFiles.length + files.length > MAX_IMAGES) {
+    alert(`이미지는 최대 ${MAX_IMAGES}장까지만 업로드 가능합니다.`);
+    return;
+  }
+
+  // 이미지 파일만 필터링
+  const imageFiles = files.filter((file) => file.type.startsWith('image/'));
+
+  if (imageFiles.length !== files.length) {
+    alert('이미지 파일만 업로드 가능합니다.');
+  }
+
+  // 선택된 파일 추가
+  selectedFiles = [...selectedFiles, ...imageFiles];
+
+  // 미리보기 렌더링
+  renderImagePreviews();
+
+  // input 초기화 (같은 파일 재선택 가능하도록)
+  e.target.value = '';
+};
+
+/**
+ * 이미지 미리보기 렌더링
+ */
+const renderImagePreviews = () => {
+  if (selectedFiles.length === 0) {
+    imagePreview.style.display = 'none';
+    return;
+  }
+
+  imagePreview.style.display = 'block';
+  imagePreview.innerHTML = `
+    <div class="image-preview-grid">
+      ${selectedFiles
+        .map(
+          (file, index) => `
+        <div class="image-preview-item">
+          <img src="${URL.createObjectURL(file)}" alt="미리보기 ${index + 1}">
+          <button type="button" class="image-preview-remove" data-index="${index}">
+            ×
+          </button>
+        </div>
+      `,
+        )
+        .join('')}
+    </div>
+  `;
+
+  // 삭제 버튼 이벤트 리스너
+  imagePreview.querySelectorAll('.image-preview-remove').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      removeImage(index);
+    });
+  });
+};
+
+/**
+ * 이미지 삭제
+ */
+const removeImage = (index) => {
+  // 메모리 누수 방지 - URL 해제
+  URL.revokeObjectURL(URL.createObjectURL(selectedFiles[index]));
+
+  // 파일 배열에서 제거
+  selectedFiles.splice(index, 1);
+
+  // 미리보기 재렌더링
+  renderImagePreviews();
 };
 
 /**
@@ -75,7 +158,6 @@ const handleSubmit = async (e) => {
   const restaurantAddress = restaurantAddressInput.value.trim();
   const foodCategory = foodCategorySelect.value;
   const rating = ratingInput.value ? parseFloat(ratingInput.value) : null;
-  const imageUrl = imageUrlInput.value.trim();
   const content = contentTextarea.value.trim();
 
   // 유효성 검사
@@ -103,24 +185,35 @@ const handleSubmit = async (e) => {
     return;
   }
 
+  // 이미지 개수 체크
+  if (selectedFiles.length > MAX_IMAGES) {
+    showError(`이미지는 최대 ${MAX_IMAGES}장까지만 업로드 가능합니다.`);
+    return;
+  }
+
   try {
     // 버튼 비활성화
     submitBtn.disabled = true;
     submitBtn.textContent = '등록 중...';
 
-    // 게시글 데이터 준비
-    const postData = {
-      title,
-      restaurantName,
-      restaurantAddress: restaurantAddress || null,
-      foodCategory: foodCategory || null,
-      rating,
-      imageUrl: imageUrl || null,
-      content,
-    };
+    // FormData 생성 (이미지 파일 포함)
+    const formData = new FormData();
+
+    // 게시글 데이터 추가
+    formData.append('title', title);
+    formData.append('restaurantName', restaurantName);
+    formData.append('restaurantAddress', restaurantAddress || '');
+    formData.append('foodCategory', foodCategory || '');
+    formData.append('rating', rating || '');
+    formData.append('content', content);
+
+    // 이미지 파일들 추가
+    selectedFiles.forEach((file) => {
+      formData.append('images', file);
+    });
 
     // 게시글 작성 API 호출
-    const result = await createPost(postData);
+    const result = await createPostWithImages(formData);
 
     console.log('게시글 작성 성공:', result);
 
@@ -140,28 +233,39 @@ const handleSubmit = async (e) => {
 };
 
 /**
+ * 이미지 포함 게시글 작성 API
+ */
+const createPostWithImages = async (formData) => {
+  const memberId = getMemberId();
+
+  const response = await fetch('http://localhost:8080/api/posts', {
+    method: 'POST',
+    headers: {
+      'Member-Id': memberId,
+    },
+    body: formData, // FormData는 Content-Type 자동 설정
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || '게시글 작성에 실패했습니다.');
+  }
+
+  return await response.json();
+};
+
+/**
  * 취소 처리
  */
 const handleCancel = () => {
   if (confirm('작성을 취소하시겠습니까?')) {
+    // 메모리 누수 방지 - 모든 URL 해제
+    selectedFiles.forEach((file) => {
+      URL.revokeObjectURL(URL.createObjectURL(file));
+    });
+
     window.location.href = '/index.html';
   }
-};
-
-/**
- * 평점 별 표시 업데이트
- */
-const updateRatingStars = () => {
-  const rating = parseFloat(ratingInput.value) || 0;
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  let stars = '⭐'.repeat(fullStars);
-  if (hasHalfStar) stars += '⭐';
-  stars += '☆'.repeat(emptyStars);
-
-  ratingStars.textContent = stars;
 };
 
 /**

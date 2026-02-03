@@ -62,8 +62,8 @@ const loadPosts = async () => {
  */
 const renderPosts = (posts) => {
   // 검색/필터 결과 숨김
-  noResults.style.display = 'none';
-  emptyState.style.display = 'none';
+  if (noResults) noResults.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
 
   if (posts.length === 0) {
     // 전체 게시글이 없는 경우
@@ -73,12 +73,14 @@ const renderPosts = (posts) => {
       // 검색/필터 결과가 없는 경우
       showNoResults();
     }
-    postsGrid.style.display = 'none';
+    if (postsGrid) postsGrid.style.display = 'none';
     return;
   }
 
-  postsGrid.style.display = 'grid';
-  postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+  if (postsGrid) {
+    postsGrid.style.display = 'grid';
+    postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+  }
 };
 
 /**
@@ -86,7 +88,9 @@ const renderPosts = (posts) => {
  */
 const updateStats = () => {
   // 전체 게시글 수
-  totalPostsSpan.textContent = allPosts.length;
+  if (totalPostsSpan) {
+    totalPostsSpan.textContent = allPosts.length;
+  }
 
   // 오늘 작성된 게시글 수
   const today = new Date();
@@ -98,7 +102,9 @@ const updateStats = () => {
     return postDate.getTime() === today.getTime();
   });
 
-  todayPostsSpan.textContent = todayPosts.length;
+  if (todayPostsSpan) {
+    todayPostsSpan.textContent = todayPosts.length;
+  }
 };
 
 /**
@@ -117,7 +123,7 @@ const filterByCategory = async (category) => {
     }
 
     // 검색어가 있으면 추가 필터링
-    const keyword = searchInput.value.trim();
+    const keyword = searchInput ? searchInput.value.trim() : '';
     if (keyword) {
       filteredPosts = filteredPosts.filter(
         (post) =>
@@ -138,6 +144,8 @@ const filterByCategory = async (category) => {
  * 검색
  */
 const handleSearch = async () => {
+  if (!searchInput) return;
+
   const keyword = searchInput.value.trim();
 
   if (!keyword) {
@@ -174,7 +182,10 @@ const handleSearch = async () => {
  * 검색 초기화
  */
 const resetSearch = () => {
-  searchInput.value = '';
+  if (searchInput) {
+    searchInput.value = '';
+  }
+
   currentCategory = 'all';
 
   // 카테고리 버튼 초기화
@@ -192,14 +203,18 @@ const resetSearch = () => {
  */
 const attachEventListeners = () => {
   // 검색 버튼
-  searchBtn.addEventListener('click', handleSearch);
+  if (searchBtn) {
+    searchBtn.addEventListener('click', handleSearch);
+  }
 
   // 검색 입력 (Enter 키)
-  searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  });
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    });
+  }
 
   // 카테고리 버튼
   categoryBtns.forEach((btn) => {
@@ -215,42 +230,44 @@ const attachEventListeners = () => {
   });
 
   // 검색 초기화 버튼
-  resetSearchBtn.addEventListener('click', resetSearch);
-};
-
-/**
- * 빈 상태 표시
- */
-const showEmptyState = () => {
-  postsGrid.style.display = 'none';
-  noResults.style.display = 'none';
-  emptyState.style.display = 'block';
-};
-
-/**
- * 검색 결과 없음 표시
- */
-const showNoResults = () => {
-  postsGrid.style.display = 'none';
-  emptyState.style.display = 'none';
-  noResults.style.display = 'block';
+  if (resetSearchBtn) {
+    resetSearchBtn.addEventListener('click', resetSearch);
+  }
 };
 
 /**
  * 로딩 표시
  */
 const showLoading = () => {
-  loading.style.display = 'block';
-  postsGrid.style.display = 'none';
-  emptyState.style.display = 'none';
-  noResults.style.display = 'none';
+  if (loading) loading.style.display = 'block';
+  if (postsGrid) postsGrid.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
+  if (noResults) noResults.style.display = 'none';
 };
 
 /**
  * 로딩 숨김
  */
 const hideLoading = () => {
-  loading.style.display = 'none';
+  if (loading) loading.style.display = 'none';
+};
+
+/**
+ * 빈 상태 표시
+ */
+const showEmptyState = () => {
+  if (postsGrid) postsGrid.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'flex';
+  if (noResults) noResults.style.display = 'none';
+};
+
+/**
+ * 검색 결과 없음 표시
+ */
+const showNoResults = () => {
+  if (postsGrid) postsGrid.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
+  if (noResults) noResults.style.display = 'block';
 };
 
 // 초기화 실행
