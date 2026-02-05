@@ -28,7 +28,7 @@ export const removeMemberNickname = () => {
   localStorage.removeItem('memberNickname');
 };
 
-// Token (향후 JWT 사용 시)
+// Access Token (JWT)
 export const getToken = () => {
   return localStorage.getItem('token');
 };
@@ -41,9 +41,22 @@ export const removeToken = () => {
   localStorage.removeItem('token');
 };
 
+// Refresh Token (JWT)
+export const getRefreshToken = () => {
+  return localStorage.getItem('refreshToken');
+};
+
+export const setRefreshToken = (refreshToken) => {
+  localStorage.setItem('refreshToken', refreshToken);
+};
+
+export const removeRefreshToken = () => {
+  localStorage.removeItem('refreshToken');
+};
+
 // 로그인 여부 확인
 export const isLoggedIn = () => {
-  return !!getMemberId();
+  return !!getMemberId() && !!getToken();
 };
 
 // 사용자 정보 가져오기
@@ -61,9 +74,16 @@ export const getUser = () => {
   };
 };
 
+// 사용자 정보 저장
+export const setUser = (user) => {
+  if (user.id) setMemberId(user.id);
+  if (user.nickname) setMemberNickname(user.nickname);
+};
+
 // 전체 로그아웃 (clearStorage)
 export const clearStorage = () => {
   removeMemberId();
   removeMemberNickname();
   removeToken();
+  removeRefreshToken();
 };

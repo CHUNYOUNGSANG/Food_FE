@@ -9,7 +9,13 @@ import {
   updateMember,
   deleteMember,
 } from '../../services/member-service.js';
-import { getMemberId, getUser, setUser } from '../../utils/storage.js';
+import {
+  getMemberId,
+  getUser,
+  setUser,
+  getToken,
+  clearStorage,
+} from '../../utils/storage.js';
 import { createPostCard } from '../../components/post-card.js';
 
 // DOM 요소
@@ -418,13 +424,18 @@ const handlePasswordChange = async (e) => {
     passwordSubmitBtn.textContent = '변경 중...';
 
     // 비밀번호 변경 API 호출
+    const token = getToken();
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (currentMemberId) headers['Member-Id'] = currentMemberId.toString();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const response = await fetch(
-      `http://localhost:8080/api/members/${memberId}/password`,
+      `http://localhost:8080/api/members/${currentMemberId}/password`,
       {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           oldPassword: old,
           newPassword: newPwd,
@@ -476,13 +487,12 @@ const handleDeleteAccount = async () => {
   }
 
   try {
-    await deleteMember(memberId);
+    await deleteMember(currentMemberId);
 
     alert('회원 탈퇴가 완료되었습니다.\n그동안 이용해주셔서 감사합니다.');
 
     // 로그아웃 처리
-    localStorage.removeItem('memberId');
-    localStorage.removeItem('memberNickname');
+    clearStorage();
     window.location.href = '/index.html';
   } catch (error) {
     console.error('회원 탈퇴 실패:', error);

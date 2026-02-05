@@ -6,7 +6,7 @@ import {
   getLikedCommentsByMember,
   removeCommentLike,
 } from '../../services/comment-like-service.js';
-import { getMemberId } from '../../utils/auth.js';
+import { getMemberId } from '../../utils/storage.js';
 import { formatDate } from '../../utils/date-formatter.js';
 
 // DOM 요소
@@ -172,7 +172,7 @@ const handleUnlike = async (commentId) => {
   }
 
   try {
-    await removeCommentLike(memberId, commentId);
+    await removeCommentLike(commentId);
 
     alert('좋아요가 취소되었습니다.');
 

@@ -80,7 +80,7 @@ export const getCommentLikeCount = async (commentId, memberId = null) => {
 export const getLikedCommentsByMember = async (memberId) => {
   try {
     const response = await httpClient.get(
-      `/api/comments/likes/member/${memberId}`,
+      API_CONFIG.ENDPOINTS.COMMENT_LIKES_BY_MEMBER(memberId),
     );
     return response;
   } catch (error) {

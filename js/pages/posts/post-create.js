@@ -7,7 +7,7 @@ import {
   validatePostTitle,
   validatePostContent,
 } from '../../utils/validator.js';
-import { getMemberId } from '../../utils/storage.js';
+import { getMemberId, getToken } from '../../utils/storage.js';
 
 // DOM 요소
 const postCreateForm = document.getElementById('postCreateForm');
@@ -237,12 +237,15 @@ const handleSubmit = async (e) => {
  */
 const createPostWithImages = async (formData) => {
   const memberId = getMemberId();
+  const token = getToken();
+
+  const headers = {};
+  if (memberId) headers['Member-Id'] = memberId;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const response = await fetch('http://localhost:8080/api/posts', {
     method: 'POST',
-    headers: {
-      'Member-Id': memberId,
-    },
+    headers,
     body: formData, // FormData는 Content-Type 자동 설정
   });
 

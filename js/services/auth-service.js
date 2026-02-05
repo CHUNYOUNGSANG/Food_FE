@@ -4,7 +4,12 @@
 
 import httpClient from '../utils/http-client.js';
 import API_CONFIG from '../config/api-config.js';
-import { setMemberId, setMemberNickname } from '../utils/storage.js';
+import {
+  setMemberId,
+  setMemberNickname,
+  setToken,
+  setRefreshToken,
+} from '../utils/storage.js';
 
 /**
  * 회원가입
@@ -36,9 +41,12 @@ export const login = async (credentials) => {
       credentials,
     );
 
-    // 로그인 성공 시 로컬스토리지에 저장
-    setMemberId(response.id);
-    setMemberNickname(response.nickname);
+    // 로그인 성공 시 JWT 토큰 및 회원 정보 저장
+    // 백엔드 LoginResponseDto: { accessToken, refreshToken, member: {...} }
+    setToken(response.accessToken);
+    setRefreshToken(response.refreshToken);
+    setMemberId(response.member.id);
+    setMemberNickname(response.member.nickname);
 
     return response;
   } catch (error) {

@@ -18,7 +18,7 @@ import {
   removeCommentLike,
   getCommentLikeCount,
 } from '../../services/comment-like-service.js';
-import { getMemberId } from '../../utils/auth.js';
+import { getMemberId } from '../../utils/storage.js';
 import { formatDate } from '../../utils/date-formatter.js';
 
 // DOM 요소
@@ -137,9 +137,18 @@ const renderPost = (post) => {
   postDate.textContent = formatDate(post.createdAt);
   viewCount.textContent = `👁️ ${post.viewCount}`;
 
-  // 이미지
-  if (post.imageUrl) {
-    postImage.src = post.imageUrl;
+  // 이미지 (images 배열 우선, 없으면 imageUrl 사용)
+  if (post.images && post.images.length > 0) {
+    const imagesHTML = post.images
+      .map(
+        (img) =>
+          `<img src="http://localhost:8080${img.fileUrl}" alt="${img.originalFileName}" style="max-width:100%; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">`,
+      )
+      .join('');
+    postImageContainer.innerHTML = imagesHTML;
+    postImageContainer.style.display = 'block';
+  } else if (post.imageUrl) {
+    postImageContainer.innerHTML = `<img id="postImage" src="http://localhost:8080${post.imageUrl}" alt="${post.title}" style="max-width:100%; border-radius: var(--radius-md);">`;
     postImageContainer.style.display = 'block';
   }
 
@@ -147,7 +156,7 @@ const renderPost = (post) => {
   postContent.textContent = post.content;
 
   // 작성자 버튼 (본인만 보임)
-  if (memberId && memberId === post.memberId) {
+  if (memberId && parseInt(memberId) === post.memberId) {
     authorActions.style.display = 'flex';
   }
 
@@ -220,7 +229,7 @@ const renderComments = (comments) => {
  */
 const createCommentHTML = (comment, isReply) => {
   const isDeleted = comment.content === '삭제된 댓글입니다.';
-  const isMyComment = memberId && memberId === comment.memberId;
+  const isMyComment = memberId && parseInt(memberId) === comment.memberId;
 
   return `
         <div class="comment-item ${isReply ? 'reply' : ''} ${isDeleted ? 'comment-deleted' : ''}" 
@@ -364,7 +373,7 @@ const attachCommentEventListeners = () => {
  */
 const loadCommentLikeStatus = async (commentId, btn) => {
   try {
-    const likeData = await getCommentLikeCount(memberId, commentId);
+    const likeData = await getCommentLikeCount(commentId);
 
     const likeIcon = btn.querySelector('.like-icon');
     const likeCount = btn.querySelector('.comment-like-count');
@@ -397,9 +406,9 @@ const handleCommentLikeToggle = async (commentId, btn) => {
     const isLiked = btn.classList.contains('liked');
 
     if (isLiked) {
-      await removeCommentLike(memberId, commentId);
+      await removeCommentLike(commentId);
     } else {
-      await addCommentLike(memberId, commentId);
+      await addCommentLike(commentId);
     }
 
     // 좋아요 상태 새로고침
@@ -442,7 +451,7 @@ const handleReplySubmit = async (parentCommentId, content, form) => {
   }
 
   try {
-    await createComment(postId, memberId, {
+    await createComment(postId, {
       content,
       parentCommentId: parseInt(parentCommentId),
     });
@@ -464,7 +473,7 @@ const handleReplySubmit = async (parentCommentId, content, form) => {
  */
 const loadLikeStatus = async () => {
   try {
-    const likeData = await getPostLikeCount(memberId, postId);
+    const likeData = await getPostLikeCount(postId);
 
     isLiked = likeData.isLiked;
     likeCount.textContent = likeData.likeCount;
@@ -503,9 +512,9 @@ const handleLikeToggle = async () => {
 
   try {
     if (isLiked) {
-      await removePostLike(memberId, postId);
+      await removePostLike(postId);
     } else {
-      await addPostLike(memberId, postId);
+      await addPostLike(postId);
     }
 
     // 좋아요 상태 새로고침
@@ -536,7 +545,7 @@ const handleCommentSubmit = async (e) => {
   }
 
   try {
-    await createComment(postId, memberId, { content });
+    await createComment(postId, { content });
 
     // 입력 폼 초기화
     commentInput.value = '';
@@ -558,7 +567,7 @@ const handleDeleteComment = async (commentId) => {
   }
 
   try {
-    await deleteComment(postId, commentId, memberId);
+    await deleteComment(postId, commentId);
 
     // 댓글 목록 새로고침
     await loadComments();
@@ -585,7 +594,7 @@ const handleDelete = async () => {
 
   try {
     const { deletePost } = await import('../../services/post-service.js');
-    await deletePost(postId, memberId);
+    await deletePost(postId);
 
     alert('게시글이 삭제되었습니다.');
     window.location.href = '/index.html';

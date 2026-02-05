@@ -19,6 +19,7 @@ export const createPostCard = (post) => {
     foodCategory,
     rating,
     imageUrl,
+    images,
     memberNickname,
     createdAt,
     viewCount = 0,
@@ -44,10 +45,16 @@ export const createPostCard = (post) => {
       카페: '☕',
     }[foodCategory] || '🍽️';
 
-  // 기본 이미지 처리
-  const cardImage = imageUrl
-    ? `<img src="${imageUrl}" alt="${title}" onerror="this.style.display='none'">`
-    : '';
+  // 기본 이미지 처리 (images 배열 우선, 없으면 imageUrl 사용)
+  let cardImage = '';
+  if (images && images.length > 0) {
+    cardImage = `<img src="http://localhost:8080${images[0].fileUrl}" alt="${escapeHtml(title)}" onerror="this.style.display='none'">`;
+  } else if (imageUrl) {
+    const imgSrc = imageUrl.startsWith('http')
+      ? imageUrl
+      : `http://localhost:8080${imageUrl}`;
+    cardImage = `<img src="${imgSrc}" alt="${escapeHtml(title)}" onerror="this.style.display='none'">`;
+  }
 
   return `
         <div class="post-card" onclick="location.href='/pages/posts/post-detail.html?id=${id}'">

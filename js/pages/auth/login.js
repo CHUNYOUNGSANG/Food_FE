@@ -64,7 +64,7 @@ const handleSubmit = async (e) => {
     console.log('로그인 성공:', response);
 
     // 로그인 성공 메시지
-    alert(`${response.nickname}님, 환영합니다! 🎉`);
+    alert(`${response.member.nickname}님, 환영합니다!`);
 
     // 메인 페이지로 이동
     window.location.href = '/index.html';

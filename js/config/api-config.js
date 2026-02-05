@@ -20,6 +20,7 @@ const API_CONFIG = {
     MEMBERS: '/members',
     MEMBER_SIGNUP: '/members',
     MEMBER_LOGIN: '/members/login',
+    MEMBER_REFRESH: '/members/refresh',
     MEMBER_DETAIL: (id) => `/members/${id}`,
     MEMBER_UPDATE: (id) => `/members/${id}`,
     MEMBER_DELETE: (id) => `/members/${id}`,
@@ -48,6 +49,7 @@ const API_CONFIG = {
     COMMENTS_BY_MEMBER: (memberId) => `/members/${memberId}/comments`,
 
     // 게시글 좋아요 관련
+    POST_LIKE: (postId) => `/posts/${postId}/likes`,
     POST_LIKE_ADD: (postId) => `/posts/${postId}/likes`,
     POST_LIKE_REMOVE: (postId) => `/posts/${postId}/likes`,
     POST_LIKE_TOGGLE: (postId) => `/posts/${postId}/likes/toggle`,
@@ -56,6 +58,7 @@ const API_CONFIG = {
     POST_LIKES_BY_POST: (postId) => `/posts/${postId}/likes`,
 
     // 댓글 좋아요 관련
+    COMMENT_LIKE: (commentId) => `/comments/${commentId}/likes`,
     COMMENT_LIKE_ADD: (commentId) => `/comments/${commentId}/likes`,
     COMMENT_LIKE_REMOVE: (commentId) => `/comments/${commentId}/likes`,
     COMMENT_LIKE_TOGGLE: (commentId) => `/comments/${commentId}/likes/toggle`,

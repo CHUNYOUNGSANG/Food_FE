@@ -7,7 +7,7 @@ import {
   deleteComment,
   updateComment,
 } from '../../services/comment-service.js';
-import { getMemberId } from '../../utils/auth.js';
+import { getMemberId } from '../../utils/storage.js';
 import { formatDate } from '../../utils/date-formatter.js';
 
 // DOM 요소
@@ -271,7 +271,6 @@ const handleEditSubmit = async (e) => {
     await updateComment(
       currentEditingComment.postId,
       currentEditingComment.commentId,
-      memberId,
       { content },
     );
 
@@ -295,7 +294,7 @@ const handleDeleteComment = async (postId, commentId) => {
   }
 
   try {
-    await deleteComment(postId, commentId, memberId);
+    await deleteComment(postId, commentId);
 
     alert('댓글이 삭제되었습니다.');
 

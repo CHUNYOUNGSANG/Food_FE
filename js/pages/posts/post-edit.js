@@ -2,12 +2,12 @@
  * 게시글 수정 페이지 로직
  */
 
-import { getPost, updatePost } from '../../services/post-service.js';
+import { getPost } from '../../services/post-service.js';
 import {
   validatePostTitle,
   validatePostContent,
 } from '../../utils/validator.js';
-import { getMemberId } from '../../utils/storage.js';
+import { getMemberId, getToken } from '../../utils/storage.js';
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -18,7 +18,10 @@ const restaurantNameInput = document.getElementById('restaurantName');
 const restaurantAddressInput = document.getElementById('restaurantAddress');
 const foodCategorySelect = document.getElementById('foodCategory');
 const ratingInput = document.getElementById('rating');
-const imageUrlInput = document.getElementById('imageUrl');
+const imageFilesInput = document.getElementById('imageFiles');
+const imagePreview = document.getElementById('imagePreview');
+const existingImages = document.getElementById('existingImages');
+const existingImageGrid = document.getElementById('existingImageGrid');
 const contentTextarea = document.getElementById('content');
 const contentCount = document.getElementById('contentCount');
 const submitBtn = document.getElementById('submitBtn');
@@ -28,6 +31,9 @@ const errorMessage = document.getElementById('errorMessage');
 // 상태
 let currentPostId = null;
 let currentPost = null;
+let selectedFiles = [];
+let deleteImageIds = [];
+const MAX_IMAGES = 10;
 
 /**
  * 초기화
@@ -70,7 +76,7 @@ const loadPost = async () => {
 
     // 권한 확인 (본인 게시글인지)
     const memberId = getMemberId();
-    if (memberId !== post.memberId.toString()) {
+    if (parseInt(memberId) !== post.memberId) {
       alert('수정 권한이 없습니다.');
       window.location.href = `/pages/posts/post-detail.html?id=${currentPostId}`;
       return;
@@ -96,14 +102,60 @@ const fillForm = (post) => {
   restaurantAddressInput.value = post.restaurantAddress || '';
   foodCategorySelect.value = post.foodCategory || '';
   ratingInput.value = post.rating || '';
-  imageUrlInput.value = post.imageUrl || '';
   contentTextarea.value = post.content || '';
 
-  // 평점 별 업데이트
-  updateRatingStars();
+  // 기존 이미지 표시
+  renderExistingImages(post.images || []);
 
   // 글자 수 업데이트
   updateContentCount();
+};
+
+/**
+ * 기존 이미지 렌더링
+ */
+const renderExistingImages = (images) => {
+  if (!images || images.length === 0) {
+    existingImages.style.display = 'none';
+    return;
+  }
+
+  existingImages.style.display = 'block';
+  existingImageGrid.innerHTML = images
+    .map(
+      (img) => `
+    <div class="image-preview-item" data-image-id="${img.id}" ${deleteImageIds.includes(img.id) ? 'style="opacity: 0.3;"' : ''}>
+      <img src="http://localhost:8080${img.fileUrl}" alt="${img.originalFileName}">
+      <button type="button" class="image-preview-remove existing-image-delete" data-image-id="${img.id}">
+        ${deleteImageIds.includes(img.id) ? '↩' : '×'}
+      </button>
+    </div>
+  `,
+    )
+    .join('');
+
+  // 삭제/복원 버튼 이벤트
+  existingImageGrid
+    .querySelectorAll('.existing-image-delete')
+    .forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const imageId = parseInt(e.target.dataset.imageId);
+        toggleDeleteImage(imageId);
+      });
+    });
+};
+
+/**
+ * 기존 이미지 삭제/복원 토글
+ */
+const toggleDeleteImage = (imageId) => {
+  const index = deleteImageIds.indexOf(imageId);
+  if (index > -1) {
+    deleteImageIds.splice(index, 1);
+  } else {
+    deleteImageIds.push(imageId);
+  }
+  renderExistingImages(currentPost.images || []);
 };
 
 /**
@@ -116,12 +168,79 @@ const attachEventListeners = () => {
   // 취소 버튼
   cancelBtn.addEventListener('click', handleCancel);
 
+  // 이미지 파일 선택
+  if (imageFilesInput) {
+    imageFilesInput.addEventListener('change', handleImageSelect);
+  }
+
   // 내용 글자 수 카운트
   contentTextarea.addEventListener('input', updateContentCount);
 
   // 입력 시 에러 메시지 숨김
   titleInput.addEventListener('input', hideError);
   contentTextarea.addEventListener('input', hideError);
+};
+
+/**
+ * 이미지 파일 선택 처리
+ */
+const handleImageSelect = (e) => {
+  const files = Array.from(e.target.files);
+  const existingCount =
+    (currentPost.images || []).length - deleteImageIds.length;
+
+  if (existingCount + selectedFiles.length + files.length > MAX_IMAGES) {
+    alert(`이미지는 최대 ${MAX_IMAGES}장까지만 업로드 가능합니다.`);
+    return;
+  }
+
+  const imageFiles = files.filter((file) => file.type.startsWith('image/'));
+  if (imageFiles.length !== files.length) {
+    alert('이미지 파일만 업로드 가능합니다.');
+  }
+
+  selectedFiles = [...selectedFiles, ...imageFiles];
+  renderNewImagePreviews();
+  e.target.value = '';
+};
+
+/**
+ * 새 이미지 미리보기 렌더링
+ */
+const renderNewImagePreviews = () => {
+  if (selectedFiles.length === 0) {
+    imagePreview.style.display = 'none';
+    return;
+  }
+
+  imagePreview.style.display = 'block';
+  imagePreview.innerHTML = `
+    <p style="font-size: var(--font-sm); color: var(--gray-600); margin-bottom: var(--spacing-sm);">
+      새 이미지:
+    </p>
+    <div class="image-preview-grid">
+      ${selectedFiles
+        .map(
+          (file, index) => `
+        <div class="image-preview-item">
+          <img src="${URL.createObjectURL(file)}" alt="미리보기 ${index + 1}">
+          <button type="button" class="image-preview-remove" data-index="${index}">
+            ×
+          </button>
+        </div>
+      `,
+        )
+        .join('')}
+    </div>
+  `;
+
+  imagePreview.querySelectorAll('.image-preview-remove').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      selectedFiles.splice(index, 1);
+      renderNewImagePreviews();
+    });
+  });
 };
 
 /**
@@ -135,7 +254,6 @@ const handleSubmit = async (e) => {
   const restaurantAddress = restaurantAddressInput.value.trim();
   const foodCategory = foodCategorySelect.value;
   const rating = ratingInput.value ? parseFloat(ratingInput.value) : null;
-  const imageUrl = imageUrlInput.value.trim();
   const content = contentTextarea.value.trim();
 
   // 유효성 검사
@@ -168,24 +286,32 @@ const handleSubmit = async (e) => {
     submitBtn.disabled = true;
     submitBtn.textContent = '수정 중...';
 
-    // 게시글 데이터 준비
-    const postData = {
-      title,
-      restaurantName,
-      restaurantAddress: restaurantAddress || null,
-      foodCategory: foodCategory || null,
-      rating,
-      imageUrl: imageUrl || null,
-      content,
-    };
+    // FormData로 multipart 전송
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('restaurantName', restaurantName);
+    if (restaurantAddress)
+      formData.append('restaurantAddress', restaurantAddress);
+    if (foodCategory) formData.append('foodCategory', foodCategory);
+    if (rating !== null) formData.append('rating', rating);
 
-    // 게시글 수정 API 호출
-    const result = await updatePost(currentPostId, postData);
+    // 삭제할 이미지 ID들
+    deleteImageIds.forEach((id) => {
+      formData.append('deleteImageIds', id);
+    });
+
+    // 새로 추가할 이미지들
+    selectedFiles.forEach((file) => {
+      formData.append('newImages', file);
+    });
+
+    // 게시글 수정 API 호출 (multipart/form-data)
+    const result = await updatePostWithImages(formData);
 
     console.log('게시글 수정 성공:', result);
 
-    // 성공 메시지
-    alert('게시글이 수정되었습니다! ✅');
+    alert('게시글이 수정되었습니다!');
 
     // 상세 페이지로 이동
     window.location.href = `/pages/posts/post-detail.html?id=${currentPostId}`;
@@ -197,6 +323,34 @@ const handleSubmit = async (e) => {
     submitBtn.disabled = false;
     submitBtn.textContent = '수정 완료';
   }
+};
+
+/**
+ * 이미지 포함 게시글 수정 API
+ */
+const updatePostWithImages = async (formData) => {
+  const memberId = getMemberId();
+  const token = getToken();
+
+  const headers = {};
+  if (memberId) headers['Member-Id'] = memberId;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const response = await fetch(
+    `http://localhost:8080/api/posts/${currentPostId}`,
+    {
+      method: 'PUT',
+      headers,
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || '게시글 수정에 실패했습니다.');
+  }
+
+  return await response.json();
 };
 
 /**
