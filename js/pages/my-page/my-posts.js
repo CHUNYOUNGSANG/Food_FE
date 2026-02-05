@@ -17,6 +17,8 @@ import {
   clearStorage,
 } from '../../utils/storage.js';
 import { createPostCard } from '../../components/post-card.js';
+import { resolveImageUrl } from '../../utils/image-url.js';
+import { hydrateAvatars } from '../../utils/avatar-loader.js';
 
 // DOM 요소
 const profileAvatar = document.getElementById('profileAvatar');
@@ -59,6 +61,9 @@ const profileForm = document.getElementById('profileForm');
 const nameInput = document.getElementById('name');
 const nicknameInput = document.getElementById('nickname');
 const profileImageInput = document.getElementById('profileImage');
+const editImagePreview = document.getElementById('editImagePreview');
+const editImagePreviewImg = document.getElementById('editImagePreviewImg');
+const editRemoveImageBtn = document.getElementById('editRemoveImageBtn');
 const profileSubmitBtn = document.getElementById('profileSubmitBtn');
 const profileError = document.getElementById('profileError');
 
@@ -99,15 +104,31 @@ const loadProfile = async () => {
   try {
     const member = await getMember(currentMemberId);
 
-    // 프로필 표시
-    profileAvatar.textContent = member.nickname.charAt(0).toUpperCase();
+    // 프로필 표시 (이미지 있으면 이미지, 없으면 이니셜)
+    if (member.profileImage) {
+      profileAvatar.textContent = '';
+      profileAvatar.style.backgroundImage = `url("${resolveImageUrl(member.profileImage)}")`;
+      profileAvatar.classList.add('has-image');
+    } else {
+      profileAvatar.style.backgroundImage = '';
+      profileAvatar.classList.remove('has-image');
+      profileAvatar.textContent = member.nickname.charAt(0).toUpperCase();
+    }
     profileNickname.textContent = member.nickname;
     profileEmail.textContent = member.email;
 
     // 프로필 폼 채우기
     nameInput.value = member.name;
     nicknameInput.value = member.nickname;
-    profileImageInput.value = member.profileImage || '';
+
+    // 기존 프로필 이미지가 있으면 미리보기 표시
+    if (member.profileImage) {
+      editImagePreviewImg.src = resolveImageUrl(member.profileImage);
+      editImagePreview.style.display = 'block';
+    } else {
+      editImagePreview.style.display = 'none';
+      editImagePreviewImg.src = '';
+    }
   } catch (error) {
     console.error('프로필 로드 실패:', error);
   }
@@ -177,6 +198,7 @@ const renderMyPosts = (posts) => {
   }
 
   postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+  hydrateAvatars(postsGrid);
   postsGrid.style.display = 'grid';
   postsEmptyState.style.display = 'none';
 };
@@ -208,6 +230,7 @@ const renderLikedPosts = (likedData) => {
 
   likedPostsGrid.style.display = 'grid';
   likedPostsEmptyState.style.display = 'none';
+  hydrateAvatars(likedPostsGrid);
 };
 
 /**
@@ -229,7 +252,7 @@ const createLikedPostCard = (post) => {
                 
                 <div style="display: flex; align-items: center; justify-content: space-between; padding-top: var(--spacing-md); border-top: 1px solid var(--gray-200);">
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: var(--font-bold); font-size: var(--font-sm);">
+                        <div class="author-avatar" data-member-id="${post.memberId}">
                             ${post.memberNickname ? post.memberNickname.charAt(0).toUpperCase() : '?'}
                         </div>
                         <span style="font-size: var(--font-sm); color: var(--gray-600); font-weight: var(--font-medium);">
@@ -283,6 +306,25 @@ const attachEventListeners = () => {
 
   // 프로필 수정
   profileForm.addEventListener('submit', handleProfileUpdate);
+
+  // 프로필 이미지 파일 선택 이벤트
+  profileImageInput.addEventListener('change', () => {
+    const file = profileImageInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        editImagePreviewImg.src = e.target.result;
+        editImagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  editRemoveImageBtn.addEventListener('click', () => {
+    profileImageInput.value = '';
+    editImagePreview.style.display = 'none';
+    editImagePreviewImg.src = '';
+  });
 
   // 내 댓글 탭
   commentsTab.addEventListener('click', () => {
@@ -344,27 +386,35 @@ const handleProfileUpdate = async (e) => {
 
   const name = nameInput.value.trim();
   const nickname = nicknameInput.value.trim();
-  const profileImage = profileImageInput.value.trim();
 
-  if (!name || !nickname) {
-    showProfileError('이름과 닉네임을 입력해주세요.');
+  if (!name) {
+    showProfileError('이름을 입력해주세요.');
     return;
+  }
+
+  if (!nickname) {
+    showProfileError('닉네임을 입력해주세요.');
+    return;
+  }
+
+  // FormData로 전송 (multipart/form-data)
+  const profileFile = profileImageInput.files[0];
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('nickname', nickname);
+  if (profileFile) {
+    formData.append('profileImage', profileFile);
   }
 
   try {
     profileSubmitBtn.disabled = true;
     profileSubmitBtn.textContent = '저장 중...';
 
-    const result = await updateMember(currentMemberId, {
-      name,
-      nickname,
-      profileImage: profileImage || null,
-    });
+    const result = await updateMember(currentMemberId, formData);
 
     // localStorage 업데이트
     const updatedUser = {
       ...currentUser,
-      name: result.name,
       nickname: result.nickname,
       profileImage: result.profileImage,
     };

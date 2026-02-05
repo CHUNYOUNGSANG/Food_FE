@@ -4,11 +4,7 @@
  */
 
 import {
-  validateEmailInput,
   validatePasswordInput,
-  validateNameInput,
-  validateNicknameInput,
-  validateForm,
 } from '../../utils/form-validator.js';
 import * as validator from '../../utils/validator.js';
 import httpClient from '../../utils/http-client.js';
@@ -23,6 +19,13 @@ const passwordConfirmInput = document.getElementById('passwordConfirm');
 const nameInput = document.getElementById('name');
 const nicknameInput = document.getElementById('nickname');
 const profileImageInput = document.getElementById('profileImage');
+const imagePreview = document.getElementById('imagePreview');
+const imagePreviewImg = document.getElementById('imagePreviewImg');
+const removeImageBtn = document.getElementById('removeImageBtn');
+const emailValidationMsg = document.getElementById('emailValidationMsg');
+const passwordConfirmValidationMsg = document.getElementById('passwordConfirmValidationMsg');
+const nameValidationMsg = document.getElementById('nameValidationMsg');
+const nicknameValidationMsg = document.getElementById('nicknameValidationMsg');
 const checkEmailBtn = document.getElementById('checkEmailBtn');
 const checkNicknameBtn = document.getElementById('checkNicknameBtn');
 const signupBtn = document.getElementById('signupBtn');
@@ -42,6 +45,10 @@ const init = () => {
   checkEmailBtn.addEventListener('click', handleCheckEmail);
   checkNicknameBtn.addEventListener('click', handleCheckNickname);
   signupForm.addEventListener('submit', handleSubmit);
+
+  // 프로필 이미지 파일 선택 이벤트
+  profileImageInput.addEventListener('change', handleImagePreview);
+  removeImageBtn.addEventListener('click', handleRemoveImage);
 
   // 입력값 변경 시 중복 확인 상태 초기화
   emailInput.addEventListener('input', () => {
@@ -64,9 +71,24 @@ const init = () => {
  * 실시간 검증 설정
  */
 const setupRealtimeValidation = () => {
-  // 이메일 실시간 검증
-  validateEmailInput(emailInput, {
-    showSuccess: false,
+  // 이메일 실시간 검증 (라벨 옆에 메시지 표시)
+  emailInput.addEventListener('input', () => {
+    const value = emailInput.value.trim();
+
+    if (value === '') {
+      showLabelMessage(emailValidationMsg,'', '');
+      emailInput.classList.remove('valid', 'invalid');
+      return;
+    }
+
+    if (validator.validateEmail(value)) {
+      showLabelMessage(emailValidationMsg,'', '');
+      emailInput.classList.remove('invalid');
+    } else {
+      showLabelMessage(emailValidationMsg,'올바른 이메일 형식이 아닙니다', 'error');
+      emailInput.classList.remove('valid');
+      emailInput.classList.add('invalid');
+    }
   });
 
   // 비밀번호 실시간 검증 (상세 버전)
@@ -74,39 +96,70 @@ const setupRealtimeValidation = () => {
     showDetailedValidation: true,
   });
 
-  // 비밀번호 확인 검증
+  // 비밀번호 확인 검증 (라벨 옆에 메시지 표시)
   passwordConfirmInput.addEventListener('input', () => {
     const password = passwordInput.value;
     const passwordConfirm = passwordConfirmInput.value;
 
     if (passwordConfirm === '') {
-      clearValidationMessage(passwordConfirmInput);
+      showLabelMessage(passwordConfirmValidationMsg, '', '');
+      passwordConfirmInput.classList.remove('valid', 'invalid');
       return;
     }
 
     if (password === passwordConfirm) {
-      showValidationMessage(
-        passwordConfirmInput,
-        '비밀번호가 일치합니다',
-        'success',
-      );
+      showLabelMessage(passwordConfirmValidationMsg, '비밀번호가 일치합니다', 'success');
+      passwordConfirmInput.classList.remove('invalid');
+      passwordConfirmInput.classList.add('valid');
     } else {
-      showValidationMessage(
-        passwordConfirmInput,
-        '비밀번호가 일치하지 않습니다',
-        'error',
-      );
+      showLabelMessage(passwordConfirmValidationMsg, '비밀번호가 일치하지 않습니다', 'error');
+      passwordConfirmInput.classList.remove('valid');
+      passwordConfirmInput.classList.add('invalid');
     }
   });
 
-  // 이름 실시간 검증
-  validateNameInput(nameInput, {
-    showSuccess: false,
+  // 이름 실시간 검증 (라벨 옆에 메시지 표시)
+  nameInput.addEventListener('input', () => {
+    const value = nameInput.value.trim();
+
+    if (value === '') {
+      showLabelMessage(nameValidationMsg, '', '');
+      nameInput.classList.remove('valid', 'invalid');
+      return;
+    }
+
+    if (validator.validateName(value)) {
+      showLabelMessage(nameValidationMsg, '', '');
+      nameInput.classList.remove('invalid');
+    } else {
+      showLabelMessage(nameValidationMsg, '이름은 2-50자 사이여야 합니다', 'error');
+      nameInput.classList.remove('valid');
+      nameInput.classList.add('invalid');
+    }
   });
 
-  // 닉네임 실시간 검증 (trim 제거)
-  validateNicknameInput(nicknameInput, {
-    showSuccess: false,
+  // 닉네임 실시간 검증 (라벨 옆에 메시지 표시)
+  nicknameInput.addEventListener('input', () => {
+    const value = nicknameInput.value;
+
+    if (value === '') {
+      showLabelMessage(nicknameValidationMsg, '', '');
+      nicknameInput.classList.remove('valid', 'invalid');
+      return;
+    }
+
+    if (value.length < 2) {
+      showLabelMessage(nicknameValidationMsg, '닉네임은 2자 이상이어야 합니다', 'error');
+      nicknameInput.classList.remove('valid');
+      nicknameInput.classList.add('invalid');
+    } else if (value.length > 50) {
+      showLabelMessage(nicknameValidationMsg, '닉네임은 50자 이하여야 합니다', 'error');
+      nicknameInput.classList.remove('valid');
+      nicknameInput.classList.add('invalid');
+    } else {
+      showLabelMessage(nicknameValidationMsg, '', '');
+      nicknameInput.classList.remove('invalid');
+    }
   });
 };
 
@@ -133,10 +186,14 @@ const handleCheckEmail = async () => {
     );
 
     if (isDuplicate) {
-      showValidationMessage(emailInput, '이미 사용 중인 이메일입니다', 'error');
+      showLabelMessage(emailValidationMsg,'이미 사용 중인 이메일입니다', 'error');
+      emailInput.classList.add('invalid');
+      emailInput.classList.remove('valid');
       emailChecked = false;
     } else {
-      showValidationMessage(emailInput, '사용 가능한 이메일입니다', 'success');
+      showLabelMessage(emailValidationMsg,'사용 가능한 이메일입니다', 'success');
+      emailInput.classList.add('valid');
+      emailInput.classList.remove('invalid');
       emailChecked = true;
     }
   } catch (error) {
@@ -172,18 +229,14 @@ const handleCheckNickname = async () => {
     );
 
     if (isDuplicate) {
-      showValidationMessage(
-        nicknameInput,
-        '이미 사용 중인 닉네임입니다',
-        'error',
-      );
+      showLabelMessage(nicknameValidationMsg, '이미 사용 중인 닉네임입니다', 'error');
+      nicknameInput.classList.add('invalid');
+      nicknameInput.classList.remove('valid');
       nicknameChecked = false;
     } else {
-      showValidationMessage(
-        nicknameInput,
-        '사용 가능한 닉네임입니다',
-        'success',
-      );
+      showLabelMessage(nicknameValidationMsg, '사용 가능한 닉네임입니다', 'success');
+      nicknameInput.classList.add('valid');
+      nicknameInput.classList.remove('invalid');
       nicknameChecked = true;
     }
   } catch (error) {
@@ -194,6 +247,33 @@ const handleCheckNickname = async () => {
     checkNicknameBtn.textContent = '중복확인';
     updateSubmitButton();
   }
+};
+
+/**
+ * 프로필 이미지 미리보기
+ */
+const handleImagePreview = () => {
+  const file = profileImageInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreviewImg.src = e.target.result;
+      imagePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.style.display = 'none';
+    imagePreviewImg.src = '';
+  }
+};
+
+/**
+ * 프로필 이미지 제거
+ */
+const handleRemoveImage = () => {
+  profileImageInput.value = '';
+  imagePreview.style.display = 'none';
+  imagePreviewImg.src = '';
 };
 
 /**
@@ -218,23 +298,25 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  // 요청 데이터 생성
-  const requestData = {
-    email: emailInput.value.trim(),
-    password: passwordInput.value,
-    name: nameInput.value.trim(),
-    nickname: nicknameInput.value.trim(),
-    profileImage: profileImageInput.value.trim() || null,
-  };
+  // FormData로 전송 (multipart/form-data)
+  const profileFile = profileImageInput.files[0];
+  const formData = new FormData();
+  formData.append('email', emailInput.value.trim());
+  formData.append('password', passwordInput.value);
+  formData.append('name', nameInput.value.trim());
+  formData.append('nickname', nicknameInput.value.trim());
+  if (profileFile) {
+    formData.append('profileImage', profileFile);
+  }
 
   try {
     signupBtn.disabled = true;
     signupBtn.textContent = '회원가입 중...';
 
     // API 호출
-    const response = await httpClient.post(
+    const response = await httpClient.postFormData(
       API_CONFIG.ENDPOINTS.MEMBER_SIGNUP,
-      requestData,
+      formData,
     );
 
     console.log('회원가입 성공:', response);
@@ -321,36 +403,16 @@ const updateSubmitButton = () => {
 };
 
 /**
- * 검증 메시지 표시 (헬퍼 함수)
+ * 라벨 옆 검증 메시지 표시 (공통)
  */
-const showValidationMessage = (input, message, type) => {
-  const existingMessage = input.parentElement.querySelector(
-    '.validation-message',
-  );
-  if (existingMessage) {
-    existingMessage.remove();
+const showLabelMessage = (spanEl, message, type) => {
+  spanEl.textContent = message;
+  spanEl.className = 'label-help-text';
+  if (type === 'error') {
+    spanEl.classList.add('label-validation-error');
+  } else if (type === 'success') {
+    spanEl.classList.add('label-validation-success');
   }
-
-  const messageEl = document.createElement('div');
-  messageEl.className = `validation-message ${type}`;
-  messageEl.textContent = message;
-  input.parentElement.appendChild(messageEl);
-
-  input.classList.remove('valid', 'invalid');
-  input.classList.add(type === 'success' ? 'valid' : 'invalid');
-};
-
-/**
- * 검증 메시지 제거 (헬퍼 함수)
- */
-const clearValidationMessage = (input) => {
-  const existingMessage = input.parentElement.querySelector(
-    '.validation-message',
-  );
-  if (existingMessage) {
-    existingMessage.remove();
-  }
-  input.classList.remove('valid', 'invalid');
 };
 
 // 초기화 실행

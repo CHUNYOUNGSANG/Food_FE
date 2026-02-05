@@ -20,6 +20,56 @@ import {
 } from '../../services/comment-like-service.js';
 import { getMemberId } from '../../utils/storage.js';
 import { formatDate } from '../../utils/date-formatter.js';
+import { resolveImageCandidates, resolveImageUrl } from '../../utils/image-url.js';
+import { hydrateAvatars } from '../../utils/avatar-loader.js';
+
+const getProfileImageFrom = (data) =>
+  data?.memberProfileImage ||
+  data?.profileImage ||
+  data?.memberProfileImageUrl ||
+  data?.profileImageUrl ||
+  data?.member?.profileImage ||
+  data?.member?.profileImageUrl ||
+  data?.author?.profileImage ||
+  data?.author?.profileImageUrl ||
+  '';
+
+const extractPostImageUrls = (postData) => {
+  const urls = [];
+
+  const list =
+    postData?.images ||
+    postData?.imageUrls ||
+    postData?.imageList ||
+    postData?.files ||
+    postData?.postImages ||
+    null;
+
+  if (Array.isArray(list)) {
+    list.forEach((item) => {
+      if (!item) return;
+      if (typeof item === 'string') {
+        urls.push(item);
+        return;
+      }
+      const candidate =
+        item.fileUrl ||
+        item.imageUrl ||
+        item.url ||
+        item.path ||
+        item.filePath ||
+        item.storedFileName ||
+        item.storedPath ||
+        '';
+      if (candidate) urls.push(candidate);
+    });
+  }
+
+  if (postData?.imageUrl) urls.push(postData.imageUrl);
+  if (postData?.thumbnailUrl) urls.push(postData.thumbnailUrl);
+
+  return [...new Set(urls.filter(Boolean))];
+};
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -131,25 +181,47 @@ const renderPost = (post) => {
   restaurantName.textContent = post.restaurantName;
   restaurantAddress.textContent = post.restaurantAddress || '주소 정보 없음';
 
-  // 작성자 정보
-  authorAvatar.textContent = post.memberNickname.charAt(0).toUpperCase();
+  // 작성자 정보 (이미지 있으면 이미지, 없으면 이니셜)
+  const authorImage = getProfileImageFrom(post);
+  if (authorImage) {
+    authorAvatar.textContent = '';
+    authorAvatar.style.backgroundImage = `url("${resolveImageUrl(authorImage)}")`;
+    authorAvatar.classList.add('has-image');
+  } else {
+    authorAvatar.style.backgroundImage = '';
+    authorAvatar.classList.remove('has-image');
+    authorAvatar.textContent = post.memberNickname.charAt(0).toUpperCase();
+  }
+  const authorMemberId =
+    post.memberId ||
+    post.member?.id ||
+    post.authorId ||
+    post.author?.id ||
+    post.writerId ||
+    post.writer?.id ||
+    '';
+  if (authorMemberId) authorAvatar.dataset.memberId = authorMemberId;
   authorName.textContent = post.memberNickname;
   postDate.textContent = formatDate(post.createdAt);
   viewCount.textContent = `👁️ ${post.viewCount}`;
 
   // 이미지 (images 배열 우선, 없으면 imageUrl 사용)
-  if (post.images && post.images.length > 0) {
-    const imagesHTML = post.images
-      .map(
-        (img) =>
-          `<img src="http://localhost:8080${img.fileUrl}" alt="${img.originalFileName}" style="max-width:100%; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">`,
-      )
+  const postImageUrls = extractPostImageUrls(post);
+  if (postImageUrls.length > 0) {
+    const imagesHTML = postImageUrls
+      .map((url) => {
+        const [primary, fallback] = resolveImageCandidates(url);
+        const fallbackAttr = fallback ? `data-fallback="${fallback}"` : '';
+        const onError =
+          "if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.style.display='none';}";
+        return `<img src="${primary}" ${fallbackAttr} onerror="${onError}" alt="${post.title}" style="max-width:100%; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">`;
+      })
       .join('');
     postImageContainer.innerHTML = imagesHTML;
     postImageContainer.style.display = 'block';
-  } else if (post.imageUrl) {
-    postImageContainer.innerHTML = `<img id="postImage" src="http://localhost:8080${post.imageUrl}" alt="${post.title}" style="max-width:100%; border-radius: var(--radius-md);">`;
-    postImageContainer.style.display = 'block';
+  } else {
+    postImageContainer.innerHTML = '';
+    postImageContainer.style.display = 'none';
   }
 
   // 내용
@@ -161,6 +233,7 @@ const renderPost = (post) => {
   }
 
   postDetail.style.display = 'block';
+  hydrateAvatars(postDetail);
 };
 
 /**
@@ -222,6 +295,7 @@ const renderComments = (comments) => {
 
   // 이벤트 리스너 재등록
   attachCommentEventListeners();
+  hydrateAvatars(commentList);
 };
 
 /**
@@ -230,6 +304,21 @@ const renderComments = (comments) => {
 const createCommentHTML = (comment, isReply) => {
   const isDeleted = comment.content === '삭제된 댓글입니다.';
   const isMyComment = memberId && parseInt(memberId) === comment.memberId;
+  const commentAvatarImage = getProfileImageFrom(comment);
+  const commentAvatarClass = commentAvatarImage
+    ? 'comment-avatar has-image'
+    : 'comment-avatar';
+  const commentAvatarStyle = commentAvatarImage
+    ? `style="background-image:url('${resolveImageUrl(commentAvatarImage)}')"`
+    : '';
+  const commentMemberId =
+    comment.memberId ||
+    comment.member?.id ||
+    comment.authorId ||
+    comment.author?.id ||
+    comment.writerId ||
+    comment.writer?.id ||
+    '';
 
   return `
         <div class="comment-item ${isReply ? 'reply' : ''} ${isDeleted ? 'comment-deleted' : ''}" 
@@ -245,7 +334,7 @@ const createCommentHTML = (comment, isReply) => {
             }
             
             <div class="comment-content-wrapper">
-                <div class="comment-avatar">
+                <div class="${commentAvatarClass}" ${commentAvatarStyle} data-member-id="${commentMemberId}">
                     ${comment.memberNickname.charAt(0).toUpperCase()}
                 </div>
                 <div class="comment-main">

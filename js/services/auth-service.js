@@ -18,10 +18,10 @@ import {
  */
 export const signUp = async (data) => {
   try {
-    const response = await httpClient.post(
-      API_CONFIG.ENDPOINTS.MEMBER_SIGNUP,
-      data,
-    );
+    const response =
+      data instanceof FormData
+        ? await httpClient.postFormData(API_CONFIG.ENDPOINTS.MEMBER_SIGNUP, data)
+        : await httpClient.post(API_CONFIG.ENDPOINTS.MEMBER_SIGNUP, data);
     return response;
   } catch (error) {
     console.error('회원가입 실패:', error);

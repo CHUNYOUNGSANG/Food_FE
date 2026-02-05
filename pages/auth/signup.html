@@ -53,9 +53,12 @@
       <form id="signupForm" class="auth-form">
         <!-- 이메일 -->
         <div class="form-group">
-          <label for="email">
-            이메일 <span class="required">*</span>
-          </label>
+          <div class="label-with-help">
+            <label for="email">
+              이메일 <span class="required">*</span>
+            </label>
+            <span id="emailValidationMsg" class="label-help-text"></span>
+          </div>
           <div class="form-inline-group">
             <input type="email" id="email" class="form-input" placeholder="example@email.com" required
               autocomplete="email">
@@ -76,26 +79,35 @@
 
         <!-- 비밀번호 확인 -->
         <div class="form-group">
-          <label for="passwordConfirm">
-            비밀번호 확인 <span class="required">*</span>
-          </label>
+          <div class="label-with-help">
+            <label for="passwordConfirm">
+              비밀번호 확인 <span class="required">*</span>
+            </label>
+            <span id="passwordConfirmValidationMsg" class="label-help-text"></span>
+          </div>
           <input type="password" id="passwordConfirm" class="form-input" placeholder="비밀번호를 다시 입력하세요" required
             autocomplete="new-password">
         </div>
 
         <!-- 이름 -->
         <div class="form-group">
-          <label for="name">
-            이름 <span class="required">*</span>
-          </label>
+          <div class="label-with-help">
+            <label for="name">
+              이름 <span class="required">*</span>
+            </label>
+            <span id="nameValidationMsg" class="label-help-text"></span>
+          </div>
           <input type="text" id="name" class="form-input" placeholder="홍길동" required autocomplete="name">
         </div>
 
         <!-- 닉네임 -->
         <div class="form-group">
-          <label for="nickname">
-            닉네임 <span class="required">*</span>
-          </label>
+          <div class="label-with-help">
+            <label for="nickname">
+              닉네임 <span class="required">*</span>
+            </label>
+            <span id="nicknameValidationMsg" class="label-help-text"></span>
+          </div>
           <div class="form-inline-group">
             <input type="text" id="nickname" class="form-input" placeholder="맛집탐험가" required autocomplete="username">
             <button type="button" id="checkNicknameBtn" class="btn btn-secondary btn-small">
@@ -104,14 +116,18 @@
           </div>
         </div>
 
-        <!-- 프로필 이미지 URL (선택) -->
+        <!-- 프로필 이미지 (선택) -->
         <div class="form-group">
           <label for="profileImage">
-            프로필 이미지 URL (선택)
+            프로필 이미지 (선택)
           </label>
-          <input type="url" id="profileImage" class="form-input" placeholder="https://example.com/profile.jpg">
+          <input type="file" id="profileImage" class="form-input" accept="image/*">
           <div class="form-help-text">
-            이미지 URL을 입력하지 않으면 기본 프로필이 사용됩니다
+            이미지를 선택하지 않으면 기본 프로필이 사용됩니다
+          </div>
+          <div id="imagePreview" class="profile-image-preview" style="display: none;">
+            <img id="imagePreviewImg" src="" alt="프로필 미리보기">
+            <button type="button" id="removeImageBtn" class="image-preview-remove">&times;</button>
           </div>
         </div>
 

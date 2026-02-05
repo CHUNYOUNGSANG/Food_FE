@@ -141,6 +141,55 @@
   color: var(--gray-500);
 }
 
+/* 라벨 옆 안내 텍스트 */
+.label-with-help {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.label-with-help label {
+  margin-bottom: 0;
+}
+
+.label-help-text {
+  font-size: var(--font-xs);
+  color: var(--gray-400);
+  font-weight: var(--font-normal);
+}
+
+.label-help-text.label-validation-error {
+  color: var(--error-color);
+  font-weight: var(--font-medium);
+}
+
+.label-help-text.label-validation-success {
+  color: var(--success-color);
+  font-weight: var(--font-medium);
+}
+
+/* 프로필 이미지 미리보기 */
+.profile-image-preview {
+  margin-top: var(--spacing-md);
+  position: relative;
+  display: inline-block;
+}
+
+.profile-image-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--gray-300);
+}
+
+.profile-image-preview .image-preview-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 /* 버튼 그룹 */
 .form-actions {
   display: flex;

@@ -25,11 +25,19 @@ export const getMember = async (memberId) => {
 /**
  * 회원 정보 수정
  * @param {number} memberId - 회원 ID
- * @param {Object} data - 수정할 데이터 { name, nickname, profileImage }
+ * @param {Object|FormData} data - 수정할 데이터 (JSON 또는 FormData)
  * @returns {Promise<Object>} 수정된 회원 정보
  */
 export const updateMember = async (memberId, data) => {
   try {
+    // FormData인 경우 putFormData 사용
+    if (data instanceof FormData) {
+      const response = await httpClient.putFormData(
+        API_CONFIG.ENDPOINTS.MEMBER_UPDATE(memberId),
+        data,
+      );
+      return response;
+    }
     const response = await httpClient.put(
       API_CONFIG.ENDPOINTS.MEMBER_UPDATE(memberId),
       data,

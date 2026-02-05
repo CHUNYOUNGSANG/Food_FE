@@ -155,12 +155,20 @@
   height: 32px;
   border-radius: var(--radius-full);
   background: var(--primary-color);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--white);
   font-weight: var(--font-bold);
   font-size: var(--font-xs);
+}
+
+.author-avatar.has-image {
+  color: transparent;
+  text-shadow: none;
 }
 
 .author-name {

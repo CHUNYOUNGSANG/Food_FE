@@ -68,11 +68,19 @@
   border-radius: 50%;
   background: var(--primary-light);
   color: var(--primary-color);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: var(--font-bold);
   font-size: var(--font-lg);
+}
+
+.author-avatar.has-image {
+  color: transparent;
+  text-shadow: none;
 }
 
 .author-details {
@@ -217,12 +225,20 @@
   border-radius: 50%;
   background: var(--primary-light);
   color: var(--primary-color);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: var(--font-bold);
   font-size: var(--font-sm);
   flex-shrink: 0;
+}
+
+.comment-avatar.has-image {
+  color: transparent;
+  text-shadow: none;
 }
 
 .comment-main {

@@ -29,6 +29,9 @@
   border-radius: 50%;
   background: var(--white);
   color: var(--primary-color);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,6 +39,11 @@
   font-weight: var(--font-bold);
   box-shadow: var(--shadow-xl);
   flex-shrink: 0;
+}
+
+.profile-avatar.has-image {
+  color: transparent;
+  text-shadow: none;
 }
 
 .profile-info {

@@ -76,16 +76,25 @@ class HttpClient {
     const token = getToken();
 
     // 기본 설정 병합
+    const mergedHeaders = {
+      ...API_CONFIG.HEADERS,
+      ...options.headers,
+      // Member-Id 헤더 추가
+      ...(memberId && { 'Member-Id': memberId.toString() }),
+      // JWT 토큰
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+    // Content-Type이 undefined이면 삭제 (FormData 전송 시 브라우저가 자동 설정)
+    Object.keys(mergedHeaders).forEach((key) => {
+      if (mergedHeaders[key] === undefined) {
+        delete mergedHeaders[key];
+      }
+    });
+
     const config = {
       ...options,
-      headers: {
-        ...API_CONFIG.HEADERS,
-        ...options.headers,
-        // Member-Id 헤더 추가
-        ...(memberId && { 'Member-Id': memberId.toString() }),
-        // JWT 토큰
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      headers: mergedHeaders,
     };
 
     try {
@@ -173,6 +182,25 @@ class HttpClient {
   }
 
   /**
+   * POST 요청 (FormData - 파일 업로드용)
+   * @param {string} url - API 엔드포인트
+   * @param {FormData} formData - FormData 객체
+   * @param {Object} options - 추가 옵션
+   * @returns {Promise} 응답 데이터
+   */
+  postFormData(url, formData, options = {}) {
+    return this.request(url, {
+      ...options,
+      method: 'POST',
+      body: formData,
+      headers: {
+        ...options.headers,
+        'Content-Type': undefined,
+      },
+    });
+  }
+
+  /**
    * PUT 요청
    * @param {string} url - API 엔드포인트
    * @param {Object} data - 요청 데이터
@@ -184,6 +212,25 @@ class HttpClient {
       ...options,
       method: 'PUT',
       body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * PUT 요청 (FormData - 파일 업로드용)
+   * @param {string} url - API 엔드포인트
+   * @param {FormData} formData - FormData 객체
+   * @param {Object} options - 추가 옵션
+   * @returns {Promise} 응답 데이터
+   */
+  putFormData(url, formData, options = {}) {
+    return this.request(url, {
+      ...options,
+      method: 'PUT',
+      body: formData,
+      headers: {
+        ...options.headers,
+        'Content-Type': undefined,
+      },
     });
   }
 

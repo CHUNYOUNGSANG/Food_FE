@@ -8,6 +8,7 @@ import {
   searchPosts,
 } from '../../services/post-service.js';
 import { createPostCard } from '../../components/post-card.js';
+import { hydrateAvatars } from '../../utils/avatar-loader.js';
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -80,6 +81,7 @@ const renderPosts = (posts) => {
   if (postsGrid) {
     postsGrid.style.display = 'grid';
     postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+    hydrateAvatars(postsGrid);
   }
 };
 
