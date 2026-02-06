@@ -18,32 +18,54 @@ export const renderHeader = () => {
   const headerHTML = `
     <div class="header-container">
       <a href="/index.html" class="site-logo">
-        🍽️ 맛집 리뷰
+        🍽️ 파인잇
       </a>
-      
-      <nav class="site-nav" id="siteNav">
-        <a href="/index.html" class="nav-link ${isCurrentPage('/index.html') ? 'active' : ''}">
-          홈
-        </a>
-        <a href="/pages/posts/post-list.html" class="nav-link ${isCurrentPage('/pages/posts/post-list.html') ? 'active' : ''}">
-          게시글
-        </a>
-        ${
-          loggedIn
-            ? `
-          <a href="/pages/my-page/my-posts.html" class="nav-link ${isCurrentPage('/pages/my-page/') ? 'active' : ''}">
-            마이페이지
-          </a>
-        `
-            : ''
-        }
-      </nav>
-      
+
+      <div class="header-search">
+        <form class="search-form" id="headerSearchForm">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="맛집을 검색해보세요..."
+            id="headerSearchInput"
+          />
+          <button type="submit" class="search-button">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="2"/>
+              <path d="M13 13L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
       <div class="user-menu">
         ${
           loggedIn
             ? `
-          <span class="user-nickname">👤 ${user.nickname}님</span>
+          <div class="user-profile-wrapper">
+            <button id="userProfileBtn" class="user-profile-button">
+              <span class="user-nickname-text">👤 ${user.nickname}님</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div id="userDropdown" class="user-dropdown" style="display: none;">
+              <div class="dropdown-header">
+                <div class="dropdown-avatar ${user.profileImage ? 'has-image' : ''}">
+                  ${
+                    user.profileImage
+                      ? `<img src="${user.profileImage.startsWith('data:') || user.profileImage.startsWith('http') ? user.profileImage : 'http://localhost:8080' + user.profileImage}" alt="${user.nickname}" />`
+                      : user.nickname ? user.nickname.charAt(0).toUpperCase() : '?'
+                  }
+                </div>
+                <div class="dropdown-info">
+                  <div class="dropdown-nickname-row">
+                    <span class="dropdown-nickname">${user.nickname}님</span>
+                    <a href="/pages/my-page/my-posts.html" class="dropdown-mypage-link">마이페이지</a>
+                  </div>
+                  <div class="dropdown-email">${user.email || ''}</div>
+                </div>
+              </div>
+            </div>
+          </div>
           <button id="logoutBtn" class="btn btn-outline btn-small">
             로그아웃
           </button>
@@ -58,10 +80,6 @@ export const renderHeader = () => {
         `
         }
       </div>
-      
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        ☰
-      </button>
     </div>
   `;
 
@@ -73,23 +91,40 @@ export const renderHeader = () => {
 };
 
 /**
- * 현재 페이지 확인
- */
-const isCurrentPage = (path) => {
-  return window.location.pathname.includes(path);
-};
-
-/**
  * 이벤트 리스너 추가
  */
 const attachEventListeners = () => {
-  // 모바일 메뉴 토글
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const siteNav = document.getElementById('siteNav');
+  // 검색 폼 처리
+  const searchForm = document.getElementById('headerSearchForm');
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const searchInput = document.getElementById('headerSearchInput');
+      const searchQuery = searchInput.value.trim();
 
-  if (mobileMenuBtn && siteNav) {
-    mobileMenuBtn.addEventListener('click', () => {
-      siteNav.classList.toggle('active');
+      if (searchQuery) {
+        // 게시글 목록 페이지로 이동하면서 검색어 전달
+        window.location.href = `/pages/posts/post-list.html?search=${encodeURIComponent(searchQuery)}`;
+      }
+    });
+  }
+
+  // 사용자 프로필 드롭다운
+  const userProfileBtn = document.getElementById('userProfileBtn');
+  const userDropdown = document.getElementById('userDropdown');
+
+  if (userProfileBtn && userDropdown) {
+    userProfileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = userDropdown.style.display === 'block';
+      userDropdown.style.display = isVisible ? 'none' : 'block';
+    });
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener('click', (e) => {
+      if (!userProfileBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+        userDropdown.style.display = 'none';
+      }
     });
   }
 

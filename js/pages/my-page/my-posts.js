@@ -301,7 +301,9 @@ const showLikedPostsEmptyState = () => {
 const attachEventListeners = () => {
   // 탭 전환
   postsTab.addEventListener('click', () => switchTab('posts'));
-  likedPostsTab.addEventListener('click', () => switchTab('liked'));
+  likedPostsTab.addEventListener('click', () => {
+    window.location.href = '/pages/my-page/liked-posts.html';
+  });
   profileTab.addEventListener('click', () => switchTab('profile'));
 
   // 프로필 수정

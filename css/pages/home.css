@@ -1,0 +1,354 @@
+/**
+ * 홈 페이지 - 레스토랑 스타일 디자인
+ */
+
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+}
+
+/* Browse our menu 섹션 */
+.browse-menu-section {
+  padding: var(--spacing-2xl) 0;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  letter-spacing: -0.02em;
+}
+
+/* 카테고리 그리드 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+/* 카테고리 카드 */
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xs);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(255, 107, 53, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.category-card:hover::before {
+  opacity: 1;
+}
+
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-2xl);
+  border-color: var(--primary-color);
+}
+
+/* 카테고리 아이콘 */
+.category-icon {
+  margin-bottom: var(--spacing-sm);
+  transition: transform 0.3s ease;
+}
+
+.category-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.category-card:hover .category-icon {
+  transform: scale(1.1);
+}
+
+/* 카테고리 타이틀 */
+.category-title {
+  font-size: var(--font-md);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* 카테고리 설명 */
+.category-description {
+  font-size: 11px;
+  color: var(--gray-600);
+  text-align: center;
+  line-height: 1.4;
+  margin-bottom: var(--spacing-sm);
+  min-height: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Explore 링크 */
+.explore-link {
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.category-card:hover .explore-link {
+  gap: var(--spacing-sm);
+  color: var(--primary-dark);
+}
+
+/* 최근 게시글 섹션 */
+.recent-posts-section {
+  padding: var(--spacing-3xl) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.section-header .section-title {
+  margin: 0;
+  text-align: left;
+}
+
+.view-all-link {
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.view-all-link:hover {
+  color: var(--primary-dark);
+}
+
+/* 게시글 그리드 - 4개씩 */
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xl);
+}
+
+/* 게시글 카드 */
+.post-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-color);
+}
+
+.post-card-image {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  background: var(--gray-100);
+}
+
+.post-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-card-image img {
+  transform: scale(1.05);
+}
+
+.post-card-badge {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  padding: 4px var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: var(--font-bold);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.post-card-content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.post-card-title {
+  font-size: var(--font-md);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-card-address {
+  font-size: var(--font-xs);
+  color: var(--gray-600);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-card-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-xs) 0;
+}
+
+.stars {
+  font-size: var(--font-sm);
+  line-height: 1;
+}
+
+.rating-value {
+  font-size: var(--font-xs);
+  font-weight: var(--font-bold);
+  color: var(--gray-700);
+}
+
+.post-card-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-xs);
+  border-top: 1px solid var(--gray-200);
+  margin-top: auto;
+}
+
+.meta-item {
+  font-size: var(--font-xs);
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 태블릿 */
+@media (max-width: 1024px) {
+  .section-title {
+    font-size: 1.75rem;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .category-card {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+
+  .category-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .posts-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .home-container {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+
+  .browse-menu-section {
+    padding: var(--spacing-xl) 0;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+  }
+
+  .category-card {
+    padding: var(--spacing-sm) var(--spacing-xs);
+  }
+
+  .category-title {
+    font-size: var(--font-sm);
+  }
+
+  .category-description {
+    font-size: 10px;
+    min-height: auto;
+  }
+
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .post-card-image {
+    height: 200px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+}

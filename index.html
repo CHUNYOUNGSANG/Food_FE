@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>맛집 리뷰 - 당신의 맛집을 공유하세요</title>
+  <title>파인잇 - 최고의 한입</title>
 
   <!-- Favicon -->
   <link rel="icon"
@@ -17,123 +17,107 @@
   <link rel="stylesheet" href="./css/components/header.css">
   <link rel="stylesheet" href="./css/components/button.css">
   <link rel="stylesheet" href="./css/components/card.css">
-  <link rel="stylesheet" href="css/components/footer.css">
+  <link rel="stylesheet" href="./css/components/footer.css">
+  <link rel="stylesheet" href="./css/pages/home.css">
 </head>
 
 <body>
   <!-- 헤더 -->
-  <header id="header" class="site-header">
-    <div class="header-container">
-      <a href="/index.html" class="site-logo">
-        🍽️ 맛집 리뷰
-      </a>
-
-      <nav class="site-nav" id="siteNav">
-        <a href="/index.html" class="nav-link active">
-          홈
-        </a>
-        <a href="/pages/posts/post-list.html" class="nav-link">
-          게시글
-        </a>
-        <a href="/pages/my-page/my-posts.html" class="nav-link">
-          마이페이지
-        </a>
-      </nav>
-
-      <div class="user-menu" id="userMenu">
-        <a href="/pages/auth/login.html" class="btn btn-outline btn-small">
-          로그인
-        </a>
-        <a href="/pages/auth/signup.html" class="btn btn-primary btn-small">
-          회원가입
-        </a>
-      </div>
-
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        ☰
-      </button>
-    </div>
-  </header>
+  <header id="header" class="site-header"></header>
 
   <!-- 메인 컨텐츠 -->
-  <main class="container">
-    <!-- Hero Section -->
-    <section class="hero">
-      <h1>🍽️ <span>맛집 리뷰</span></h1>
-      <p>당신만의 숨은 맛집을 공유하고 발견하세요</p>
-    </section>
+  <main class="home-container">
+    <!-- Browse our menu 섹션 -->
+    <section class="browse-menu-section">
+      <h1 class="section-title">Browse our menu</h1>
 
-    <!-- 검색 & 필터 -->
-    <section style="margin: var(--spacing-2xl) 0;">
-      <!-- 검색바 -->
-      <div
-        style="background: var(--white); padding: var(--spacing-xl); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); margin-bottom: var(--spacing-lg); border: 1px solid var(--gray-200);">
-        <div style="display: flex; gap: var(--spacing-md);">
-          <input type="text" id="searchInput" placeholder="맛집 이름, 메뉴, 지역을 검색하세요..."
-            style="flex: 1; padding: var(--spacing-md); border: 1.5px solid var(--gray-300); border-radius: var(--radius-md); font-size: var(--font-sm);">
-          <button id="searchBtn" class="btn btn-primary">
-            검색
-          </button>
-        </div>
-      </div>
+      <div class="category-grid">
+        <!-- Breakfast 카드 -->
+        <a href="/pages/category.html?category=한식" class="category-card">
+          <div class="category-icon">
+            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
+              <path
+                d="M25 35C25 35 28 30 35 30C42 30 42 35 42 35M42 35C42 35 42 30 49 30C56 30 59 35 59 35M42 35V50M25 35L25 50H59V35"
+                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h3 class="category-title">한식</h3>
+          <p class="category-description">전통의 맛과 정성이 담긴 한식당을 만나보세요</p>
+          <span class="explore-link">Explore menu →</span>
+        </a>
 
-      <!-- 카테고리 필터 -->
-      <div
-        style="background: var(--white); padding: var(--spacing-lg); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--gray-200);">
-        <h3
-          style="font-size: var(--font-sm); font-weight: var(--font-semibold); color: var(--gray-700); margin-bottom: var(--spacing-md);">
-          카테고리</h3>
-        <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
-          <button class="btn btn-secondary btn-small category-btn active" data-category="all">
-            전체
-          </button>
-          <button class="btn btn-secondary btn-small category-btn" data-category="한식">
-            한식
-          </button>
-          <button class="btn btn-secondary btn-small category-btn" data-category="중식">
-            중식
-          </button>
-          <button class="btn btn-secondary btn-small category-btn" data-category="일식">
-            일식
-          </button>
-          <button class="btn btn-secondary btn-small category-btn" data-category="양식">
-            양식
-          </button>
-          <button class="btn btn-secondary btn-small category-btn" data-category="카페">
-            카페
-          </button>
-        </div>
-      </div>
-    </section>
+        <!-- Main Dishes 카드 -->
+        <a href="/pages/category.html?category=중식" class="category-card">
+          <div class="category-icon">
+            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
+              <circle cx="40" cy="35" r="3" fill="#FF6B35" />
+              <circle cx="40" cy="45" r="3" fill="#FF6B35" />
+              <path d="M25 30H55C57 30 58 31 58 33V47C58 49 57 50 55 50H25C23 50 22 49 22 47V33C22 31 23 30 25 30Z"
+                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3 class="category-title">중식</h3>
+          <p class="category-description">중국의 다양한 요리를 맛볼 수 있는 곳</p>
+          <span class="explore-link">Explore menu →</span>
+        </a>
 
-    <!-- 게시글 목록 -->
-    <section>
-      <div
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
-        <h2 style="font-size: var(--font-2xl); font-weight: var(--font-bold); color: var(--gray-900);">
-          최근 게시글
-        </h2>
-        <a href="/pages/posts/post-create.html" class="btn btn-primary">
-          글쓰기
+        <!-- Drinks 카드 -->
+        <a href="/pages/category.html?category=일식" class="category-card">
+          <div class="category-icon">
+            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
+              <path d="M30 25H50M35 25V50C35 52 36 54 40 54C44 54 45 52 45 50V25M38 30H42" stroke="#FF6B35"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h3 class="category-title">일식</h3>
+          <p class="category-description">신선한 재료로 만든 일본 요리</p>
+          <span class="explore-link">Explore menu →</span>
+        </a>
+
+        <!-- Desserts 카드 -->
+        <a href="/pages/category.html?category=양식" class="category-card">
+          <div class="category-icon">
+            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
+              <path d="M30 45L35 30L40 45L45 30L50 45M28 45H52L50 50H30L28 45Z" stroke="#FF6B35" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h3 class="category-title">양식</h3>
+          <p class="category-description">서양의 맛을 느낄 수 있는 레스토랑</p>
+          <span class="explore-link">Explore menu →</span>
+        </a>
+
+        <!-- 카페 카드 추가 -->
+        <a href="/pages/category.html?category=카페" class="category-card">
+          <div class="category-icon">
+            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
+              <path
+                d="M25 35C25 33 26 32 28 32H48C50 32 51 33 51 35V42C51 45 49 47 46 47H30C27 47 25 45 25 42V35ZM51 37H54C56 37 57 38 57 40C57 42 56 43 54 43H51"
+                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M28 47V50H48V47" stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3 class="category-title">카페</h3>
+          <p class="category-description">커피와 디저트를 즐길 수 있는 공간</p>
+          <span class="explore-link">Explore menu →</span>
         </a>
       </div>
+    </section>
 
-      <div id="postsGrid" class="post-grid">
-        <!-- 게시글 카드들이 동적으로 추가됩니다 -->
+    <!-- 최근 게시글 섹션 -->
+    <section class="recent-posts-section">
+      <div class="section-header">
+        <h2 class="section-title">최근 게시글</h2>
+        <a href="/pages/posts/post-list.html" class="view-all-link">전체보기 →</a>
       </div>
 
-      <div id="loading" class="loading" style="display: none;">
-        <div class="loading-text">로딩중...</div>
-      </div>
-
-      <!-- 빈 상태 -->
-      <div id="emptyState" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">🍽️</div>
-        <h3 class="empty-state-title">아직 등록된 맛집이 없어요</h3>
-        <p class="empty-state-message">첫 번째 맛집을 소개해주세요!</p>
-        <a href="/pages/posts/post-create.html" class="btn btn-primary" style="margin-top: var(--spacing-lg);">
-          첫 맛집 등록하기
-        </a>
+      <div class="posts-grid" id="recentPostsGrid">
+        <!-- 게시글 카드들이 여기에 동적으로 추가됨 -->
       </div>
     </section>
   </main>
@@ -142,17 +126,17 @@
   <footer class="site-footer">
     <div class="footer-container">
       <p class="footer-logo">
-        🍽️ 맛집 리뷰
+        🍽️ 파인잇
       </p>
       <p class="footer-copyright">
-        맛있는 순간을 나누는 공간 © 2025
+        맛있는 순간을 나누는 공간 © 2026
       </p>
     </div>
   </footer>
 
   <!-- JavaScript -->
-  <script type="module" src="./js/pages/posts/post-list.js"></script>
   <script type="module" src="./js/components/header.js"></script>
+  <script type="module" src="./js/pages/home.js"></script>
 </body>
 
 </html>

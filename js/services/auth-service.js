@@ -7,6 +7,8 @@ import API_CONFIG from '../config/api-config.js';
 import {
   setMemberId,
   setMemberNickname,
+  setMemberEmail,
+  setMemberProfileImage,
   setToken,
   setRefreshToken,
 } from '../utils/storage.js';
@@ -47,6 +49,10 @@ export const login = async (credentials) => {
     setRefreshToken(response.refreshToken);
     setMemberId(response.member.id);
     setMemberNickname(response.member.nickname);
+    setMemberEmail(response.member.email);
+    if (response.member.profileImage) {
+      setMemberProfileImage(response.member.profileImage);
+    }
 
     return response;
   } catch (error) {

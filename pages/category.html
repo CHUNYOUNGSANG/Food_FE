@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카테고리 - 다이닝코드</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/common/reset.css">
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/layout.css">
+  <link rel="stylesheet" href="../css/components/header.css">
+  <link rel="stylesheet" href="../css/components/button.css">
+  <link rel="stylesheet" href="../css/components/card.css">
+  <link rel="stylesheet" href="../css/components/footer.css">
+  <link rel="stylesheet" href="../css/pages/category.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header id="header" class="site-header"></header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="category-container">
+    <!-- 카테고리 탭 -->
+    <section class="category-tabs-section">
+      <div class="category-tabs">
+        <button class="category-tab" data-category="한식">
+          🍚 한식
+        </button>
+        <button class="category-tab" data-category="중식">
+          🥟 중식
+        </button>
+        <button class="category-tab" data-category="일식">
+          🍱 일식
+        </button>
+        <button class="category-tab" data-category="양식">
+          🍝 양식
+        </button>
+        <button class="category-tab" data-category="카페">
+          ☕ 카페
+        </button>
+      </div>
+    </section>
+
+    <!-- 카테고리 헤더 -->
+    <section class="category-header">
+      <h1 class="category-title" id="categoryTitle">한식</h1>
+      <p class="category-description" id="categoryDescription">전통의 맛과 정성이 담긴 한식당을 만나보세요</p>
+    </section>
+
+    <!-- 게시글 목록 -->
+    <section class="posts-section">
+      <!-- 상단 액션 바 -->
+      <div class="posts-actions">
+        <div class="posts-count">
+          총 <span id="postsCount">0</span>개의 맛집
+        </div>
+        <div class="posts-controls">
+          <select id="sortSelect" class="sort-select">
+            <option value="latest">최신순</option>
+            <option value="popular">인기순</option>
+            <option value="rating">평점순</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 게시글 그리드 -->
+      <div class="posts-grid" id="postsGrid">
+        <!-- 게시글 카드들이 여기에 동적으로 추가됨 -->
+      </div>
+
+      <!-- 빈 상태 -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">📭</div>
+        <p class="empty-message">아직 등록된 맛집이 없습니다</p>
+        <p class="empty-submessage">첫 번째 맛집을 소개해주세요!</p>
+      </div>
+
+      <!-- 로딩 상태 -->
+      <div class="loading-state" id="loadingState" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>맛집을 불러오는 중...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-logo">
+        🍽️ 다이닝코드
+      </p>
+      <p class="footer-copyright">
+        맛있는 순간을 나누는 공간 © 2025
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script type="module" src="../js/components/header.js"></script>
+  <script type="module" src="../js/pages/category.js"></script>
+</body>
+
+</html>
