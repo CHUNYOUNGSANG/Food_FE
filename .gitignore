@@ -147,6 +147,9 @@ bundle/
 .env
 .env.local
 
+# 카카오 API 키 (개인 키 보호 - kakao-config.example.js를 복사해서 사용)
+js/config/kakao-config.js
+
 # VSCode
 .vscode/
 *.code-workspace
