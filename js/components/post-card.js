@@ -64,8 +64,7 @@ export const createPostCard = (post) => {
     id,
     title,
     content,
-    restaurantName,
-    foodCategory,
+    restaurant,
     rating,
     imageUrl,
     images,
@@ -76,6 +75,9 @@ export const createPostCard = (post) => {
   } = post;
 
   // 카테고리 클래스 매핑
+  const normalizedCategory =
+    normalizeCategory(restaurant?.category) ||
+    (restaurant?.category ? String(restaurant.category).trim() : '미분류');
   const categoryClass =
     {
       한식: 'korean',
@@ -83,7 +85,7 @@ export const createPostCard = (post) => {
       일식: 'japanese',
       양식: 'western',
       카페: 'cafe',
-    }[foodCategory] || '';
+    }[normalizedCategory] || '';
 
   // 카테고리 이모지
   const categoryEmoji =
@@ -93,7 +95,7 @@ export const createPostCard = (post) => {
       일식: '🍱',
       양식: '🍝',
       카페: '☕',
-    }[foodCategory] || '🍽️';
+    }[normalizedCategory] || '🍽️';
 
   // 기본 이미지 처리 (여러 필드 대응)
   let cardImage = '';
@@ -133,15 +135,30 @@ export const createPostCard = (post) => {
     ? `data-member-id="${resolvedMemberId}"`
     : '';
 
+  const dataAttrs = [
+    restaurant?.name ? `data-restaurant-name="${escapeHtml(restaurant.name)}"` : '',
+    restaurant?.address
+      ? `data-restaurant-address="${escapeHtml(restaurant.address)}"`
+      : '',
+    restaurant?.latitude !== undefined && restaurant?.latitude !== null
+      ? `data-lat="${restaurant.latitude}"`
+      : '',
+    restaurant?.longitude !== undefined && restaurant?.longitude !== null
+      ? `data-lng="${restaurant.longitude}"`
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return `
-        <div class="post-card" onclick="location.href='/pages/posts/post-detail.html?id=${id}'">
+        <div class="post-card" ${dataAttrs} onclick="location.href='/pages/posts/post-detail.html?id=${id}'">
             <div class="post-card-image">
                 ${cardImage}
                 ${
-                  foodCategory
+                  normalizedCategory
                     ? `
                     <span class="category-badge ${categoryClass}">
-                        ${categoryEmoji} ${foodCategory}
+                        ${categoryEmoji} ${normalizedCategory}
                     </span>
                 `
                     : ''
@@ -161,10 +178,10 @@ export const createPostCard = (post) => {
                 <h3 class="post-card-title">${escapeHtml(title)}</h3>
                 
                 ${
-                  restaurantName
+                  restaurant?.name
                     ? `
                     <div class="post-card-restaurant">
-                        📍 ${escapeHtml(restaurantName)}
+                        📍 ${escapeHtml(restaurant.name)}
                     </div>
                 `
                     : ''
@@ -204,6 +221,14 @@ const escapeHtml = (text) => {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+};
+
+const normalizeCategory = (category) => {
+  if (!category) return '';
+  const text = String(category).trim();
+  if (!text) return '';
+  const parts = text.split('>').map((part) => part.trim()).filter(Boolean);
+  return parts[parts.length - 1] || text;
 };
 
 /**

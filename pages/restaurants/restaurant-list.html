@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>추천 맛집 전체보기 - 파인잇</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/footer.css">
+  <link rel="stylesheet" href="../../css/pages/restaurant-list.css">
+</head>
+
+<body class="restaurant-list-page">
+  <!-- 헤더 -->
+  <header id="header" class="site-header"></header>
+
+  <main class="restaurant-list-container">
+    <section class="restaurant-hero">
+      <div class="restaurant-hero-text">
+        <p class="restaurant-hero-kicker">전체보기</p>
+        <h1 class="restaurant-hero-title">추천 맛집</h1>
+        <p class="restaurant-hero-subtitle">가까운 맛집을 검색하고 바로 리뷰를 확인해보세요.</p>
+      </div>
+      <form class="restaurant-search" id="restaurantSearchForm">
+        <input type="text" id="restaurantSearchInput" placeholder="지역, 음식점, 카테고리를 검색해보세요"
+          autocomplete="off" />
+        <button type="submit" class="btn btn-primary">검색</button>
+      </form>
+    </section>
+
+    <section class="restaurant-grid-section">
+      <div class="restaurant-grid" id="restaurantGrid"></div>
+      <div class="restaurant-empty" id="restaurantEmpty">
+        <p>표시할 맛집이 없습니다.</p>
+      </div>
+      <div class="restaurant-actions">
+        <button type="button" class="btn btn-outline" id="restaurantLoadMore">더보기</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-logo">🍽️ 파인잇</p>
+      <p class="footer-copyright">맛있는 순간을 나누는 공간 © 2026</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/components/header.js"></script>
+  <script type="module" src="../../js/pages/restaurants/restaurant-list.js"></script>
+</body>
+
+</html>

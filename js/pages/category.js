@@ -14,6 +14,15 @@ const CATEGORY_DESCRIPTIONS = {
   카페: '커피와 디저트를 즐길 수 있는 공간',
 };
 
+const normalizeCategory = (category) => {
+  if (!category) return '';
+  const text = String(category);
+  const parts = text.split('>').map((part) => part.trim());
+  const last = parts[parts.length - 1] || text;
+  const candidates = ['한식', '중식', '일식', '양식', '카페'];
+  return candidates.find((item) => last.includes(item)) || '';
+};
+
 // 상태 관리
 let currentCategory = '한식';
 let currentSort = 'latest';
@@ -213,8 +222,9 @@ const createPostCard = (post) => {
 
   const rating = post.rating || 0;
   const stars = '⭐'.repeat(Math.round(rating));
-  const category = post.foodCategory || post.category || '기타';
-  const address = post.restaurantAddress || post.address || '주소 정보 없음';
+  const category = normalizeCategory(post.restaurant?.category) || '기타';
+  const address =
+    post.restaurant?.address || post.address || '주소 정보 없음';
 
   return `
     <a href="/pages/posts/post-detail.html?id=${post.id}" class="post-card">

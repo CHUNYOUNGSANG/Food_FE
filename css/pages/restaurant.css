@@ -1,0 +1,255 @@
+/**
+ * 맛집 상세 페이지 스타일
+ */
+
+body {
+  background: var(--gray-50);
+}
+
+.restaurant-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--spacing-2xl);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-3xl);
+  margin: var(--spacing-2xl) 0;
+}
+
+.restaurant-hero-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.restaurant-chip {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+}
+
+.restaurant-name {
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+
+.restaurant-address {
+  font-size: var(--font-md);
+  color: var(--gray-600);
+}
+
+.restaurant-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.restaurant-summary {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-width: 140px;
+}
+
+.summary-label {
+  font-size: var(--font-xs);
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.summary-value {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+}
+
+.restaurant-hero-map {
+  min-width: 0;
+}
+
+.restaurant-map {
+  width: 100%;
+  height: 260px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-100);
+}
+
+.restaurant-reviews {
+  margin-bottom: var(--spacing-3xl);
+}
+
+.review-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+}
+
+.review-sort {
+  max-width: 180px;
+}
+
+.restaurant-gallery {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.gallery-item {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  aspect-ratio: 4 / 3;
+  background: var(--gray-100);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.review-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.page-info {
+  font-size: var(--font-sm);
+  color: var(--gray-600);
+}
+
+.review-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: inherit;
+}
+
+.review-title {
+  font-size: var(--font-lg);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+}
+
+.review-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-xs);
+  color: var(--gray-600);
+}
+
+.restaurant-review-form {
+  margin-bottom: var(--spacing-3xl);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-2xl);
+}
+
+.review-form {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+}
+
+.gallery-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.gallery-modal-content {
+  position: relative;
+  max-width: 960px;
+  margin: 10vh auto;
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-2xl);
+}
+
+.gallery-modal-content img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  display: block;
+}
+
+.gallery-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+}
+
+.review-rating {
+  font-weight: var(--font-semibold);
+  color: var(--gray-900);
+}
+
+@media (max-width: 1024px) {
+  .restaurant-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .review-list {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}

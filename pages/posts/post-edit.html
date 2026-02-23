@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 수정 - 맛집 리뷰</title>
+  <title>게시글 수정 - 파인잇</title>
 
   <!-- Favicon -->
   <link rel="icon"
@@ -18,35 +18,13 @@
   <link rel="stylesheet" href="../../css/components/button.css">
   <link rel="stylesheet" href="../../css/components/form.css">
   <link rel="stylesheet" href="../../css/components/footer.css">
+  <link rel="stylesheet" href="../../css/pages/post-create.css">
+  <link rel="stylesheet" href="../../css/pages/post-edit.css">
 </head>
 
 <body>
   <!-- 헤더 -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/index.html" class="site-logo">
-        🍽️ 맛집 리뷰
-      </a>
-
-      <nav class="site-nav">
-        <a href="/index.html" class="nav-link">
-          홈
-        </a>
-        <a href="/pages/posts/post-list.html" class="nav-link">
-          게시글
-        </a>
-        <a href="/pages/my-page/my-posts.html" class="nav-link">
-          마이페이지
-        </a>
-      </nav>
-
-      <div class="user-menu" id="userMenu"></div>
-
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        ☰
-      </button>
-    </div>
-  </header>
+  <header id="header" class="site-header"></header>
 
   <!-- 메인 컨텐츠 -->
   <main class="container-sm">
@@ -56,128 +34,84 @@
     </div>
 
     <div id="editContent" style="display: none;">
-      <div
-        style="background: var(--white); padding: var(--spacing-3xl); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); margin: var(--spacing-2xl) 0; border: 1px solid var(--gray-200);">
-        <!-- 헤더 -->
-        <div
-          style="margin-bottom: var(--spacing-2xl); border-bottom: 2px solid var(--gray-200); padding-bottom: var(--spacing-lg);">
-          <h1
-            style="font-size: var(--font-3xl); font-weight: var(--font-bold); color: var(--gray-900); margin-bottom: var(--spacing-sm);">
-            게시글 수정하기 ✏️
-          </h1>
-          <p style="color: var(--gray-600); font-size: var(--font-md);">
-            내용을 수정하고 저장해주세요
-          </p>
+      <div class="post-create-card">
+        <div class="post-create-header">
+          <h1 class="post-create-title">게시글 수정</h1>
         </div>
 
         <form id="postEditForm">
-          <!-- 제목 -->
-          <div class="form-group">
-            <label for="title">
-              제목 <span class="required">*</span>
-            </label>
-            <input type="text" id="title" class="form-input" placeholder="예) 압구정 숨은 맛집! 진짜 맛있어요" required
-              maxlength="200">
-          </div>
+          <div class="post-create-grid minimalist">
+            <div class="post-create-left left-panel">
+              <div class="category-rating-row">
+                <select id="foodCategory" class="form-select inline-select">
+                  <option value="">카테고리</option>
+                </select>
+                <div class="rating-inline">
+                  <input type="number" id="rating" class="form-input rating-inline-input" placeholder="0.0 ~ 5.0"
+                    min="0" max="5" step="0.1" required>
+                  <div id="ratingStars" class="rating-stars">
+                    <span class="star empty">★</span>
+                    <span class="star empty">★</span>
+                    <span class="star empty">★</span>
+                    <span class="star empty">★</span>
+                    <span class="star empty">★</span>
+                  </div>
+                </div>
+              </div>
 
-          <!-- 맛집 이름 -->
-          <div class="form-group">
-            <label for="restaurantName">
-              맛집 이름 <span class="required">*</span>
-            </label>
-            <input type="text" id="restaurantName" class="form-input" placeholder="예) 홍대 김밥천국" required maxlength="100">
-          </div>
+              <input type="hidden" id="restaurantId">
+              <div class="title-block">
+                <input type="text" id="title" class="form-input title-input" placeholder="제목을 입력하세요" required
+                  maxlength="100">
+              </div>
 
-          <!-- 맛집 주소 -->
-          <div class="form-group">
-            <label for="restaurantAddress">
-              맛집 주소
-            </label>
-            <input type="text" id="restaurantAddress" class="form-input" placeholder="예) 서울시 마포구 홍대입구역 3번 출구"
-              maxlength="300">
-          </div>
+              <div class="content-editor">
+                <textarea id="content" class="form-textarea" placeholder="내용을 작성해주세요" required
+                  rows="12"></textarea>
+                <div class="content-tag-bar">
+                  <div id="tagList" class="tag-list"></div>
+                  <input type="text" id="tagInput" class="tag-input" placeholder="#태그입력">
+                </div>
+              </div>
+              <div id="contentCount" class="content-count">0자</div>
+            </div>
 
-          <!-- 음식 카테고리 -->
-          <div class="form-group">
-            <label for="foodCategory">
-              음식 카테고리
-            </label>
-            <select id="foodCategory" class="form-select"
-              style="width: 100%; padding: var(--spacing-md); border: 1.5px solid var(--gray-300); border-radius: var(--radius-md); font-size: var(--font-sm);">
-              <option value="">카테고리 선택</option>
-              <option value="한식">🌶️ 한식</option>
-              <option value="중식">🥟 중식</option>
-              <option value="일식">🍱 일식</option>
-              <option value="양식">🍝 양식</option>
-              <option value="카페">☕ 카페</option>
-            </select>
-          </div>
+            <div class="post-create-right">
+              <div class="side-card">
+                <div class="form-group">
+                  <label for="restaurantAddress">주소</label>
+                  <input type="text" id="restaurantAddress" class="form-input" placeholder="주소나 장소명을 검색하세요"
+                    maxlength="300">
+                  <div id="placeResults" class="place-results" style="display: none;"></div>
+                </div>
+                <div class="form-group">
+                  <label for="kakaoMap">지도</label>
+                  <div id="kakaoMap" class="map-container"></div>
+                </div>
+                <div class="form-group">
+                  <label for="restaurantName">맛집명</label>
+                  <input type="text" id="restaurantName" class="form-input" placeholder="맛집명을 입력하세요"
+                    maxlength="100">
+                </div>
+              </div>
 
-          <!-- 평점 -->
-          <div class="form-group">
-            <label for="rating">
-              평점
-            </label>
-            <select id="rating" class="form-select" required>
-              <option value="">평점을 선택하세요</option>
-              <option value="5.0">5.0점</option>
-              <option value="4.5">4.5점</option>
-              <option value="4.0">4.0점</option>
-              <option value="3.5">3.5점</option>
-              <option value="3.0">3.0점</option>
-              <option value="2.5">2.5점</option>
-              <option value="2.0">2.0점</option>
-              <option value="1.5">1.5점</option>
-              <option value="1.0">1.0점</option>
-            </select>
-          </div>
-
-          <!-- 이미지 업로드 -->
-          <div class="form-group">
-            <label for="imageFiles">
-              이미지 업로드 (최대 10장)
-            </label>
-
-            <!-- 기존 이미지 표시 -->
-            <div id="existingImages" class="existing-images" style="display: none;">
-              <p style="font-size: var(--font-sm); color: var(--gray-600); margin-bottom: var(--spacing-sm);">
-                기존 이미지:
-              </p>
-              <div id="existingImageGrid" class="image-preview-grid">
-                <!-- 기존 이미지들이 여기에 표시됩니다 -->
+              <div class="side-card">
+                <div class="form-group">
+                  <label for="imageFiles">이미지 업로드 (최대 10장)</label>
+                  <div id="existingImages" class="existing-images" style="display: none;">
+                    <p class="form-help-text">기존 이미지</p>
+                    <div id="existingImageGrid" class="image-preview-grid"></div>
+                  </div>
+                  <input type="file" id="imageFiles" class="form-input" accept="image/*" multiple
+                    style="padding: var(--spacing-sm);">
+                  <div id="imagePreview" class="image-preview-container" style="display: none;"></div>
+                </div>
               </div>
             </div>
-
-            <!-- 새 이미지 업로드 -->
-            <input type="file" id="imageFiles" class="form-input" accept="image/*" multiple
-              style="padding: var(--spacing-sm); margin-top: var(--spacing-md);">
-            <div class="form-help-text">
-              새로운 이미지를 추가하거나 기존 이미지를 삭제할 수 있습니다 (최대 10장)
-            </div>
-
-            <!-- 새 이미지 미리보기 -->
-            <div id="imagePreview" class="image-preview-container" style="display: none;">
-              <!-- 미리보기 이미지들이 여기에 추가됩니다 -->
-            </div>
           </div>
 
-          <!-- 리뷰 내용 -->
-          <div class="form-group">
-            <label for="content">
-              리뷰 내용 <span class="required">*</span>
-            </label>
-            <textarea id="content" class="form-textarea" placeholder="맛집에 대한 솔직한 후기를 작성해주세요." required
-              rows="10"></textarea>
-            <div id="contentCount"
-              style="text-align: right; margin-top: var(--spacing-xs); font-size: var(--font-sm); color: var(--gray-500);">
-              0자
-            </div>
-          </div>
-
-          <!-- 에러 메시지 -->
           <div id="errorMessage" class="error-message" style="display: none;"></div>
 
-          <!-- 버튼 -->
           <div class="form-actions" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-2xl);">
             <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">
               수정 완료
@@ -195,7 +129,7 @@
   <footer class="site-footer">
     <div class="footer-container">
       <p class="footer-logo">
-        🍽️ 맛집 리뷰
+        🍽️ 파인잇
       </p>
       <p class="footer-copyright">
         맛있는 순간을 나누는 공간 © 2025
@@ -204,6 +138,7 @@
   </footer>
 
   <!-- JavaScript -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9da00fac3ff4a27fc860f49c6ce402f4&libraries=services"></script>
   <script type="module" src="../../js/pages/posts/post-edit.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 </body>

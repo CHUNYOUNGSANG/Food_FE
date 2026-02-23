@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>맛집 상세 - 파인잇</title>
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../css/common/reset.css">
+  <link rel="stylesheet" href="../../css/common/variables.css">
+  <link rel="stylesheet" href="../../css/common/layout.css">
+  <link rel="stylesheet" href="../../css/components/header.css">
+  <link rel="stylesheet" href="../../css/components/button.css">
+  <link rel="stylesheet" href="../../css/components/card.css">
+  <link rel="stylesheet" href="../../css/components/footer.css">
+  <link rel="stylesheet" href="../../css/pages/restaurant.css">
+</head>
+
+<body>
+  <!-- 헤더 -->
+  <header id="header" class="site-header"></header>
+
+  <!-- 메인 -->
+  <main class="container">
+    <div id="loading" class="loading" style="display: none;">
+      <div class="loading-text">로딩중...</div>
+    </div>
+
+    <section id="restaurantHeader" class="restaurant-hero" style="display: none;">
+      <div class="restaurant-hero-main">
+        <div class="restaurant-chip" id="restaurantCategory">카테고리</div>
+        <h1 id="restaurantName" class="restaurant-name">맛집명</h1>
+        <p id="restaurantAddress" class="restaurant-address">주소</p>
+        <div class="restaurant-actions">
+          <a id="restaurantReviewLink" class="btn btn-primary btn-small">
+            리뷰 작성
+          </a>
+          <a id="restaurantPlaceLink" class="btn btn-outline btn-small" target="_blank" rel="noopener noreferrer">
+            카카오맵 보기
+          </a>
+        </div>
+        <div class="restaurant-summary">
+          <div class="summary-card">
+            <div class="summary-label">평균 평점</div>
+            <div class="summary-value" id="restaurantAvgRating">0.0</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">리뷰 수</div>
+            <div class="summary-value" id="restaurantReviewCount">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="restaurant-hero-map">
+        <div id="restaurantMap" class="restaurant-map"></div>
+      </div>
+    </section>
+
+    <section id="restaurantGallery" class="restaurant-gallery" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">사진 갤러리</h2>
+      </div>
+      <div id="galleryGrid" class="gallery-grid"></div>
+    </section>
+
+    <section class="restaurant-reviews">
+      <div class="section-header">
+        <h2 class="section-title">리뷰 모음</h2>
+        <span id="reviewCount" class="section-subtitle">0개</span>
+      </div>
+      <div class="review-controls">
+        <select id="reviewSort" class="form-select review-sort">
+          <option value="latest">최신순</option>
+          <option value="rating">평점순</option>
+          <option value="views">조회순</option>
+        </select>
+      </div>
+      <div id="reviewList" class="review-list"></div>
+      <div id="reviewPagination" class="review-pagination" style="display: none;">
+        <button id="reviewPrev" class="btn btn-outline btn-small">이전</button>
+        <span id="reviewPageInfo" class="page-info">1 / 1</span>
+        <button id="reviewNext" class="btn btn-outline btn-small">다음</button>
+      </div>
+      <div id="reviewEmpty" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">📝</div>
+        <p class="empty-state-text">아직 등록된 리뷰가 없어요.</p>
+        <a id="restaurantEmptyReviewLink" href="/pages/posts/post-create.html" class="btn btn-primary">첫 리뷰 작성하기</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-logo">🍽️ 파인잇</p>
+      <p class="footer-copyright">맛있는 순간을 나누는 공간 © 2026</p>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9da00fac3ff4a27fc860f49c6ce402f4&libraries=services"></script>
+  <script type="module" src="../../js/pages/restaurants/restaurant-detail.js"></script>
+  <script type="module" src="../../js/components/header.js"></script>
+
+  <div id="galleryModal" class="gallery-modal" style="display: none;">
+    <div class="gallery-modal-backdrop"></div>
+    <div class="gallery-modal-content">
+      <button id="galleryModalClose" class="gallery-modal-close">×</button>
+      <img id="galleryModalImage" src="" alt="gallery" />
+    </div>
+  </div>
+</body>
+
+</html>

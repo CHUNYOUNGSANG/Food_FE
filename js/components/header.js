@@ -4,6 +4,7 @@
  */
 
 import { isLoggedIn, getUser, clearStorage } from '../utils/storage.js';
+import { resolveImageUrl } from '../utils/image-url.js';
 
 /**
  * 헤더 렌더링
@@ -14,11 +15,14 @@ export const renderHeader = () => {
 
   const loggedIn = isLoggedIn();
   const user = getUser();
+  const profileImageUrl = user?.profileImage
+    ? resolveImageUrl(user.profileImage)
+    : '';
 
   const headerHTML = `
     <div class="header-container">
       <a href="/index.html" class="site-logo">
-        🍽️ 파인잇
+        <span>🍽️ 파인잇</span>
       </a>
 
       <div class="header-search">
@@ -51,8 +55,8 @@ export const renderHeader = () => {
               <div class="dropdown-header">
                 <div class="dropdown-avatar ${user.profileImage ? 'has-image' : ''}">
                   ${
-                    user.profileImage
-                      ? `<img src="${user.profileImage.startsWith('data:') || user.profileImage.startsWith('http') ? user.profileImage : 'http://localhost:8080' + user.profileImage}" alt="${user.nickname}" />`
+                    profileImageUrl
+                      ? `<img src="${profileImageUrl}" alt="${user.nickname}" />`
                       : user.nickname ? user.nickname.charAt(0).toUpperCase() : '?'
                   }
                 </div>
@@ -63,6 +67,10 @@ export const renderHeader = () => {
                   </div>
                   <div class="dropdown-email">${user.email || ''}</div>
                 </div>
+              </div>
+              <div class="dropdown-menu">
+                <a href="/pages/posts/post-create.html" class="dropdown-item">게시글 작성</a>
+                <a href="/pages/my-page/my-posts.html" class="dropdown-item">내 게시글</a>
               </div>
             </div>
           </div>

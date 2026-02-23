@@ -2,11 +2,28 @@
  * 게시글 상세 페이지 전용 스타일
  */
 
+body {
+  background: var(--gray-50);
+}
+
+.section-heading {
+  font-size: var(--font-lg);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-md);
+}
+
+.section-help {
+  margin-top: var(--spacing-sm);
+  color: var(--gray-600);
+  font-size: var(--font-sm);
+}
+
 /* ===== 게시글 헤더 ===== */
 .post-header {
   background: var(--white);
-  padding: var(--spacing-2xl);
-  border-radius: var(--radius-xl);
+  padding: var(--spacing-3xl);
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
   margin: var(--spacing-2xl) 0;
   border: 1px solid var(--gray-200);
@@ -20,7 +37,7 @@
 }
 
 .post-title {
-  font-size: var(--font-4xl);
+  font-size: clamp(2.25rem, 3.5vw, 3.25rem);
   font-weight: var(--font-bold);
   color: var(--gray-900);
   margin-bottom: var(--spacing-lg);
@@ -29,9 +46,9 @@
 
 /* ===== 맛집 정보 ===== */
 .restaurant-info {
-  background: var(--gray-50);
+  background: var(--gray-100);
   padding: var(--spacing-lg);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -45,6 +62,25 @@
 .restaurant-address {
   font-size: var(--font-sm);
   color: var(--gray-600);
+}
+
+/* ===== 태그 ===== */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.post-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--white);
+  border-radius: 999px;
+  font-size: var(--font-xs);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
 }
 
 /* ===== 게시글 메타 정보 ===== */
@@ -66,8 +102,8 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--primary-light);
-  color: var(--primary-color);
+  background: var(--primary-color);
+  color: var(--white);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -131,6 +167,24 @@
   max-height: 600px;
 }
 
+/* ===== 지도 ===== */
+.post-map-section {
+  background: var(--white);
+  padding: var(--spacing-3xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--spacing-2xl);
+  border: 1px solid var(--gray-200);
+}
+
+.post-map {
+  width: 100%;
+  height: 320px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-100);
+}
+
 /* ===== 게시글 내용 ===== */
 .post-content-container {
   background: var(--white);
@@ -170,8 +224,8 @@
 .comment-section {
   background: var(--white);
   padding: var(--spacing-3xl);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
   border: 1px solid var(--gray-200);
 }
 

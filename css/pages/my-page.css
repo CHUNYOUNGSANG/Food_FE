@@ -2,18 +2,20 @@
  * 마이페이지 전용 스타일
  */
 
+/* ===== 페이지 배경 ===== */
+body {
+  background: var(--gray-50);
+}
+
 /* ===== 프로필 헤더 ===== */
 .profile-header {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--primary-dark) 100%
-  );
+  background: var(--white);
   padding: var(--spacing-3xl);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl);
   margin: var(--spacing-2xl) 0;
-  color: var(--white);
+  color: var(--gray-900);
   box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-200);
 }
 
 .profile-content {
@@ -24,11 +26,11 @@
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--white);
-  color: var(--primary-color);
+  width: 104px;
+  height: 104px;
+  border-radius: 18px;
+  background: var(--primary-color);
+  color: var(--white);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -37,7 +39,7 @@
   justify-content: center;
   font-size: var(--font-3xl);
   font-weight: var(--font-bold);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   flex-shrink: 0;
 }
 
@@ -59,7 +61,7 @@
 
 .profile-email {
   font-size: var(--font-md);
-  opacity: 0.9;
+  color: var(--gray-600);
 }
 
 /* ===== 프로필 통계 ===== */
@@ -71,10 +73,44 @@
 .stat-card {
   text-align: center;
   padding: var(--spacing-lg);
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--gray-50);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(10px);
-  min-width: 100px;
+  backdrop-filter: none;
+  min-width: 120px;
+  border: 1px solid var(--gray-200);
+}
+
+/* ===== 마이페이지 카드 레이아웃 ===== */
+.tab-container,
+.empty-state,
+.profile-form-container {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.tab-container {
+  padding: var(--spacing-lg);
+}
+
+.tab-content {
+  margin-top: var(--spacing-lg);
+}
+
+/* ===== 버튼 칩 강화 ===== */
+.tab-button {
+  background: var(--gray-100);
+}
+
+.tab-button.active {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
+/* ===== 내 게시글 카드 여백 ===== */
+.posts-grid {
+  margin-top: var(--spacing-lg);
 }
 
 .stat-number {
@@ -95,13 +131,13 @@
   border-radius: var(--radius-xl);
   margin-bottom: var(--spacing-xl);
   border: 1px solid var(--gray-200);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
 }
 
 .tab-buttons {
   display: flex;
-  gap: var(--spacing-lg);
-  border-bottom: 2px solid var(--gray-200);
+  gap: var(--spacing-md);
+  border-bottom: 1px solid var(--gray-200);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -116,25 +152,29 @@
 }
 
 .tab-button {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   border: none;
-  background: none;
+  background: var(--gray-50);
   cursor: pointer;
-  font-size: var(--font-md);
+  font-size: var(--font-sm);
   font-weight: var(--font-semibold);
-  color: var(--gray-600);
-  border-bottom: 3px solid transparent;
-  transition: all 0.3s;
+  color: var(--gray-700);
+  border-radius: 999px;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
 .tab-button:hover {
   color: var(--primary-color);
+  border-color: rgba(17, 24, 39, 0.12);
+  background: var(--white);
 }
 
 .tab-button.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+  color: var(--white);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 /* ===== 탭 컨텐츠 ===== */
@@ -152,7 +192,8 @@
   padding: var(--spacing-3xl);
   background: var(--white);
   border-radius: var(--radius-xl);
-  border: 2px dashed var(--gray-300);
+  border: 1px dashed var(--gray-300);
+  box-shadow: var(--shadow-md);
 }
 
 .empty-state-icon {

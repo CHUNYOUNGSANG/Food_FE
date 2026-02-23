@@ -21,91 +21,38 @@
   <link rel="stylesheet" href="./css/pages/home.css">
 </head>
 
-<body>
+<body class="home-page">
   <!-- 헤더 -->
   <header id="header" class="site-header"></header>
 
   <!-- 메인 컨텐츠 -->
   <main class="home-container">
-    <!-- Browse our menu 섹션 -->
-    <section class="browse-menu-section">
-      <h1 class="section-title">Browse our menu</h1>
+    <!-- 카테고리 바 -->
+    <section class="category-bar" aria-label="카테고리">
+      <div class="category-list" id="categoryList"></div>
+    </section>
 
-      <div class="category-grid">
-        <!-- Breakfast 카드 -->
-        <a href="/pages/category.html?category=한식" class="category-card">
-          <div class="category-icon">
-            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
-              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
-              <path
-                d="M25 35C25 35 28 30 35 30C42 30 42 35 42 35M42 35C42 35 42 30 49 30C56 30 59 35 59 35M42 35V50M25 35L25 50H59V35"
-                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <h3 class="category-title">한식</h3>
-          <p class="category-description">전통의 맛과 정성이 담긴 한식당을 만나보세요</p>
-          <span class="explore-link">Explore menu →</span>
-        </a>
+    <!-- 추천 맛집 -->
+    <section class="recommend-section">
+      <div class="section-header">
+        <h2 class="section-title">추천 맛집</h2>
+        <a href="/pages/restaurants/restaurant-list.html" class="view-all-link">전체보기 →</a>
+      </div>
+      <div class="recommend-grid" id="recommendGrid">
+        <!-- 추천 맛집 카드가 동적으로 추가됨 -->
+      </div>
+    </section>
 
-        <!-- Main Dishes 카드 -->
-        <a href="/pages/category.html?category=중식" class="category-card">
-          <div class="category-icon">
-            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
-              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
-              <circle cx="40" cy="35" r="3" fill="#FF6B35" />
-              <circle cx="40" cy="45" r="3" fill="#FF6B35" />
-              <path d="M25 30H55C57 30 58 31 58 33V47C58 49 57 50 55 50H25C23 50 22 49 22 47V33C22 31 23 30 25 30Z"
-                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" />
-            </svg>
-          </div>
-          <h3 class="category-title">중식</h3>
-          <p class="category-description">중국의 다양한 요리를 맛볼 수 있는 곳</p>
-          <span class="explore-link">Explore menu →</span>
-        </a>
+    <!-- 실시간 Top 10 섹션 -->
+    <section class="top10-section">
+      <div class="section-header" style="margin-bottom: var(--spacing-lg);">
+        <h1 class="section-title" style="margin: 0; text-align: left;">실시간 Top 10</h1>
+        <a href="/pages/posts/post-list.html" class="view-all-link">전체보기 →</a>
+      </div>
+      <p class="section-subtitle">지금 가장 많이 찾는 인기 카테고리</p>
 
-        <!-- Drinks 카드 -->
-        <a href="/pages/category.html?category=일식" class="category-card">
-          <div class="category-icon">
-            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
-              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
-              <path d="M30 25H50M35 25V50C35 52 36 54 40 54C44 54 45 52 45 50V25M38 30H42" stroke="#FF6B35"
-                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <h3 class="category-title">일식</h3>
-          <p class="category-description">신선한 재료로 만든 일본 요리</p>
-          <span class="explore-link">Explore menu →</span>
-        </a>
-
-        <!-- Desserts 카드 -->
-        <a href="/pages/category.html?category=양식" class="category-card">
-          <div class="category-icon">
-            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
-              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
-              <path d="M30 45L35 30L40 45L45 30L50 45M28 45H52L50 50H30L28 45Z" stroke="#FF6B35" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <h3 class="category-title">양식</h3>
-          <p class="category-description">서양의 맛을 느낄 수 있는 레스토랑</p>
-          <span class="explore-link">Explore menu →</span>
-        </a>
-
-        <!-- 카페 카드 추가 -->
-        <a href="/pages/category.html?category=카페" class="category-card">
-          <div class="category-icon">
-            <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
-              <circle cx="40" cy="40" r="40" fill="#FFE8D6" />
-              <path
-                d="M25 35C25 33 26 32 28 32H48C50 32 51 33 51 35V42C51 45 49 47 46 47H30C27 47 25 45 25 42V35ZM51 37H54C56 37 57 38 57 40C57 42 56 43 54 43H51"
-                stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M28 47V50H48V47" stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round" />
-            </svg>
-          </div>
-          <h3 class="category-title">카페</h3>
-          <p class="category-description">커피와 디저트를 즐길 수 있는 공간</p>
-          <span class="explore-link">Explore menu →</span>
-        </a>
+      <div class="top10-carousel" id="top10Carousel" aria-live="polite">
+        <!-- Top 10 게시글이 동적으로 렌더링됩니다 -->
       </div>
     </section>
 

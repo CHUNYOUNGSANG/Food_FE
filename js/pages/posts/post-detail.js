@@ -71,6 +71,14 @@ const extractPostImageUrls = (postData) => {
   return [...new Set(urls.filter(Boolean))];
 };
 
+const normalizeCategory = (category) => {
+  if (!category) return '';
+  const text = String(category).trim();
+  if (!text) return '';
+  const parts = text.split('>').map((part) => part.trim()).filter(Boolean);
+  return parts[parts.length - 1] || text;
+};
+
 // DOM 요소
 const loading = document.getElementById('loading');
 const postDetail = document.getElementById('postDetail');
@@ -79,6 +87,7 @@ const categoryBadge = document.getElementById('categoryBadge');
 const ratingBadge = document.getElementById('ratingBadge');
 const restaurantName = document.getElementById('restaurantName');
 const restaurantAddress = document.getElementById('restaurantAddress');
+const postTags = document.getElementById('postTags');
 const authorAvatar = document.getElementById('authorAvatar');
 const authorName = document.getElementById('authorName');
 const postDate = document.getElementById('postDate');
@@ -86,6 +95,8 @@ const viewCount = document.getElementById('viewCount');
 const postImageContainer = document.getElementById('postImageContainer');
 const postImage = document.getElementById('postImage');
 const postContent = document.getElementById('postContent');
+const postMap = document.getElementById('postMap');
+const postMapSection = postMap ? postMap.closest('.post-map-section') : null;
 const authorActions = document.getElementById('authorActions');
 const editBtn = document.getElementById('editBtn');
 const deleteBtn = document.getElementById('deleteBtn');
@@ -106,6 +117,11 @@ let memberId = null;
 let post = null;
 let comments = [];
 let isLiked = false;
+
+// 카카오맵
+let kakaoMap = null;
+let kakaoMarker = null;
+let kakaoGeocoder = null;
 
 /**
  * 초기화
@@ -165,9 +181,20 @@ const renderPost = (post) => {
   postTitle.textContent = post.title;
 
   // 카테고리
-  if (post.foodCategory) {
-    categoryBadge.textContent = post.foodCategory;
-    categoryBadge.className = `category-badge category-${post.foodCategory}`;
+  if (post.restaurant?.category) {
+    const normalized =
+      normalizeCategory(post.restaurant.category) ||
+      String(post.restaurant.category).trim();
+    const categoryClass =
+      {
+        한식: 'korean',
+        중식: 'chinese',
+        일식: 'japanese',
+        양식: 'western',
+        카페: 'cafe',
+      }[normalized] || '';
+    categoryBadge.textContent = normalized || post.restaurant.category;
+    categoryBadge.className = `category-badge ${categoryClass}`;
   }
 
   // 평점
@@ -178,8 +205,22 @@ const renderPost = (post) => {
   }
 
   // 맛집 정보
-  restaurantName.textContent = post.restaurantName;
-  restaurantAddress.textContent = post.restaurantAddress || '주소 정보 없음';
+  restaurantName.textContent = post.restaurant?.name || '';
+  restaurantAddress.textContent = post.restaurant?.address || '주소 정보 없음';
+  renderPostMap(post);
+
+  // 태그
+  if (postTags) {
+    const tags = post.tags || [];
+    if (tags.length > 0) {
+      postTags.innerHTML = tags
+        .map((tag) => `<span class="post-tag">#${tag}</span>`)
+        .join('');
+      postTags.style.display = 'flex';
+    } else {
+      postTags.style.display = 'none';
+    }
+  }
 
   // 작성자 정보 (이미지 있으면 이미지, 없으면 이니셜)
   const authorImage = getProfileImageFrom(post);
@@ -234,6 +275,54 @@ const renderPost = (post) => {
 
   postDetail.style.display = 'block';
   hydrateAvatars(postDetail);
+};
+
+/**
+ * 게시글 지도 렌더링
+ */
+const renderPostMap = (post) => {
+  if (!postMap || !postMapSection) return;
+  const address = post?.restaurant?.address;
+  const latitude = post?.restaurant?.latitude;
+  const longitude = post?.restaurant?.longitude;
+  if (!address && (latitude === null || longitude === null || latitude === undefined || longitude === undefined)) {
+    postMapSection.style.display = 'none';
+    return;
+  }
+
+  if (!window.kakao || !window.kakao.maps) {
+    console.warn('카카오맵 SDK가 로드되지 않았습니다.');
+    postMapSection.style.display = 'none';
+    return;
+  }
+
+  if (!kakaoMap) {
+    const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
+    kakaoMap = new window.kakao.maps.Map(postMap, {
+      center: defaultCenter,
+      level: 4,
+    });
+    kakaoMarker = new window.kakao.maps.Marker({ position: defaultCenter });
+    kakaoMarker.setMap(kakaoMap);
+    kakaoGeocoder = new window.kakao.maps.services.Geocoder();
+  }
+
+  if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
+    const position = new window.kakao.maps.LatLng(latitude, longitude);
+    kakaoMap.setCenter(position);
+    kakaoMarker.setPosition(position);
+    return;
+  }
+
+  if (address) {
+    kakaoGeocoder.addressSearch(address, (result, status) => {
+      if (status !== window.kakao.maps.services.Status.OK) return;
+      const { x, y } = result[0];
+      const position = new window.kakao.maps.LatLng(y, x);
+      kakaoMap.setCenter(position);
+      kakaoMarker.setPosition(position);
+    });
+  }
 };
 
 /**
@@ -703,7 +792,7 @@ const handleShare = () => {
     navigator
       .share({
         title: post.title,
-        text: `${post.restaurantName} - ${post.title}`,
+        text: `${post.restaurant?.name || ''} - ${post.title}`,
         url: url,
       })
       .catch((err) => console.log('공유 취소:', err));

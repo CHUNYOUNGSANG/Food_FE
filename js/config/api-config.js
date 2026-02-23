@@ -36,6 +36,7 @@ const API_CONFIG = {
     POSTS_BY_MEMBER: (memberId) => `/posts/member/${memberId}`,
     POSTS_BY_CATEGORY: (category) => `/posts/category/${category}`,
     POSTS_SEARCH: '/posts/search',
+    POSTS_SEARCH_RESTAURANT: '/posts/search/restaurant',
 
     // 댓글 관련
     COMMENTS: (postId) => `/posts/${postId}/comments`,
@@ -65,6 +66,15 @@ const API_CONFIG = {
     COMMENT_LIKE_COUNT: (commentId) => `/comments/${commentId}/likes/count`,
     COMMENT_LIKES_BY_MEMBER: (memberId) => `/comments/likes/member/${memberId}`,
     COMMENT_LIKES_BY_COMMENT: (commentId) => `/comments/${commentId}/likes`,
+
+    // 태그 관련
+    TAGS: '/tags',
+    TAGS_SEARCH: '/tags/search',
+
+    // 맛집(음식점) 관련
+    RESTAURANTS: '/restaurants',
+    RESTAURANT_DETAIL: (restaurantId) => `/restaurants/${restaurantId}`,
+    RESTAURANT_POSTS: (restaurantId) => `/restaurants/${restaurantId}/posts`,
   },
 };
 

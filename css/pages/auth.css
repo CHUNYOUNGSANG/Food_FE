@@ -1,13 +1,17 @@
 /**
- * 인증 페이지 스타일 - 깔끔한 미니멀 디자인
+ * 인증 페이지 스타일 - 카드 강조 디자인
  */
+
+body {
+  background: var(--gray-50);
+}
 
 .auth-container {
   max-width: 480px;
   margin: var(--spacing-3xl) auto;
   padding: var(--spacing-3xl);
   background: var(--white);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--gray-200);
 }

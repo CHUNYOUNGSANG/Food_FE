@@ -5,6 +5,22 @@
 import httpClient from '../utils/http-client.js';
 import API_CONFIG from '../config/api-config.js';
 
+const normalizePostsResponse = (response) => {
+  if (!response) return [];
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response.content)) return response.content;
+  return [];
+};
+
+const normalizeCategory = (category) => {
+  if (!category) return '';
+  const text = String(category);
+  const parts = text.split('>').map((part) => part.trim());
+  const last = parts[parts.length - 1] || text;
+  const candidates = ['한식', '중식', '일식', '양식', '카페'];
+  return candidates.find((item) => last.includes(item)) || '';
+};
+
 /**
  * 모든 게시글 조회 (최신순)
  * @returns {Promise<Array>} 게시글 목록
@@ -12,7 +28,7 @@ import API_CONFIG from '../config/api-config.js';
 export const getAllPosts = async () => {
   try {
     const response = await httpClient.get(API_CONFIG.ENDPOINTS.POSTS);
-    return response;
+    return normalizePostsResponse(response);
   } catch (error) {
     console.error('게시글 목록 조회 실패:', error);
     throw error;
@@ -97,7 +113,7 @@ export const searchPosts = async (keyword) => {
     const response = await httpClient.get(
       `${API_CONFIG.ENDPOINTS.POSTS_SEARCH}?keyword=${encodeURIComponent(keyword)}`,
     );
-    return response;
+    return normalizePostsResponse(response);
   } catch (error) {
     console.error('게시글 검색 실패:', error);
     throw error;
@@ -111,10 +127,11 @@ export const searchPosts = async (keyword) => {
  */
 export const getPostsByCategory = async (category) => {
   try {
-    const response = await httpClient.get(
-      API_CONFIG.ENDPOINTS.POSTS_BY_CATEGORY(category),
+    const posts = await getAllPosts();
+    const normalized = normalizeCategory(category);
+    return posts.filter(
+      (post) => normalizeCategory(post?.restaurant?.category) === normalized,
     );
-    return response;
   } catch (error) {
     console.error('카테고리별 게시글 조회 실패:', error);
     throw error;
@@ -131,7 +148,7 @@ export const getPostsByMember = async (memberId) => {
     const response = await httpClient.get(
       API_CONFIG.ENDPOINTS.POSTS_BY_MEMBER(memberId),
     );
-    return response;
+    return normalizePostsResponse(response);
   } catch (error) {
     console.error('회원 게시글 조회 실패:', error);
     throw error;

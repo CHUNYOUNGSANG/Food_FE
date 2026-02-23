@@ -82,7 +82,7 @@ export const validateName = (name) => {
 
 /**
  * 게시글 제목 검증
- * 규칙: 1-200자
+ * 규칙: 1-100자
  * @param {string} title - 검증할 제목
  * @returns {boolean} 유효성 여부
  */
@@ -92,7 +92,7 @@ export const validatePostTitle = (title) => {
   }
 
   const trimmed = title.trim();
-  return trimmed.length >= 1 && trimmed.length <= 200;
+  return trimmed.length >= 1 && trimmed.length <= 100;
 };
 
 /**

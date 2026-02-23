@@ -10,7 +10,7 @@
   padding: var(--spacing-md) var(--spacing-xl);
   font-size: var(--font-sm);
   font-weight: var(--font-semibold);
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -38,7 +38,7 @@
 .btn-primary {
   background: var(--primary-color);
   color: var(--white);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 12px 20px rgba(17, 24, 39, 0.2);
 }
 
 .btn-primary:hover {
@@ -50,7 +50,7 @@
   background: var(--white);
   color: var(--gray-700);
   border: 1.5px solid var(--gray-300);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
 }
 
 .btn-secondary:hover {

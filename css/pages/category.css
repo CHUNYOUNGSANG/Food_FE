@@ -125,7 +125,7 @@
 .sort-select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.12);
 }
 
 /* 게시글 그리드 */

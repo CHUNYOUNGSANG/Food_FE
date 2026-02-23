@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 목록 - 맛집 리뷰</title>
+  <title>게시글 목록 - 파인잇</title>
 
   <!-- Favicon -->
   <link rel="icon"
@@ -18,35 +18,12 @@
   <link rel="stylesheet" href="../../css/components/button.css">
   <link rel="stylesheet" href="../../css/components/card.css">
   <link rel="stylesheet" href="../../css/components/footer.css">
+  <link rel="stylesheet" href="../../css/pages/post-list.css">
 </head>
 
 <body>
   <!-- 헤더 -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/index.html" class="site-logo">
-        🍽️ 맛집 리뷰
-      </a>
-
-      <nav class="site-nav">
-        <a href="/index.html" class="nav-link">
-          홈
-        </a>
-        <a href="/pages/posts/post-list.html" class="nav-link active">
-          게시글
-        </a>
-        <a href="/pages/my-page/my-posts.html" class="nav-link">
-          마이페이지
-        </a>
-      </nav>
-
-      <div class="user-menu" id="userMenu"></div>
-
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        ☰
-      </button>
-    </div>
-  </header>
+  <header id="header" class="site-header"></header>
 
   <!-- 메인 컨텐츠 -->
   <main class="container">
@@ -54,7 +31,7 @@
     <section class="hero-section">
       <div class="hero-content">
         <h1 class="hero-title">
-          🍽️ 맛집 리뷰 모아보기
+          🍽️ 파인잇 모아보기
         </h1>
         <p class="hero-description">
           전국 곳곳의 맛집을 발견하고 공유하세요
@@ -110,7 +87,7 @@
       <div class="loading-text">로딩중...</div>
     </div>
 
-    <!-- 게시글 그리드 -->
+    <!-- 게시글 리스트 -->
     <section id="postsGrid" class="posts-grid">
       <!-- 게시글 카드가 동적으로 추가됩니다 -->
     </section>
@@ -146,7 +123,7 @@
   <footer class="site-footer">
     <div class="footer-container">
       <p class="footer-logo">
-        🍽️ 맛집 리뷰
+        🍽️ 파인잇
       </p>
       <p class="footer-copyright">
         맛있는 순간을 나누는 공간 © 2025
@@ -155,137 +132,10 @@
   </footer>
 
   <!-- JavaScript -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9da00fac3ff4a27fc860f49c6ce402f4&libraries=services"></script>
   <script type="module" src="../../js/pages/posts/post-list.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 
-  <style>
-    /* 히어로 섹션 */
-    .hero-section {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      padding: var(--spacing-3xl) var(--spacing-2xl);
-      border-radius: var(--radius-xl);
-      margin-bottom: var(--spacing-2xl);
-      text-align: center;
-      color: var(--white);
-    }
-
-    .hero-title {
-      font-size: var(--font-4xl);
-      font-weight: var(--font-bold);
-      margin-bottom: var(--spacing-md);
-    }
-
-    .hero-description {
-      font-size: var(--font-lg);
-      opacity: 0.9;
-    }
-
-    /* 검색 & 필터 */
-    .filter-section {
-      background: var(--white);
-      padding: var(--spacing-xl);
-      border-radius: var(--radius-xl);
-      margin-bottom: var(--spacing-xl);
-      border: 1px solid var(--gray-200);
-      box-shadow: var(--shadow-md);
-    }
-
-    .search-container {
-      display: flex;
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .search-input {
-      flex: 1;
-      padding: var(--spacing-md) var(--spacing-lg);
-      border: 1.5px solid var(--gray-300);
-      border-radius: var(--radius-md);
-      font-size: var(--font-md);
-      transition: all 0.3s;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .category-filter {
-      display: flex;
-      gap: var(--spacing-sm);
-      flex-wrap: wrap;
-    }
-
-    .category-btn {
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border: 1.5px solid var(--gray-300);
-      background: var(--white);
-      border-radius: var(--radius-md);
-      font-size: var(--font-sm);
-      font-weight: var(--font-semibold);
-      color: var(--gray-700);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .category-btn:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .category-btn.active {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-      color: var(--white);
-    }
-
-    /* 통계 */
-    .stats-section {
-      display: flex;
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    .stat-item {
-      flex: 1;
-      background: var(--white);
-      padding: var(--spacing-xl);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--gray-200);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--spacing-sm);
-    }
-
-    .stat-label {
-      font-size: var(--font-sm);
-      color: var(--gray-600);
-    }
-
-    .stat-value {
-      font-size: var(--font-3xl);
-      font-weight: var(--font-bold);
-      color: var(--primary-color);
-    }
-
-    /* 반응형 */
-    @media (max-width: 768px) {
-      .hero-title {
-        font-size: var(--font-2xl);
-      }
-
-      .search-container {
-        flex-direction: column;
-      }
-
-      .stats-section {
-        flex-direction: column;
-      }
-    }
-  </style>
 </body>
 
 </html>

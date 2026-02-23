@@ -2,11 +2,7 @@
  * 게시글 목록 페이지 로직
  */
 
-import {
-  getAllPosts,
-  getPostsByCategory,
-  searchPosts,
-} from '../../services/post-service.js';
+import { getAllPosts } from '../../services/post-service.js';
 import { createPostCard } from '../../components/post-card.js';
 import { hydrateAvatars } from '../../utils/avatar-loader.js';
 
@@ -27,12 +23,22 @@ let allPosts = [];
 let filteredPosts = [];
 let currentCategory = 'all';
 
+const normalizeCategory = (category) => {
+  if (!category) return '';
+  const text = String(category);
+  const parts = text.split('>').map((part) => part.trim());
+  const last = parts[parts.length - 1] || text;
+  const candidates = ['한식', '중식', '일식', '양식', '카페'];
+  return candidates.find((item) => last.includes(item)) || '';
+};
+
 /**
  * 초기화
  */
 const init = async () => {
   await loadPosts();
   attachEventListeners();
+  applySearchFromQuery();
 };
 
 /**
@@ -79,9 +85,12 @@ const renderPosts = (posts) => {
   }
 
   if (postsGrid) {
-    postsGrid.style.display = 'grid';
-    postsGrid.innerHTML = posts.map((post) => createPostCard(post)).join('');
+    postsGrid.style.display = 'flex';
+    postsGrid.innerHTML = posts
+      .map((post, index) => createPostRow(post, index))
+      .join('');
     hydrateAvatars(postsGrid);
+    initInlineMaps();
   }
 };
 
@@ -118,20 +127,26 @@ const filterByCategory = async (category) => {
 
     currentCategory = category;
 
-    if (category === 'all') {
-      filteredPosts = allPosts;
-    } else {
-      filteredPosts = await getPostsByCategory(category);
-    }
+  if (category === 'all') {
+    filteredPosts = allPosts;
+  } else {
+    filteredPosts = allPosts.filter((post) => {
+      const normalized = normalizeCategory(post?.restaurant?.category);
+      return normalized === category;
+    });
+  }
 
     // 검색어가 있으면 추가 필터링
     const keyword = searchInput ? searchInput.value.trim() : '';
     if (keyword) {
-      filteredPosts = filteredPosts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-          post.restaurantName.toLowerCase().includes(keyword.toLowerCase()),
-      );
+      filteredPosts = filteredPosts.filter((post) => {
+        const title = post.title || '';
+        const name = post.restaurant?.name || '';
+        return (
+          title.toLowerCase().includes(keyword.toLowerCase()) ||
+          name.toLowerCase().includes(keyword.toLowerCase())
+        );
+      });
     }
 
     renderPosts(filteredPosts);
@@ -156,28 +171,29 @@ const handleSearch = async () => {
     return;
   }
 
-  try {
-    showLoading();
+  showLoading();
 
-    // 백엔드 검색 API 사용
-    const searchResults = await searchPosts(keyword);
+  const lower = keyword.toLowerCase();
+  filteredPosts = allPosts.filter((post) => {
+    const title = post.title || '';
+    const name = post.restaurant?.name || '';
+    const address = post.restaurant?.address || '';
+    return (
+      title.toLowerCase().includes(lower) ||
+      name.toLowerCase().includes(lower) ||
+      address.toLowerCase().includes(lower)
+    );
+  });
 
-    // 현재 카테고리 필터 적용
-    if (currentCategory !== 'all') {
-      filteredPosts = searchResults.filter(
-        (post) => post.foodCategory === currentCategory,
-      );
-    } else {
-      filteredPosts = searchResults;
-    }
-
-    renderPosts(filteredPosts);
-  } catch (error) {
-    console.error('검색 실패:', error);
-    showNoResults();
-  } finally {
-    hideLoading();
+  if (currentCategory !== 'all') {
+    filteredPosts = filteredPosts.filter((post) => {
+      const normalized = normalizeCategory(post?.restaurant?.category);
+      return normalized === currentCategory;
+    });
   }
+
+  renderPosts(filteredPosts);
+  hideLoading();
 };
 
 /**
@@ -198,6 +214,15 @@ const resetSearch = () => {
   // 전체 게시글 표시
   filteredPosts = allPosts;
   renderPosts(filteredPosts);
+};
+
+const applySearchFromQuery = () => {
+  const params = new URLSearchParams(window.location.search);
+  const search = params.get('search');
+  if (searchInput && search) {
+    searchInput.value = search;
+    handleSearch();
+  }
 };
 
 /**
@@ -235,6 +260,95 @@ const attachEventListeners = () => {
   if (resetSearchBtn) {
     resetSearchBtn.addEventListener('click', resetSearch);
   }
+
+  if (postsGrid) {
+    postsGrid.addEventListener('mouseover', (event) => {
+      const card = event.target.closest('.post-card');
+      if (!card) return;
+    });
+  }
+};
+
+const createPostRow = (post, index) => {
+  const mapId = `postMap-${post.id || index}`;
+  const name = escapeHtml(
+    post.restaurant?.name || post.title || '맛집명 없음',
+  );
+  const address = escapeHtml(post.restaurant?.address || '');
+  const latitude = post.restaurant?.latitude;
+  const longitude = post.restaurant?.longitude;
+  const dataAttrs = [
+    address ? `data-address="${address}"` : '',
+    name ? `data-name="${name}"` : '',
+    latitude !== undefined && latitude !== null ? `data-lat="${latitude}"` : '',
+    longitude !== undefined && longitude !== null
+      ? `data-lng="${longitude}"`
+      : '',
+    `data-map-id="${mapId}"`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return `
+    <div class="post-row" ${dataAttrs}>
+      <div class="post-row-main">
+        ${createPostCard(post)}
+      </div>
+      <div class="post-row-map">
+        <div class="map-card">
+          <div id="${mapId}" class="post-row-map-canvas"></div>
+          <div class="map-card-address">${address || '주소 정보 없음'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+const initInlineMaps = () => {
+  if (!window.kakao || !window.kakao.maps) return;
+  const geocoder = new window.kakao.maps.services.Geocoder();
+  const rows = document.querySelectorAll('.post-row');
+  rows.forEach((row) => {
+    const mapId = row.dataset.mapId;
+    const mapEl = mapId ? document.getElementById(mapId) : null;
+    if (!mapEl) return;
+    const latitude = row.dataset.lat ? Number(row.dataset.lat) : null;
+    const longitude = row.dataset.lng ? Number(row.dataset.lng) : null;
+    const address = row.dataset.address || '';
+    const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
+    const map = new window.kakao.maps.Map(mapEl, {
+      center: defaultCenter,
+      level: 4,
+      draggable: false,
+      scrollwheel: false,
+    });
+    const marker = new window.kakao.maps.Marker({ position: defaultCenter });
+    marker.setMap(map);
+
+    if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
+      const position = new window.kakao.maps.LatLng(latitude, longitude);
+      map.setCenter(position);
+      marker.setPosition(position);
+      return;
+    }
+
+    if (address) {
+      geocoder.addressSearch(address, (result, status) => {
+        if (status !== window.kakao.maps.services.Status.OK) return;
+        const { x, y } = result[0];
+        const position = new window.kakao.maps.LatLng(y, x);
+        map.setCenter(position);
+        marker.setPosition(position);
+      });
+    }
+  });
+};
+
+const escapeHtml = (text) => {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 };
 
 /**

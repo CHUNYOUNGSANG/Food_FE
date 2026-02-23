@@ -1,20 +1,20 @@
 /* CSS Variables - 깔끔한 미니멀 디자인 */
 :root {
-  /* Primary Colors - 차분하고 깔끔한 블루 */
-  --primary-color: #2563eb; /* 깔끔한 블루 */
-  --primary-light: #3b82f6;
-  --primary-dark: #1d4ed8;
-  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  /* Primary Colors - 미니멀 잉크 톤 */
+  --primary-color: #111827;
+  --primary-light: #1f2937;
+  --primary-dark: #0b1220;
+  --primary-gradient: linear-gradient(135deg, #111827 0%, #0b1220 100%);
 
-  --secondary-color: #10b981; /* 차분한 그린 */
-  --secondary-light: #34d399;
-  --secondary-dark: #059669;
-  --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --secondary-color: #0ea5e9;
+  --secondary-light: #38bdf8;
+  --secondary-dark: #0284c7;
+  --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 
-  --accent-color: #f59e0b; /* 포인트 오렌지 */
-  --accent-light: #fbbf24;
-  --accent-dark: #d97706;
-  --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --accent-color: #f97316;
+  --accent-light: #fb923c;
+  --accent-dark: #ea580c;
+  --accent-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
 
   /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.85);
@@ -30,16 +30,16 @@
 
   /* Neutral Colors - 깔끔한 그레이스케일 */
   --white: #ffffff;
-  --gray-50: #fafafa;
-  --gray-100: #f5f5f5;
-  --gray-200: #e5e5e5;
-  --gray-300: #d4d4d4;
-  --gray-400: #a3a3a3;
-  --gray-500: #737373;
-  --gray-600: #525252;
-  --gray-700: #404040;
-  --gray-800: #262626;
-  --gray-900: #171717;
+  --gray-50: #f8f7f4;
+  --gray-100: #f2f1ee;
+  --gray-200: #e7e5e1;
+  --gray-300: #d6d3cc;
+  --gray-400: #a8a29e;
+  --gray-500: #78716c;
+  --gray-600: #57534e;
+  --gray-700: #3f3b38;
+  --gray-800: #262421;
+  --gray-900: #181513;
   --black: #000000;
 
   /* Food Category Colors - 깔끔한 버전 */
@@ -67,14 +67,11 @@
   --radius-full: 9999px;
 
   /* Shadows - 부드럽고 깔끔한 섀도우 */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-  --shadow-xl:
-    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 18px 38px rgba(15, 23, 42, 0.14);
+  --shadow-2xl: 0 28px 56px rgba(15, 23, 42, 0.18);
 
   /* Font Sizes */
   --font-xs: 0.75rem; /* 12px */
@@ -111,11 +108,11 @@
 }
 
 /* 폰트 import - 깔끔한 폰트 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:wght@600;700;800&display=swap');
 
 body {
   font-family:
-    'Inter',
+    'Manrope',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
