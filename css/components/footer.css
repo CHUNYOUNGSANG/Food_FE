@@ -1,46 +1,158 @@
 /**
- * 푸터 스타일
+ * 푸터 스타일 - 다크 멀티컬럼
  */
 
 .site-footer {
-  background: var(--gray-900);
-  color: var(--white);
-  padding: var(--spacing-2xl) 0;
-  margin-top: var(--spacing-3xl);
+  background: #111827;
+  color: #9ca3af;
+  padding: 48px 0 0;
 }
 
 .footer-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
-  text-align: center;
+  padding: 0 16px;
 }
 
-.footer-logo {
-  font-size: var(--font-md);
-  margin-bottom: var(--spacing-sm);
-  font-weight: var(--font-semibold);
+/* 푸터 그리드 */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding-bottom: 32px;
 }
 
-.footer-copyright {
-  color: var(--gray-400);
-  font-size: var(--font-sm);
-}
-
-.footer-links {
+/* 브랜드 영역 */
+.footer-brand {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-md);
+  color: white;
+  font-size: 1rem;
+}
+
+.footer-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.footer-tagline {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* 푸터 컬럼 */
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-col-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .footer-link {
-  color: var(--gray-400);
+  color: #9ca3af;
   text-decoration: none;
-  font-size: var(--font-sm);
-  transition: color 0.3s;
+  font-size: 0.875rem;
+  transition: color 0.2s;
 }
 
 .footer-link:hover {
-  color: var(--white);
+  color: white;
+}
+
+/* 소셜 미디어 */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-social-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f2937;
+  color: #9ca3af;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.footer-social-btn:hover {
+  background: #374151;
+  color: white;
+}
+
+/* 하단 경계선 & 저작권 */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  border-top: 1px solid #1f2937;
+  font-size: 0.875rem;
+}
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
 }

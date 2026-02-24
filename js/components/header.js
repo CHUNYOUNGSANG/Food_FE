@@ -22,34 +22,36 @@ export const renderHeader = () => {
   const headerHTML = `
     <div class="header-container">
       <a href="/index.html" class="site-logo">
-        <span>🍽️ 파인잇</span>
+        <div class="logo-icon">
+          <i class="ri-restaurant-2-fill"></i>
+        </div>
+        <span class="logo-text">파인잇</span>
       </a>
 
-      <div class="header-search">
-        <form class="search-form" id="headerSearchForm">
-          <input
-            type="text"
-            class="search-input"
-            placeholder="맛집을 검색해보세요..."
-            id="headerSearchInput"
-          />
-          <button type="submit" class="search-button">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="2"/>
-              <path d="M13 13L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </form>
-      </div>
+      <nav class="site-nav">
+        <a href="/pages/posts/post-list.html" class="nav-link">맛집 탐색</a>
+        <a href="/pages/category.html" class="nav-link">카테고리</a>
+        <a href="/pages/restaurants/restaurant-list.html" class="nav-link">맛집 목록</a>
+      </nav>
 
       <div class="user-menu">
+        <a href="/pages/posts/post-create.html" class="btn-write">
+          <i class="ri-edit-2-line"></i>리뷰 작성
+        </a>
         ${
           loggedIn
             ? `
           <div class="user-profile-wrapper">
             <button id="userProfileBtn" class="user-profile-button">
-              <span class="user-nickname-text">👤 ${user.nickname}님</span>
-              <span class="dropdown-arrow">▼</span>
+              <span class="user-nickname-text">
+                ${
+                  profileImageUrl
+                    ? `<img src="${profileImageUrl}" alt="${user.nickname}" class="profile-avatar-img" />`
+                    : `<span class="profile-avatar-initial">${user.nickname ? user.nickname.charAt(0).toUpperCase() : '?'}</span>`
+                }
+                ${user.nickname}님
+              </span>
+              <span class="dropdown-arrow">▾</span>
             </button>
             <div id="userDropdown" class="user-dropdown" style="display: none;">
               <div class="dropdown-header">
@@ -74,15 +76,15 @@ export const renderHeader = () => {
               </div>
             </div>
           </div>
-          <button id="logoutBtn" class="btn btn-outline btn-small">
+          <button id="logoutBtn" class="btn-header-outline">
             로그아웃
           </button>
         `
             : `
-          <a href="/pages/auth/login.html" class="btn btn-outline btn-small">
+          <a href="/pages/auth/login.html" class="btn-header-outline">
             로그인
           </a>
-          <a href="/pages/auth/signup.html" class="btn btn-primary btn-small">
+          <a href="/pages/auth/signup.html" class="btn-header-primary">
             회원가입
           </a>
         `
@@ -94,7 +96,6 @@ export const renderHeader = () => {
   headerElement.innerHTML = headerHTML;
   headerElement.className = 'site-header';
 
-  // 이벤트 리스너 추가
   attachEventListeners();
 };
 
@@ -102,21 +103,6 @@ export const renderHeader = () => {
  * 이벤트 리스너 추가
  */
 const attachEventListeners = () => {
-  // 검색 폼 처리
-  const searchForm = document.getElementById('headerSearchForm');
-  if (searchForm) {
-    searchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const searchInput = document.getElementById('headerSearchInput');
-      const searchQuery = searchInput.value.trim();
-
-      if (searchQuery) {
-        // 게시글 목록 페이지로 이동하면서 검색어 전달
-        window.location.href = `/pages/posts/post-list.html?search=${encodeURIComponent(searchQuery)}`;
-      }
-    });
-  }
-
   // 사용자 프로필 드롭다운
   const userProfileBtn = document.getElementById('userProfileBtn');
   const userDropdown = document.getElementById('userDropdown');
@@ -128,7 +114,6 @@ const attachEventListeners = () => {
       userDropdown.style.display = isVisible ? 'none' : 'block';
     });
 
-    // 드롭다운 외부 클릭 시 닫기
     document.addEventListener('click', (e) => {
       if (!userProfileBtn.contains(e.target) && !userDropdown.contains(e.target)) {
         userDropdown.style.display = 'none';

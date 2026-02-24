@@ -10,6 +10,8 @@ const loginForm = document.getElementById('loginForm');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const loginBtn = document.getElementById('loginBtn');
+const loginBtnText = document.getElementById('loginBtnText');
+const loginBtnIcon = document.getElementById('loginBtnIcon');
 const errorMessage = document.getElementById('errorMessage');
 
 /**
@@ -17,18 +19,31 @@ const errorMessage = document.getElementById('errorMessage');
  */
 const init = () => {
   attachEventListeners();
+  initPasswordToggle();
 };
 
 /**
  * 이벤트 리스너 등록
  */
 const attachEventListeners = () => {
-  // 폼 제출
   loginForm.addEventListener('submit', handleSubmit);
-
-  // 입력 시 에러 메시지 숨김
   emailInput.addEventListener('input', hideError);
   passwordInput.addEventListener('input', hideError);
+};
+
+/**
+ * 비밀번호 표시/숨김 토글
+ */
+const initPasswordToggle = () => {
+  const toggleBtn = document.getElementById('pwToggleBtn');
+  const toggleIcon = document.getElementById('pwToggleIcon');
+  if (!toggleBtn || !passwordInput) return;
+
+  toggleBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+  });
 };
 
 /**
@@ -40,7 +55,6 @@ const handleSubmit = async (e) => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  // 유효성 검사
   if (!validateEmail(email)) {
     showError('올바른 이메일 형식이 아닙니다.');
     emailInput.focus();
@@ -54,27 +68,21 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    // 버튼 비활성화
     loginBtn.disabled = true;
-    loginBtn.textContent = '로그인 중...';
+    if (loginBtnText) loginBtnText.textContent = '로그인 중...';
+    if (loginBtnIcon) loginBtnIcon.style.display = 'none';
 
-    // 로그인 API 호출 (auth-service.js에서 자동으로 localStorage 저장)
     const response = await login({ email, password });
 
-    console.log('로그인 성공:', response);
-
-    // 로그인 성공 메시지
     alert(`${response.member.nickname}님, 환영합니다!`);
-
-    // 메인 페이지로 이동
     window.location.href = '/index.html';
   } catch (error) {
     console.error('로그인 실패:', error);
     showError(error.message || '이메일 또는 비밀번호가 일치하지 않습니다.');
   } finally {
-    // 버튼 활성화
     loginBtn.disabled = false;
-    loginBtn.textContent = '로그인';
+    if (loginBtnText) loginBtnText.textContent = '로그인';
+    if (loginBtnIcon) loginBtnIcon.style.display = '';
   }
 };
 
@@ -93,5 +101,4 @@ const hideError = () => {
   errorMessage.style.display = 'none';
 };
 
-// 초기화 실행
 init();

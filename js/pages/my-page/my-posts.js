@@ -3,7 +3,8 @@
  */
 
 import { getPostsByMember } from '../../services/post-service.js';
-import { getLikedPostsByMember } from '../../services/post-like-service.js';
+import { getLikedPostsByMember, getPostLikeCount } from '../../services/post-like-service.js';
+import { getCommentsByPost, getCommentsByMember } from '../../services/comment-service.js';
 import {
   getMember,
   updateMember,
@@ -26,6 +27,8 @@ const profileNickname = document.getElementById('profileNickname');
 const profileEmail = document.getElementById('profileEmail');
 const postCount = document.getElementById('postCount');
 const likedCount = document.getElementById('likedCount');
+const myCommentCount = document.getElementById('myCommentCount');
+const postCountBadge = document.getElementById('postCountBadge');
 const commentsTab = document.getElementById('commentsTab');
 const likedCommentsTab = document.getElementById('likedCommentsTab');
 const passwordForm = document.getElementById('passwordForm');
@@ -90,8 +93,12 @@ const init = async () => {
   // 프로필 로드
   await loadProfile();
 
-  // 게시글 로드
-  await loadMyPosts();
+  // 게시글 로드 + 좋아요/댓글 통계 병렬 로드
+  await Promise.all([
+    loadMyPosts(),
+    loadLikedPosts(),
+    loadMyCommentsCount(),
+  ]);
 
   // 이벤트 리스너
   attachEventListeners();
@@ -145,6 +152,7 @@ const loadMyPosts = async () => {
 
     // 게시글 개수 표시
     postCount.textContent = myPosts.length;
+    if (postCountBadge) postCountBadge.textContent = `${myPosts.length}개의 리뷰`;
 
     // 게시글 렌더링
     renderMyPosts(myPosts);
@@ -189,6 +197,20 @@ const loadLikedPosts = async () => {
 };
 
 /**
+ * 내 댓글 수 로드 (사이드바 통계용)
+ */
+const loadMyCommentsCount = async () => {
+  try {
+    const comments = await getCommentsByMember(currentMemberId);
+    if (myCommentCount) {
+      myCommentCount.textContent = Array.isArray(comments) ? comments.length : 0;
+    }
+  } catch (error) {
+    console.error('댓글 수 로드 실패:', error);
+  }
+};
+
+/**
  * 내 게시글 렌더링
  */
 const renderMyPosts = (posts) => {
@@ -201,6 +223,31 @@ const renderMyPosts = (posts) => {
   hydrateAvatars(postsGrid);
   postsGrid.style.display = 'grid';
   postsEmptyState.style.display = 'none';
+  hydrateMyPostCounts(posts, postsGrid);
+};
+
+/**
+ * 내 게시글 카드 좋아요/댓글 수 실시간 업데이트
+ */
+const hydrateMyPostCounts = async (posts, container) => {
+  await Promise.all(
+    posts.map(async (post) => {
+      const card = container.querySelector(`[data-post-id="${post.id}"]`);
+      if (!card) return;
+      try {
+        const [likeData, comments] = await Promise.all([
+          getPostLikeCount(post.id),
+          getCommentsByPost(post.id),
+        ]);
+        const likeEl = card.querySelector('.post-card-like-count');
+        const commentEl = card.querySelector('.post-card-comment-count');
+        if (likeEl) likeEl.textContent = likeData?.likeCount ?? 0;
+        if (commentEl) commentEl.textContent = Array.isArray(comments) ? comments.length : 0;
+      } catch (_) {
+        // 카운트 로드 실패 시 초기값 유지
+      }
+    }),
+  );
 };
 
 /**
@@ -346,6 +393,51 @@ const attachEventListeners = () => {
   // 회원 탈퇴
   if (deleteAccountBtn) {
     deleteAccountBtn.addEventListener('click', handleDeleteAccount);
+  }
+
+  // 사이드바 로그아웃
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      clearStorage();
+      window.location.href = '/index.html';
+    });
+  }
+
+  // 모바일 탭
+  const mobilePostsTab = document.getElementById('mobilePostsTab');
+  const mobileLikedTab = document.getElementById('mobileLikedTab');
+  const mobileLikedCommentsTab = document.getElementById('mobileLikedCommentsTab');
+  const mobileProfileTab = document.getElementById('mobileProfileTab');
+
+  const setMobileActive = (activeBtn) => {
+    [mobilePostsTab, mobileLikedTab, mobileLikedCommentsTab, mobileProfileTab].forEach(
+      (btn) => btn && btn.classList.remove('active'),
+    );
+    if (activeBtn) activeBtn.classList.add('active');
+  };
+
+  if (mobilePostsTab) {
+    mobilePostsTab.addEventListener('click', () => {
+      setMobileActive(mobilePostsTab);
+      switchTab('posts');
+    });
+  }
+  if (mobileLikedTab) {
+    mobileLikedTab.addEventListener('click', () => {
+      window.location.href = '/pages/my-page/liked-posts.html';
+    });
+  }
+  if (mobileLikedCommentsTab) {
+    mobileLikedCommentsTab.addEventListener('click', () => {
+      window.location.href = '/pages/my-page/liked-comments.html';
+    });
+  }
+  if (mobileProfileTab) {
+    mobileProfileTab.addEventListener('click', () => {
+      setMobileActive(mobileProfileTab);
+      switchTab('profile');
+    });
   }
 };
 

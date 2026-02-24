@@ -10,79 +10,157 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
+
   <!-- CSS -->
   <link rel="stylesheet" href="../../css/common/reset.css">
   <link rel="stylesheet" href="../../css/common/variables.css">
-  <link rel="stylesheet" href="../../css/common/layout.css">
-  <link rel="stylesheet" href="../../css/components/header.css">
-  <link rel="stylesheet" href="../../css/components/button.css">
-  <link rel="stylesheet" href="../../css/components/form.css">
   <link rel="stylesheet" href="../../css/pages/auth.css">
 </head>
 
-<body>
-  <!-- 헤더 -->
-  <header id="header" class="site-header"></header>
+<body class="auth-page">
+  <div class="auth-split">
 
-  <!-- 메인 컨텐츠 -->
-  <main class="container-sm">
-    <div class="auth-container">
-      <div class="auth-header">
-        <h1>로그인</h1>
-        <p>다시 만나서 반가워요! 👋</p>
-      </div>
+    <!-- 왼쪽: 로그인 폼 -->
+    <div class="auth-form-side">
+      <div class="auth-form-inner">
 
-      <form id="loginForm" class="auth-form">
-        <!-- 이메일 -->
-        <div class="form-group">
-          <label for="email">
-            이메일 <span class="required">*</span>
-          </label>
-          <input type="email" id="email" class="form-input" placeholder="example@email.com" required
-            autocomplete="email" autofocus>
+        <!-- 로고 -->
+        <a href="/index.html" class="auth-logo">
+          <div class="auth-logo-icon"><i class="ri-restaurant-2-fill"></i></div>
+          <span class="auth-logo-text">파인잇</span>
+        </a>
+
+        <!-- 타이틀 -->
+        <h1 class="auth-title">다시 오신 것을 환영해요</h1>
+        <p class="auth-subtitle">로그인하고 맛집 여정을 이어가세요</p>
+
+        <!-- 로그인 폼 -->
+        <form id="loginForm" class="auth-form">
+
+          <!-- 이메일 -->
+          <div class="auth-field">
+            <label class="auth-label" for="email">이메일</label>
+            <div class="auth-input-wrap">
+              <i class="ri-mail-line auth-input-icon"></i>
+              <input type="email" id="email" class="auth-input"
+                placeholder="example@email.com" required autocomplete="email" autofocus>
+            </div>
+          </div>
+
+          <!-- 비밀번호 -->
+          <div class="auth-field">
+            <label class="auth-label" for="password">비밀번호</label>
+            <div class="auth-input-wrap">
+              <i class="ri-lock-line auth-input-icon"></i>
+              <input type="password" id="password" class="auth-input auth-input-pw"
+                placeholder="비밀번호를 입력하세요" required autocomplete="current-password">
+              <button type="button" class="auth-pw-toggle" id="pwToggleBtn" tabindex="-1">
+                <i class="ri-eye-line" id="pwToggleIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 비밀번호 찾기 -->
+          <div class="auth-forgot">
+            <a href="#" class="auth-forgot-link">비밀번호를 잊으셨나요?</a>
+          </div>
+
+          <!-- 에러 메시지 -->
+          <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+          <!-- 로그인 버튼 -->
+          <button type="submit" id="loginBtn" class="auth-submit-btn">
+            <span id="loginBtnText">로그인</span>
+            <i class="ri-arrow-right-line" id="loginBtnIcon"></i>
+          </button>
+
+        </form>
+
+        <!-- 구분선 -->
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <span class="auth-divider-text">또는</span>
+          <div class="auth-divider-line"></div>
         </div>
 
-        <!-- 비밀번호 -->
-        <div class="form-group">
-          <label for="password">
-            비밀번호 <span class="required">*</span>
-          </label>
-          <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required
-            autocomplete="current-password">
-        </div>
-
-        <!-- 로그인 유지 -->
-        <div class="form-group" style="margin-bottom: var(--spacing-md);">
-          <label
-            style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; font-weight: var(--font-normal);">
-            <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px; cursor: pointer;">
-            <span style="font-size: var(--font-sm); color: var(--gray-600);">
-              로그인 상태 유지
-            </span>
-          </label>
-        </div>
-
-        <!-- 에러 메시지 -->
-        <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-        <!-- 버튼 -->
-        <div class="form-actions">
-          <button type="submit" id="loginBtn" class="btn btn-primary btn-large">
-            로그인
+        <!-- 소셜 로그인 -->
+        <div class="auth-social">
+          <button type="button" class="auth-social-btn">
+            <img src="https://www.google.com/favicon.ico" alt="Google" class="auth-social-icon">
+            Google
+          </button>
+          <button type="button" class="auth-social-btn auth-kakao-btn" id="kakaoLoginBtn">
+            <div class="auth-kakao-icon"><i class="ri-chat-1-fill"></i></div>
+            카카오
           </button>
         </div>
 
-        <!-- 링크 -->
-        <div class="auth-footer">
-          <p>아직 회원이 아니신가요? <a href="./signup.html">회원가입</a></p>
-        </div>
-      </form>
+        <!-- 회원가입 링크 -->
+        <p class="auth-switch">
+          아직 계정이 없으신가요?
+          <a href="./signup.html" class="auth-switch-link">회원가입</a>
+        </p>
+
+      </div>
     </div>
-  </main>
+
+    <!-- 오른쪽: 비주얼 -->
+    <div class="auth-visual-side">
+
+      <!-- 통계 -->
+      <div class="auth-visual-stats">
+        <div class="auth-stat">
+          <div class="auth-stat-num">12,458</div>
+          <div class="auth-stat-label">맛집 리뷰</div>
+        </div>
+        <div class="auth-stat">
+          <div class="auth-stat-num">3,892</div>
+          <div class="auth-stat-label">활동 회원</div>
+        </div>
+      </div>
+
+      <!-- 음식 카드들 -->
+      <div class="auth-visual-cards">
+        <div class="auth-food-card auth-food-card-1">
+          <span class="auth-food-emoji">🍲</span>
+          <span class="auth-food-label">한식</span>
+        </div>
+        <div class="auth-food-card auth-food-card-2">
+          <span class="auth-food-emoji">🍱</span>
+          <span class="auth-food-label">일식</span>
+        </div>
+        <div class="auth-food-card auth-food-card-3">
+          <span class="auth-food-emoji">🍝</span>
+          <span class="auth-food-label">양식</span>
+        </div>
+      </div>
+
+      <!-- 리뷰 카드 -->
+      <div class="auth-review-card">
+        <div class="auth-review-stars">
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+        </div>
+        <p class="auth-review-text">"여기 진짜 숨은 맛집이에요! 분위기도 좋고 음식도 최고"</p>
+        <p class="auth-review-author">- 맛집헌터 님의 리뷰</p>
+      </div>
+
+    </div>
+
+  </div>
 
   <!-- JavaScript -->
   <script type="module" src="../../js/pages/auth/login.js"></script>
-  <script type="module" src="../../js/components/header.js"></script>
 </body>
 
 </html>

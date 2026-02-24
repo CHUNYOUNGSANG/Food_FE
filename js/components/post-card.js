@@ -72,6 +72,8 @@ export const createPostCard = (post) => {
     memberId,
     createdAt,
     viewCount = 0,
+    likeCount = 0,
+    commentCount = 0,
   } = post;
 
   // 카테고리 클래스 매핑
@@ -151,7 +153,7 @@ export const createPostCard = (post) => {
     .join(' ');
 
   return `
-        <div class="post-card" ${dataAttrs} onclick="location.href='/pages/posts/post-detail.html?id=${id}'">
+        <div class="post-card" data-post-id="${id}" ${dataAttrs} onclick="location.href='/pages/posts/post-detail.html?id=${id}'">
             <div class="post-card-image">
                 ${cardImage}
                 ${
@@ -198,11 +200,14 @@ export const createPostCard = (post) => {
                     </div>
                     
                     <div class="post-card-meta">
+                        <span class="meta-item post-card-like-count-wrap" title="좋아요">
+                            ❤️ <span class="post-card-like-count">${likeCount}</span>
+                        </span>
+                        <span class="meta-item post-card-comment-count-wrap" title="댓글">
+                            💬 <span class="post-card-comment-count">${commentCount}</span>
+                        </span>
                         <span class="meta-item" title="조회수">
                             👁️ ${viewCount}
-                        </span>
-                        <span class="meta-item" title="작성일">
-                            🕐 ${getRelativeTime(createdAt)}
                         </span>
                     </div>
                 </div>

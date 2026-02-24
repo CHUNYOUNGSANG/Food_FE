@@ -4,11 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>파인잇 - 최고의 한입</title>
+  <title>파인잇 - 당신의 맛집을 찾아보세요 | 맛집 리뷰 공유 플랫폼</title>
 
   <!-- Favicon -->
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/common/reset.css">
@@ -27,57 +35,185 @@
 
   <!-- 메인 컨텐츠 -->
   <main class="home-container">
-    <!-- 카테고리 바 -->
-    <section class="category-bar" aria-label="카테고리">
-      <div class="category-list" id="categoryList"></div>
+
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+      <div class="hero-bg-gradient"></div>
+      <div class="hero-blob hero-blob-1"></div>
+      <div class="hero-blob hero-blob-2"></div>
+      <div class="hero-content">
+        <h1 class="hero-title">당신만의 <span class="hero-title-highlight">맛집</span>을<br>찾아보세요</h1>
+        <p class="hero-subtitle">전국의 숨은 맛집부터 핫플레이스까지, 실시간 리뷰와 함께 공유하는 맛집 플랫폼</p>
+        <div class="hero-search-wrap">
+          <form class="hero-search-form" id="heroSearchForm">
+            <input type="text" class="hero-search-input" placeholder="맛집, 지역, 음식 종류로 검색해보세요" />
+            <button type="submit" class="hero-search-btn">
+              <i class="ri-search-line"></i>
+            </button>
+          </form>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-number" id="statPostCount">-</div>
+            <div class="hero-stat-label">맛집 리뷰</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">3,892</div>
+            <div class="hero-stat-label">활동 회원</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">156</div>
+            <div class="hero-stat-label">지역</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- 추천 맛집 -->
-    <section class="recommend-section">
-      <div class="section-header">
-        <h2 class="section-title">추천 맛집</h2>
-        <a href="/pages/restaurants/restaurant-list.html" class="view-all-link">전체보기 →</a>
-      </div>
-      <div class="recommend-grid" id="recommendGrid">
-        <!-- 추천 맛집 카드가 동적으로 추가됨 -->
+    <!-- 카테고리 섹션 -->
+    <section class="category-section">
+      <div class="section-container">
+        <h2 class="section-title-center">카테고리별 탐색</h2>
+        <div class="category-grid-new">
+          <a href="/pages/category.html?category=한식" class="category-btn">
+            <div class="category-btn-icon" style="background:#fff7ed;color:#ea580c;">
+              <i class="ri-bowl-line"></i>
+            </div>
+            <span>한식</span>
+          </a>
+          <a href="/pages/category.html?category=중식" class="category-btn">
+            <div class="category-btn-icon" style="background:#fef2f2;color:#dc2626;">
+              <i class="ri-restaurant-2-line"></i>
+            </div>
+            <span>중식</span>
+          </a>
+          <a href="/pages/category.html?category=일식" class="category-btn">
+            <div class="category-btn-icon" style="background:#fdf2f8;color:#db2777;">
+              <i class="ri-cake-3-line"></i>
+            </div>
+            <span>일식</span>
+          </a>
+          <a href="/pages/category.html?category=양식" class="category-btn">
+            <div class="category-btn-icon" style="background:#faf5ff;color:#9333ea;">
+              <i class="ri-goblet-line"></i>
+            </div>
+            <span>양식</span>
+          </a>
+          <a href="/pages/category.html?category=카페" class="category-btn">
+            <div class="category-btn-icon" style="background:#fffbeb;color:#d97706;">
+              <i class="ri-cup-line"></i>
+            </div>
+            <span>카페</span>
+          </a>
+          <a href="/pages/category.html?category=디저트" class="category-btn">
+            <div class="category-btn-icon" style="background:#fff1f2;color:#e11d48;">
+              <i class="ri-cake-2-line"></i>
+            </div>
+            <span>디저트</span>
+          </a>
+          <a href="/pages/category.html?category=분식" class="category-btn">
+            <div class="category-btn-icon" style="background:#fefce8;color:#ca8a04;">
+              <i class="ri-restaurant-line"></i>
+            </div>
+            <span>분식</span>
+          </a>
+          <a href="/pages/category.html?category=치킨" class="category-btn">
+            <div class="category-btn-icon" style="background:#fff7ed;color:#ea580c;">
+              <i class="ri-fire-line"></i>
+            </div>
+            <span>치킨</span>
+          </a>
+        </div>
       </div>
     </section>
 
-    <!-- 실시간 Top 10 섹션 -->
-    <section class="top10-section">
-      <div class="section-header" style="margin-bottom: var(--spacing-lg);">
-        <h1 class="section-title" style="margin: 0; text-align: left;">실시간 Top 10</h1>
-        <a href="/pages/posts/post-list.html" class="view-all-link">전체보기 →</a>
+    <!-- 인기 맛집 리뷰 섹션 -->
+    <section class="popular-posts-section">
+      <div class="section-container">
+        <div class="section-header-row">
+          <h2 class="section-title-left">인기 맛집 리뷰</h2>
+          <a href="/pages/posts/post-list.html" class="view-all-link">전체보기<i class="ri-arrow-right-line"></i></a>
+        </div>
+        <div class="popular-posts-grid" id="popularPostsGrid">
+          <!-- 인기 게시글이 동적으로 추가됨 -->
+        </div>
       </div>
-      <p class="section-subtitle">지금 가장 많이 찾는 인기 카테고리</p>
+    </section>
 
-      <div class="top10-carousel" id="top10Carousel" aria-live="polite">
-        <!-- Top 10 게시글이 동적으로 렌더링됩니다 -->
+    <!-- 추천 맛집 섹션 -->
+    <section class="recommend-section-new">
+      <div class="section-container">
+        <div class="section-header-row">
+          <div>
+            <h2 class="section-title-left">추천 맛집</h2>
+            <p class="section-desc">파인잇이 엄선한 이달의 추천 맛집</p>
+          </div>
+          <a href="/pages/restaurants/restaurant-list.html" class="view-all-link">더보기<i class="ri-arrow-right-line"></i></a>
+        </div>
+        <div class="recommend-grid-new" id="recommendGrid">
+          <!-- 추천 맛집 카드가 동적으로 추가됨 -->
+        </div>
       </div>
     </section>
 
-    <!-- 최근 게시글 섹션 -->
-    <section class="recent-posts-section">
-      <div class="section-header">
-        <h2 class="section-title">최근 게시글</h2>
-        <a href="/pages/posts/post-list.html" class="view-all-link">전체보기 →</a>
-      </div>
-
-      <div class="posts-grid" id="recentPostsGrid">
-        <!-- 게시글 카드들이 여기에 동적으로 추가됨 -->
+    <!-- CTA 섹션 -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2 class="cta-title">지금 바로 시작하세요</h2>
+        <p class="cta-subtitle">당신의 맛집 경험을 공유하고, 다른 사람들의 추천을 받아보세요</p>
+        <div class="cta-buttons">
+          <a href="/pages/posts/post-create.html" class="cta-btn-primary">리뷰 작성하기</a>
+          <a href="/pages/posts/post-list.html" class="cta-btn-secondary">맛집 탐색하기</a>
+        </div>
       </div>
     </section>
+
   </main>
 
   <!-- 푸터 -->
   <footer class="site-footer">
     <div class="footer-container">
-      <p class="footer-logo">
-        🍽️ 파인잇
-      </p>
-      <p class="footer-copyright">
-        맛있는 순간을 나누는 공간 © 2026
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-wrap">
+            <div class="footer-logo-icon"><i class="ri-restaurant-2-fill"></i></div>
+            <span class="footer-logo-text">파인잇</span>
+          </div>
+          <p class="footer-tagline">당신만의 맛집을 찾고 공유하는 플랫폼</p>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">서비스</h3>
+          <ul class="footer-links-list">
+            <li><a href="/pages/posts/post-list.html" class="footer-link">맛집 탐색</a></li>
+            <li><a href="/pages/category.html" class="footer-link">카테고리</a></li>
+            <li><a href="/pages/restaurants/restaurant-list.html" class="footer-link">맛집 목록</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">고객지원</h3>
+          <ul class="footer-links-list">
+            <li><a href="#" class="footer-link">공지사항</a></li>
+            <li><a href="#" class="footer-link">FAQ</a></li>
+            <li><a href="#" class="footer-link">문의하기</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">소셜 미디어</h3>
+          <div class="footer-social">
+            <a href="#" class="footer-social-btn"><i class="ri-instagram-line"></i></a>
+            <a href="#" class="footer-social-btn"><i class="ri-facebook-circle-line"></i></a>
+            <a href="#" class="footer-social-btn"><i class="ri-youtube-line"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 파인잇. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#" class="footer-link">이용약관</a>
+          <a href="#" class="footer-link">개인정보처리방침</a>
+        </div>
+      </div>
     </div>
   </footer>
 

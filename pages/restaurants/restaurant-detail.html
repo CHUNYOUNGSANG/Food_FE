@@ -10,111 +10,246 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
+
   <!-- CSS -->
   <link rel="stylesheet" href="../../css/common/reset.css">
   <link rel="stylesheet" href="../../css/common/variables.css">
-  <link rel="stylesheet" href="../../css/common/layout.css">
   <link rel="stylesheet" href="../../css/components/header.css">
-  <link rel="stylesheet" href="../../css/components/button.css">
-  <link rel="stylesheet" href="../../css/components/card.css">
-  <link rel="stylesheet" href="../../css/components/footer.css">
   <link rel="stylesheet" href="../../css/pages/restaurant.css">
 </head>
 
-<body>
-  <!-- 헤더 -->
+<body class="rd-page">
+  <!-- 사이트 헤더 -->
   <header id="header" class="site-header"></header>
 
-  <!-- 메인 -->
-  <main class="container">
-    <div id="loading" class="loading" style="display: none;">
-      <div class="loading-text">로딩중...</div>
+  <!-- 로딩 -->
+  <div id="loading" class="rd-loading" style="display: none;">
+    <div class="rd-loading-spinner"></div>
+    <p class="rd-loading-text">맛집 정보를 불러오는 중...</p>
+  </div>
+
+  <!-- ===== 히어로 섹션 ===== -->
+  <section id="restaurantHeader" class="rd-hero" style="display: none;">
+    <!-- 배경 이미지 (첫 리뷰 사진 또는 그라디언트) -->
+    <div class="rd-hero-bg" id="restaurantHeroBg"></div>
+    <div class="rd-hero-overlay"></div>
+
+    <!-- 하단 콘텐츠 -->
+    <div class="rd-hero-bottom">
+      <span id="restaurantCategory" class="rd-category-chip">카테고리</span>
+      <h1 id="restaurantName" class="rd-restaurant-name">맛집명</h1>
+      <div class="rd-hero-meta">
+        <span id="restaurantAvgRating" class="rd-avg-rating">0.0</span>
+        <span class="rd-meta-sep">·</span>
+        <span class="rd-review-hint">리뷰 <span id="restaurantReviewCount">0</span>개</span>
+      </div>
+      <p id="restaurantAddress" class="rd-restaurant-addr"></p>
+    </div>
+  </section>
+
+  <!-- ===== 탭 네비게이션 (스크롤 시 고정) ===== -->
+  <nav class="rd-tabs" id="rdTabs">
+    <div class="rd-tabs-inner">
+      <button class="rd-tab active" data-section="section-info">
+        <i class="ri-information-line"></i>정보
+      </button>
+      <button class="rd-tab" data-section="section-menu">
+        <i class="ri-restaurant-line"></i>메뉴
+      </button>
+      <button class="rd-tab" data-section="restaurantGallery">
+        <i class="ri-image-line"></i>사진
+      </button>
+      <button class="rd-tab" data-section="section-comments">
+        <i class="ri-chat-quote-line"></i>댓글
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== 메인 컨텐츠 ===== -->
+  <main class="rd-main">
+
+    <!-- ── 정보 섹션 ── -->
+    <div id="section-info">
+      <!-- 정보 카드 (영업시간, 전화) -->
+      <div class="rd-info-cards">
+        <div class="rd-info-card">
+          <div class="rd-info-icon"><i class="ri-time-line"></i></div>
+          <div class="rd-info-body">
+            <p class="rd-info-label">영업시간</p>
+            <p id="restaurantHours" class="rd-info-val">정보 없음</p>
+          </div>
+        </div>
+        <div class="rd-info-card">
+          <div class="rd-info-icon"><i class="ri-phone-line"></i></div>
+          <div class="rd-info-body">
+            <p class="rd-info-label">전화번호</p>
+            <p id="restaurantPhone" class="rd-info-val">정보 없음</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 주소 행 -->
+      <div class="rd-addr-row">
+        <i class="ri-map-pin-2-fill"></i>
+        <span id="restaurantAddressInfo">-</span>
+        <button id="copyAddressBtn" class="rd-copy-btn">
+          <i class="ri-file-copy-line"></i>복사
+        </button>
+      </div>
     </div>
 
-    <section id="restaurantHeader" class="restaurant-hero" style="display: none;">
-      <div class="restaurant-hero-main">
-        <div class="restaurant-chip" id="restaurantCategory">카테고리</div>
-        <h1 id="restaurantName" class="restaurant-name">맛집명</h1>
-        <p id="restaurantAddress" class="restaurant-address">주소</p>
-        <div class="restaurant-actions">
-          <a id="restaurantReviewLink" class="btn btn-primary btn-small">
-            리뷰 작성
-          </a>
-          <a id="restaurantPlaceLink" class="btn btn-outline btn-small" target="_blank" rel="noopener noreferrer">
-            카카오맵 보기
-          </a>
-        </div>
-        <div class="restaurant-summary">
-          <div class="summary-card">
-            <div class="summary-label">평균 평점</div>
-            <div class="summary-value" id="restaurantAvgRating">0.0</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-label">리뷰 수</div>
-            <div class="summary-value" id="restaurantReviewCount">0</div>
-          </div>
+    <!-- ── 지도 카드 ── -->
+    <div class="rd-card">
+      <h4 class="rd-card-title">
+        <i class="ri-map-pin-line"></i>위치
+      </h4>
+      <div id="restaurantMap" class="rd-map"></div>
+      <div class="rd-map-btns">
+        <a id="restaurantNaviLink" href="#" class="rd-btn-primary" target="_blank" rel="noopener noreferrer">
+          <i class="ri-road-map-line"></i>길찾기
+        </a>
+        <a id="restaurantPlaceLink" href="#" class="rd-btn-secondary" target="_blank" rel="noopener noreferrer"
+          style="display: none;">
+          <i class="ri-external-link-line"></i>카카오맵에서 보기
+        </a>
+      </div>
+    </div>
+
+    <!-- ── 메뉴 섹션 ── -->
+    <div id="section-menu" class="rd-card">
+      <div class="rd-card-header">
+        <h4 class="rd-card-title"><i class="ri-restaurant-line"></i>메뉴</h4>
+      </div>
+      <div id="menuList" class="rd-menu-list">
+        <div class="rd-menu-empty">
+          <i class="ri-information-line"></i>
+          <span>메뉴 정보를 가져올 수 없습니다.</span>
+          <a id="menuKakaoLink" href="#" class="rd-menu-kakao-link" target="_blank" rel="noopener noreferrer"
+            style="display:none;">카카오맵에서 확인 →</a>
         </div>
       </div>
-      <div class="restaurant-hero-map">
-        <div id="restaurantMap" class="restaurant-map"></div>
+    </div>
+
+    <!-- ── 사진 갤러리 ── -->
+    <section id="restaurantGallery" class="rd-card" style="display: none;">
+      <div class="rd-card-header">
+        <h4 class="rd-card-title"><i class="ri-image-line"></i>사진</h4>
+        <span id="photoCountBadge" class="rd-count-badge">0장</span>
       </div>
+      <div id="galleryGrid" class="rd-gallery-grid"></div>
     </section>
 
-    <section id="restaurantGallery" class="restaurant-gallery" style="display: none;">
-      <div class="section-header">
-        <h2 class="section-title">사진 갤러리</h2>
-      </div>
-      <div id="galleryGrid" class="gallery-grid"></div>
-    </section>
+    <!-- ── 댓글 섹션 ── -->
+    <div id="section-comments">
 
-    <section class="restaurant-reviews">
-      <div class="section-header">
-        <h2 class="section-title">리뷰 모음</h2>
-        <span id="reviewCount" class="section-subtitle">0개</span>
+      <!-- 평점 요약 -->
+      <div class="rd-card">
+        <h4 class="rd-card-title"><i class="ri-star-line"></i>평점 요약</h4>
+        <div class="rd-rating-summary">
+          <div class="rd-rating-big-col">
+            <div id="restaurantAvgRatingBig" class="rd-big-num">0.0</div>
+            <div id="ratingStarsDisplay" class="rd-stars-row"></div>
+            <p class="rd-rating-total">총 <span id="reviewCountSummary">0</span>개</p>
+          </div>
+          <div id="ratingBars" class="rd-bars-col"></div>
+        </div>
       </div>
-      <div class="review-controls">
-        <select id="reviewSort" class="form-select review-sort">
-          <option value="latest">최신순</option>
-          <option value="rating">평점순</option>
-          <option value="views">조회순</option>
-        </select>
+
+      <!-- 댓글 목록 -->
+      <div class="rd-card">
+        <div class="rd-card-header">
+          <h4 class="rd-card-title"><i class="ri-chat-quote-line"></i>댓글</h4>
+          <span id="reviewCount" class="rd-count-badge">0개</span>
+        </div>
+        <div class="rd-sort-row">
+          <select id="reviewSort" class="rd-sort-select">
+            <option value="latest">최신순</option>
+            <option value="rating">평점순</option>
+            <option value="views">조회순</option>
+          </select>
+        </div>
+        <div id="reviewList" class="rd-comment-list"></div>
+        <div id="reviewPagination" class="rd-pagination" style="display: none;">
+          <button id="reviewPrev" class="rd-page-btn">이전</button>
+          <span id="reviewPageInfo" class="rd-page-info">1 / 1</span>
+          <button id="reviewNext" class="rd-page-btn">다음</button>
+        </div>
+        <div id="reviewEmpty" class="rd-empty" style="display: none;">
+          <div class="rd-empty-icon">📝</div>
+          <p class="rd-empty-text">아직 등록된 리뷰가 없어요.</p>
+          <a id="restaurantEmptyReviewLink" href="/pages/posts/post-create.html" class="rd-empty-btn">
+            첫 리뷰 작성하기
+          </a>
+        </div>
       </div>
-      <div id="reviewList" class="review-list"></div>
-      <div id="reviewPagination" class="review-pagination" style="display: none;">
-        <button id="reviewPrev" class="btn btn-outline btn-small">이전</button>
-        <span id="reviewPageInfo" class="page-info">1 / 1</span>
-        <button id="reviewNext" class="btn btn-outline btn-small">다음</button>
-      </div>
-      <div id="reviewEmpty" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">📝</div>
-        <p class="empty-state-text">아직 등록된 리뷰가 없어요.</p>
-        <a id="restaurantEmptyReviewLink" href="/pages/posts/post-create.html" class="btn btn-primary">첫 리뷰 작성하기</a>
-      </div>
-    </section>
+
+    </div>
 
   </main>
 
   <!-- 푸터 -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <p class="footer-logo">🍽️ 파인잇</p>
-      <p class="footer-copyright">맛있는 순간을 나누는 공간 © 2026</p>
+  <footer class="rd-footer">
+    <div class="rd-footer-inner">
+      <div class="rd-footer-brand">
+        <div class="rd-footer-logo"><i class="ri-restaurant-2-fill"></i></div>
+        <span>파인잇</span>
+      </div>
+      <p class="rd-footer-copy">© 2025 파인잇. All rights reserved.</p>
+      <div class="rd-footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+      </div>
     </div>
   </footer>
 
-  <!-- JS -->
+  <!-- 하단 고정 바 -->
+  <div class="rd-bottom-bar">
+    <a id="restaurantCallBtn" href="tel:" class="rd-call-btn">
+      <i class="ri-phone-line"></i>전화
+    </a>
+    <a id="restaurantReviewLink" href="/pages/posts/post-create.html" class="rd-write-btn">
+      <i class="ri-edit-2-line"></i>리뷰 작성하기
+    </a>
+  </div>
+
+  <!-- 갤러리 모달 -->
+  <div id="galleryModal" class="rd-modal" style="display: none;">
+    <div class="gallery-modal-backdrop"></div>
+    <div class="rd-modal-wrap">
+      <button id="galleryModalClose" class="rd-modal-close">×</button>
+      <img id="galleryModalImage" src="" alt="gallery">
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="../../js/config/kakao-config.js"></script>
-  <script>document.write('<scr'+'ipt src="//dapi.kakao.com/v2/maps/sdk.js?appkey='+window.KAKAO_APP_KEY+'&libraries=services"><\/scr'+'ipt>');</script>
+  <script>document.write('<scr' + 'ipt src="//dapi.kakao.com/v2/maps/sdk.js?appkey=' + window.KAKAO_APP_KEY + '&libraries=services"><\/scr' + 'ipt>');</script>
   <script type="module" src="../../js/pages/restaurants/restaurant-detail.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 
-  <div id="galleryModal" class="gallery-modal" style="display: none;">
-    <div class="gallery-modal-backdrop"></div>
-    <div class="gallery-modal-content">
-      <button id="galleryModalClose" class="gallery-modal-close">×</button>
-      <img id="galleryModalImage" src="" alt="gallery" />
-    </div>
-  </div>
+  <!-- 탭 네비게이션 클릭 스크롤 -->
+  <script>
+    document.querySelectorAll('.rd-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var sectionId = tab.dataset.section;
+        var section = document.getElementById(sectionId);
+        if (section) {
+          var top = section.getBoundingClientRect().top + window.scrollY - 126;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+        document.querySelectorAll('.rd-tab').forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+      });
+    });
+  </script>
 </body>
 
 </html>

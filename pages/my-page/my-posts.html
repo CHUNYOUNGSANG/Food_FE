@@ -10,235 +10,228 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
+
   <!-- CSS -->
   <link rel="stylesheet" href="../../css/common/reset.css">
   <link rel="stylesheet" href="../../css/common/variables.css">
-  <link rel="stylesheet" href="../../css/common/layout.css">
   <link rel="stylesheet" href="../../css/components/header.css">
   <link rel="stylesheet" href="../../css/components/button.css">
   <link rel="stylesheet" href="../../css/components/card.css">
   <link rel="stylesheet" href="../../css/components/form.css">
-  <link rel="stylesheet" href="../../css/components/footer.css">
   <link rel="stylesheet" href="../../css/pages/my-page.css">
 </head>
 
-<body>
+<body class="mp-page">
   <!-- 헤더 -->
   <header id="header" class="site-header"></header>
 
-  <!-- 메인 컨텐츠 -->
-  <main class="container">
-    <!-- 프로필 섹션 -->
-    <div class="profile-header">
-      <div class="profile-content">
-        <div id="profileAvatar" class="profile-avatar">
-          U
+  <main class="mp-main">
+
+    <!-- 모바일 전용 탭 (lg 미만) -->
+    <div class="mp-mobile-tabs">
+      <button id="mobilePostsTab" class="mp-mobile-tab active">
+        <i class="ri-quill-pen-line"></i>내 리뷰
+      </button>
+      <button id="mobileLikedTab" class="mp-mobile-tab">
+        <i class="ri-bookmark-line"></i>저장한 맛집
+      </button>
+      <button id="mobileLikedCommentsTab" class="mp-mobile-tab">
+        <i class="ri-heart-line"></i>좋아요
+      </button>
+      <button id="mobileProfileTab" class="mp-mobile-tab">
+        <i class="ri-settings-3-line"></i>설정
+      </button>
+    </div>
+
+    <div class="mp-layout">
+
+      <!-- ===== 왼쪽 사이드바 ===== -->
+      <aside class="mp-sidebar-wrap">
+        <div class="mp-sidebar-sticky">
+          <div class="mp-profile-card">
+
+            <!-- 아바타 + 이름 -->
+            <div class="mp-avatar-section">
+              <div class="mp-avatar-wrap">
+                <div id="profileAvatar" class="mp-avatar">U</div>
+              </div>
+              <h2 id="profileNickname" class="mp-profile-name">닉네임</h2>
+              <p id="profileEmail" class="mp-profile-handle">@email</p>
+            </div>
+
+            <!-- 통계 3열 -->
+            <div class="mp-stats-grid">
+              <div class="mp-stat">
+                <div id="postCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">리뷰</div>
+              </div>
+              <div class="mp-stat mp-stat-border">
+                <div id="likedCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">좋아요</div>
+              </div>
+              <div class="mp-stat">
+                <div id="myCommentCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">댓글</div>
+              </div>
+            </div>
+
+            <!-- 네비게이션 -->
+            <nav class="mp-nav">
+              <button id="postsTab" class="mp-nav-btn active">
+                <div class="mp-nav-icon"><i class="ri-quill-pen-line"></i></div>
+                내 리뷰
+              </button>
+              <button id="likedPostsTab" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-heart-line"></i></div>
+                좋아요한 리뷰
+              </button>
+              <button id="commentsTab" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-chat-3-line"></i></div>
+                내 댓글
+              </button>
+              <button id="likedCommentsTab" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-heart-line"></i></div>
+                좋아요한 댓글
+              </button>
+              <button id="profileTab" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-settings-3-line"></i></div>
+                프로필 설정
+              </button>
+            </nav>
+
+            <!-- 로그아웃 -->
+            <div class="mp-logout-wrap">
+              <button id="logoutBtn" class="mp-logout-btn">
+                <div class="mp-nav-icon"><i class="ri-logout-box-r-line"></i></div>
+                로그아웃
+              </button>
+            </div>
+
+          </div>
         </div>
-        <div class="profile-info">
-          <h1 id="profileNickname" class="profile-nickname">
-            닉네임
-          </h1>
-          <p id="profileEmail" class="profile-email">
-            email@example.com
-          </p>
-        </div>
-        <div class="profile-stats">
-          <div class="stat-card">
-            <div class="stat-number" id="postCount">
-              0
-            </div>
-            <div class="stat-label">
-              내 게시글
-            </div>
+      </aside>
+
+      <!-- ===== 오른쪽 컨텐츠 ===== -->
+      <div class="mp-content">
+
+        <!-- 내 리뷰 탭 -->
+        <div id="postsContent" class="tab-content active">
+          <div id="postsLoading" class="mp-loading" style="display: none;">로딩중...</div>
+          <div class="mp-section-header">
+            <h2 class="mp-section-title">내 리뷰</h2>
+            <span id="postCountBadge" class="mp-section-count">0개의 리뷰</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="likedCount">
-              0
-            </div>
-            <div class="stat-label">
-              좋아요
-            </div>
+          <div id="postsGrid" class="mp-posts-list"></div>
+          <div id="postsEmptyState" class="mp-empty" style="display: none;">
+            <div class="mp-empty-icon"><i class="ri-quill-pen-line"></i></div>
+            <h3 class="mp-empty-title">작성한 게시글이 없어요</h3>
+            <p class="mp-empty-desc">첫 맛집 후기를 작성해보세요!</p>
+            <a href="/pages/posts/post-create.html" class="mp-empty-btn">게시글 작성하기</a>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 탭 메뉴 -->
-    <div class="tab-container">
-      <div class="tab-buttons">
-        <button id="postsTab" class="tab-button active">
-          📝 내 게시글
-        </button>
-        <button id="likedPostsTab" class="tab-button">
-          ❤️ 좋아요한 게시글
-        </button>
-        <button id="commentsTab" class="tab-button">
-          💬 내 댓글
-        </button>
-        <button id="likedCommentsTab" class="tab-button">
-          💕 좋아요한 댓글
-        </button>
-        <button id="profileTab" class="tab-button">
-          ⚙️ 프로필 수정
-        </button>
-      </div>
-    </div>
+        <!-- 좋아요한 게시글 탭 -->
+        <div id="likedPostsContent" class="tab-content" style="display: none;">
+          <div id="likedPostsLoading" class="mp-loading" style="display: none;">로딩중...</div>
+          <div class="mp-section-header">
+            <h2 class="mp-section-title">좋아요한 게시글</h2>
+          </div>
+          <div id="likedPostsGrid" class="mp-posts-list"></div>
+          <div id="likedPostsEmptyState" class="mp-empty" style="display: none;">
+            <div class="mp-empty-icon"><i class="ri-heart-line"></i></div>
+            <h3 class="mp-empty-title">좋아요한 게시글이 없어요</h3>
+            <p class="mp-empty-desc">마음에 드는 맛집을 발견하면<br>좋아요 버튼을 눌러보세요!</p>
+            <a href="/index.html" class="mp-empty-btn">게시글 둘러보기</a>
+          </div>
+        </div>
 
-    <!-- 내 게시글 탭 -->
-    <div id="postsContent" class="tab-content active">
-      <!-- 로딩 -->
-      <div id="postsLoading" class="loading" style="display: none;">
-        <div class="loading-text">로딩중...</div>
-      </div>
+        <!-- 프로필 수정 탭 -->
+        <div id="profileContent" class="tab-content" style="display: none;">
 
-      <!-- 게시글 그리드 -->
-      <div id="postsGrid" class="posts-grid">
-        <!-- 게시글 카드가 동적으로 추가됩니다 -->
-      </div>
-
-      <!-- 빈 상태 -->
-      <div id="postsEmptyState" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">📝</div>
-        <h3 class="empty-state-title">
-          작성한 게시글이 없어요
-        </h3>
-        <p class="empty-state-description">
-          첫 맛집 후기를 작성해보세요!
-        </p>
-        <a href="/pages/posts/post-create.html" class="btn btn-primary">
-          게시글 작성하기
-        </a>
-      </div>
-    </div>
-
-    <!-- 좋아요한 게시글 탭 -->
-    <div id="likedPostsContent" class="tab-content" style="display: none;">
-      <!-- 로딩 -->
-      <div id="likedPostsLoading" class="loading" style="display: none;">
-        <div class="loading-text">로딩중...</div>
-      </div>
-
-      <!-- 게시글 그리드 -->
-      <div id="likedPostsGrid" class="posts-grid">
-        <!-- 좋아요한 게시글 카드가 동적으로 추가됩니다 -->
-      </div>
-
-      <!-- 빈 상태 -->
-      <div id="likedPostsEmptyState" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">❤️</div>
-        <h3 class="empty-state-title">
-          좋아요한 게시글이 없어요
-        </h3>
-        <p class="empty-state-description">
-          마음에 드는 맛집을 발견하면<br>좋아요 버튼을 눌러보세요!
-        </p>
-        <a href="/index.html" class="btn btn-primary">
-          게시글 둘러보기
-        </a>
-      </div>
-    </div>
-
-    <!-- 프로필 수정 탭 -->
-    <div id="profileContent" class="tab-content" style="display: none;">
-      <div class="profile-form-container">
-        <h2 class="profile-form-title">
-          프로필 수정
-        </h2>
-
-        <form id="profileForm">
-          <div class="form-group">
-            <label for="name">이름</label>
-            <input type="text" id="name" class="form-input" readonly disabled
-              style="background-color: var(--gray-100); cursor: not-allowed;">
+          <!-- 프로필 수정 폼 -->
+          <div class="mp-profile-form-card">
+            <h2 class="mp-form-title">프로필 수정</h2>
+            <form id="profileForm">
+              <div class="mp-form-group">
+                <label for="name" class="mp-form-label">이름</label>
+                <input type="text" id="name" class="mp-form-input form-input" readonly disabled>
+              </div>
+              <div class="mp-form-group">
+                <label for="nickname" class="mp-form-label">닉네임</label>
+                <input type="text" id="nickname" class="mp-form-input form-input" required>
+              </div>
+              <div class="mp-form-group">
+                <label for="profileImage" class="mp-form-label">프로필 이미지</label>
+                <input type="file" id="profileImage" class="mp-form-input" accept="image/*">
+                <div id="editImagePreview" class="mp-image-preview" style="display: none;">
+                  <img id="editImagePreviewImg" src="" alt="프로필 미리보기">
+                  <button type="button" id="editRemoveImageBtn" class="mp-image-remove">&times;</button>
+                </div>
+              </div>
+              <div id="profileError" class="mp-form-error" style="display: none;"></div>
+              <div class="mp-form-actions">
+                <button type="submit" id="profileSubmitBtn" class="mp-submit-btn">저장하기</button>
+              </div>
+            </form>
           </div>
 
-          <div class="form-group">
-            <label for="nickname">닉네임</label>
-            <input type="text" id="nickname" class="form-input" required>
+          <!-- 비밀번호 변경 -->
+          <div class="mp-profile-form-card" style="margin-top: 24px;">
+            <h2 class="mp-form-title">비밀번호 변경</h2>
+            <form id="passwordForm">
+              <div class="mp-form-group">
+                <label for="oldPassword" class="mp-form-label">현재 비밀번호</label>
+                <input type="password" id="oldPassword" class="mp-form-input" required>
+              </div>
+              <div class="mp-form-group">
+                <label for="newPassword" class="mp-form-label">새 비밀번호</label>
+                <input type="password" id="newPassword" class="mp-form-input" required>
+                <div class="mp-form-help">8자 이상, 영문과 숫자를 포함해야 합니다.</div>
+              </div>
+              <div class="mp-form-group">
+                <label for="confirmPassword" class="mp-form-label">새 비밀번호 확인</label>
+                <input type="password" id="confirmPassword" class="mp-form-input" required>
+              </div>
+              <div id="passwordError" class="mp-form-error" style="display: none;"></div>
+              <div class="mp-form-actions">
+                <button type="submit" id="passwordSubmitBtn" class="mp-submit-btn">비밀번호 변경</button>
+              </div>
+            </form>
           </div>
 
-          <div class="form-group">
-            <label for="profileImage">프로필 이미지</label>
-            <input type="file" id="profileImage" class="form-input" accept="image/*">
-            <div id="editImagePreview" class="profile-image-preview" style="display: none;">
-              <img id="editImagePreviewImg" src="" alt="프로필 미리보기">
-              <button type="button" id="editRemoveImageBtn" class="image-preview-remove">&times;</button>
-            </div>
+          <!-- 회원 탈퇴 -->
+          <div class="mp-danger-card">
+            <h2 class="mp-form-title mp-danger-title">회원 탈퇴</h2>
+            <p class="mp-danger-desc">회원 탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.</p>
+            <button id="deleteAccountBtn" class="mp-danger-btn">회원 탈퇴</button>
           </div>
 
-          <div id="profileError" class="error-message" style="display: none;"></div>
+        </div>
 
-          <div class="form-actions">
-            <button type="submit" id="profileSubmitBtn" class="btn btn-primary">
-              저장하기
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- 비밀번호 변경 폼 -->
-      <div class="profile-form-container" style="margin-top: var(--spacing-2xl);">
-        <h2 class="profile-form-title">
-          🔒 비밀번호 변경
-        </h2>
-
-        <form id="passwordForm">
-          <div class="form-group">
-            <label for="oldPassword">현재 비밀번호</label>
-            <input type="password" id="oldPassword" class="form-input" required>
-          </div>
-
-          <div class="form-group">
-            <label for="newPassword">새 비밀번호</label>
-            <input type="password" id="newPassword" class="form-input" required
-              pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$">
-            <div class="form-help-text">
-              8자 이상, 영문과 숫자를 포함해야 합니다.
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword">새 비밀번호 확인</label>
-            <input type="password" id="confirmPassword" class="form-input" required>
-          </div>
-
-          <div id="passwordError" class="error-message" style="display: none;"></div>
-
-          <div class="form-actions">
-            <button type="submit" id="passwordSubmitBtn" class="btn btn-primary">
-              비밀번호 변경
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- 회원 탈퇴 -->
-      <div class="profile-form-container" style="margin-top: var(--spacing-2xl); border: 2px solid var(--error-color);">
-        <h2 class="profile-form-title" style="color: var(--error-color);">
-          ⚠️ 회원 탈퇴
-        </h2>
-
-        <p style="color: var(--gray-600); margin-bottom: var(--spacing-lg);">
-          회원 탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.
-        </p>
-
-        <button id="deleteAccountBtn" class="btn btn-outline"
-          style="color: var(--error-color); border-color: var(--error-color);">
-          회원 탈퇴
-        </button>
       </div>
     </div>
   </main>
 
   <!-- 푸터 -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <p class="footer-logo">
-        🍽️ 파인잇
-      </p>
-      <p class="footer-copyright">
-        맛있는 순간을 나누는 공간 © 2025
-      </p>
+  <footer class="mp-footer">
+    <div class="mp-footer-inner">
+      <div class="mp-footer-brand">
+        <div class="mp-footer-logo-icon"><i class="ri-restaurant-2-fill"></i></div>
+        <span class="mp-footer-logo-text">파인잇</span>
+      </div>
+      <p>© 2025 파인잇. All rights reserved.</p>
+      <div class="mp-footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+      </div>
     </div>
   </footer>
 

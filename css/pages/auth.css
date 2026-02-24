@@ -1,55 +1,875 @@
 /**
- * 인증 페이지 스타일 - 카드 강조 디자인
+ * 인증 페이지 스타일 - 스플릿 스크린 디자인
  */
 
-body {
-  background: var(--gray-50);
+* {
+  box-sizing: border-box;
 }
 
+.auth-page {
+  margin: 0;
+  padding: 0;
+  font-family:
+    'Noto Sans KR',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+/* ===========================
+   스플릿 레이아웃
+=========================== */
+.auth-split {
+  display: flex;
+  min-height: 100vh;
+  background: white;
+}
+
+/* ===========================
+   왼쪽: 폼 영역
+=========================== */
+.auth-form-side {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 32px;
+}
+
+.auth-form-inner {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 로고 */
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  margin-bottom: 48px;
+}
+
+.auth-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.125rem;
+}
+
+.auth-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ea580c, #db2777);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 타이틀 */
+.auth-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 40px;
+}
+
+/* 폼 */
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 필드 */
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.auth-input-wrap {
+  position: relative;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  font-family: inherit;
+}
+
+.auth-input:focus {
+  border-color: #fb923c;
+  background: white;
+}
+
+.auth-input::placeholder {
+  color: #9ca3af;
+}
+
+/* 비밀번호 필드 패딩 */
+.auth-input-pw {
+  padding-right: 44px;
+}
+
+/* 비밀번호 토글 버튼 */
+.auth-pw-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.auth-pw-toggle:hover {
+  color: #6b7280;
+}
+
+/* 비밀번호 찾기 */
+.auth-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+
+.auth-forgot-link {
+  font-size: 0.875rem;
+  color: #ea580c;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.auth-forgot-link:hover {
+  color: #c2410c;
+}
+
+/* 에러 메시지 */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+/* 로그인/회원가입 제출 버튼 */
+.auth-submit-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    opacity 0.2s,
+    box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+  font-family: inherit;
+}
+
+.auth-submit-btn:hover {
+  opacity: 0.92;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 구분선 */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.auth-divider-text {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* 소셜 로그인 */
+.auth-social {
+  display: flex;
+  gap: 12px;
+}
+
+.auth-social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.auth-social-btn:hover {
+  background: #f3f4f6;
+}
+
+.auth-social-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.auth-kakao-icon {
+  width: 16px;
+  height: 16px;
+  background: #fee500;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.auth-kakao-icon i {
+  font-size: 0.625rem;
+  color: #111;
+}
+
+/* 회원가입 스위치 */
+.auth-switch {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 32px;
+}
+
+.auth-switch-link {
+  color: #ea580c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-switch-link:hover {
+  color: #c2410c;
+}
+
+/* ===========================
+   오른쪽: 비주얼 영역
+=========================== */
+.auth-visual-side {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fffbeb 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+/* 통계 */
+.auth-visual-stats {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  display: flex;
+  gap: 24px;
+  text-align: right;
+}
+
+.auth-stat-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.auth-stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* 음식 카드들 */
+.auth-visual-cards {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 420px;
+}
+
+.auth-food-card {
+  position: absolute;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.5s ease;
+}
+
+.auth-food-card:hover {
+  transform: rotate(0deg) !important;
+}
+
+.auth-food-emoji {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.auth-food-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* 카드 1 - 한식 */
+.auth-food-card-1 {
+  top: 0;
+  left: -16px;
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #fed7aa, #fb923c);
+  transform: rotate(-6deg);
+}
+
+/* 카드 2 - 일식 */
+.auth-food-card-2 {
+  top: 64px;
+  right: 0;
+  width: 220px;
+  height: 280px;
+  background: linear-gradient(135deg, #fbcfe8, #f472b6);
+  transform: rotate(4deg);
+}
+
+/* 카드 3 - 양식 */
+.auth-food-card-3 {
+  bottom: -20px;
+  left: 48px;
+  width: 210px;
+  height: 160px;
+  background: linear-gradient(135deg, #ddd6fe, #a78bfa);
+  transform: rotate(3deg);
+}
+
+/* 리뷰 카드 */
+.auth-review-card {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 280px;
+}
+
+.auth-review-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+  color: #fbbf24;
+  font-size: 0.875rem;
+}
+
+.auth-review-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.auth-review-author {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ===========================
+   반응형
+=========================== */
+@media (min-width: 1024px) {
+  .auth-form-side {
+    width: 45%;
+    padding: 48px 64px;
+  }
+
+  .auth-visual-side {
+    display: flex;
+    width: 55%;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-form-side {
+    padding: 32px 20px;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* ===========================
+   회원가입 전용 스타일
+=========================== */
+
+/* 회원가입은 좌우 반전: 왼쪽=비주얼, 오른쪽=폼 */
+.signup-visual-side {
+  display: none;
+  order: -1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fffbeb 100%);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.signup-visual-logo {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+}
+
+.signup-visual-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 원형 비주얼 */
+.signup-visual-circle {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fed7aa, #fbcfe8, #ddd6fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.signup-visual-emoji {
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.signup-visual-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.signup-visual-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* 기능 카드들 */
+.signup-features {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.signup-feature-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  width: 96px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.signup-feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+}
+
+.signup-feature-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* 모바일 전용 로고 */
+.auth-logo-mobile {
+  display: flex;
+  margin-bottom: 32px;
+}
+
+/* 2열 그리드 */
+.auth-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* 라벨 + 검증 메시지 행 */
+.auth-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* 입력 + 버튼 인라인 */
+.auth-input-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.auth-input-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 중복확인 버튼 */
+.auth-dup-btn {
+  padding: 0 12px;
+  height: 48px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.auth-dup-btn:hover {
+  background: #ffedd5;
+  border-color: #fb923c;
+}
+
+.auth-dup-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 선택 표시 */
+.auth-optional {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* 파일 업로드 */
+.auth-file-input {
+  display: none;
+}
+
+.auth-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px dashed #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #6b7280;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.auth-upload-label:hover {
+  border-color: #fb923c;
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.auth-upload-label i {
+  font-size: 1.125rem;
+}
+
+/* 이미지 미리보기 */
+.auth-image-preview {
+  position: relative;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.auth-image-preview img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.auth-image-remove {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+/* 이용약관 동의 */
+.auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.auth-terms-checkbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: #ea580c;
+  cursor: pointer;
+}
+
+.auth-terms-label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.auth-terms-link {
+  color: #ea580c;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-terms-link:hover {
+  text-decoration: underline;
+}
+
+/* 비밀번호 검증 블록: auth-input-wrap 안에 붙으므로 absolute로 플로팅 처리 */
+.auth-input-wrap .password-validation {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin-top: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-input-wrap .password-validation-item.invalid {
+  color: #dc2626;
+}
+
+.auth-input-wrap .password-validation-item.invalid::before {
+  content: '✗';
+  color: #dc2626;
+}
+
+/* 검증 메시지 (라벨 옆) */
+.label-help-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.label-validation-error {
+  color: #dc2626;
+}
+
+.label-validation-success {
+  color: #16a34a;
+}
+
+/* 입력 유효성 상태 */
+.auth-input.valid {
+  border-color: #16a34a;
+}
+
+.auth-input.invalid {
+  border-color: #dc2626;
+}
+
+/* 반응형 */
+@media (min-width: 1024px) {
+  .signup-visual-side {
+    display: flex;
+    width: 45%;
+  }
+
+  .signup-form-side {
+    width: 55%;
+  }
+
+  .auth-logo-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===========================
+   기존 signup.html 호환성
+   (signup 페이지가 구 스타일 사용 시)
+=========================== */
 .auth-container {
   max-width: 480px;
-  margin: var(--spacing-3xl) auto;
-  padding: var(--spacing-3xl);
-  background: var(--white);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--gray-200);
+  margin: 80px auto;
+  padding: 48px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: 32px;
 }
 
 .auth-header h1 {
-  font-size: var(--font-3xl);
-  font-weight: var(--font-bold);
-  color: var(--gray-900);
-  margin-bottom: var(--spacing-sm);
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
 }
 
 .auth-header p {
-  font-size: var(--font-md);
-  color: var(--gray-600);
-  font-weight: var(--font-normal);
-}
-
-.auth-form {
-  width: 100%;
+  font-size: 1rem;
+  color: #6b7280;
 }
 
 .auth-footer {
-  margin-top: var(--spacing-2xl);
-  padding-top: var(--spacing-xl);
+  margin-top: 32px;
+  padding-top: 24px;
   text-align: center;
-  font-size: var(--font-sm);
-  color: var(--gray-600);
-  border-top: 1px solid var(--gray-200);
+  font-size: 0.875rem;
+  color: #6b7280;
+  border-top: 1px solid #e5e7eb;
 }
 
 .auth-footer a {
-  color: var(--primary-color);
-  font-weight: var(--font-semibold);
+  color: #ea580c;
+  font-weight: 600;
   text-decoration: none;
 }
 
@@ -57,11 +877,10 @@ body {
   text-decoration: underline;
 }
 
-/* 버튼 확장 */
 .btn-large {
   width: 100%;
-  padding: var(--spacing-md) var(--spacing-xl);
-  font-size: var(--font-md);
-  font-weight: var(--font-semibold);
-  margin-top: var(--spacing-sm);
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 8px;
 }
