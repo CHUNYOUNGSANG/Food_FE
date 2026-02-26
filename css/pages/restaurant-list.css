@@ -56,9 +56,9 @@
 
 .restaurant-search input {
   width: min(360px, 80vw);
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 12px;
-  border: 1px solid var(--color-border);
+  border: 1.5px solid #d1d5db;
   background: #fff;
   font-size: 14px;
   color: var(--color-text);
@@ -67,8 +67,13 @@
 }
 
 .restaurant-search input:focus {
-  border-color: rgba(17, 24, 39, 0.4);
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.restaurant-search .btn {
+  padding: 10px 18px;
+  font-size: 14px;
 }
 
 .restaurant-grid-section {

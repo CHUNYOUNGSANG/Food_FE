@@ -16,7 +16,7 @@
 .mp-main {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 96px 16px 64px;
+  padding: 32px 16px 64px;
 }
 
 @media (min-width: 640px) {
@@ -686,6 +686,251 @@
 
 .mp-footer-links a:hover {
   color: white;
+}
+
+/* ===========================
+   사이드바 내비 앵커 지원 (sub-pages)
+=========================== */
+a.mp-nav-btn {
+  text-decoration: none;
+  color: #4b5563;
+  display: flex;
+}
+
+a.mp-nav-btn:hover {
+  background: #f9fafb;
+  color: #111827;
+}
+
+a.mp-nav-btn.active {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* ===========================
+   서브페이지 통계 행
+=========================== */
+.mp-sub-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mp-sub-stat-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  text-align: center;
+}
+
+.mp-sub-stat-num {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+/* ===========================
+   서브페이지 목록 컨테이너
+=========================== */
+.mp-list-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ===========================
+   댓글 카드 (JS 생성 공통)
+=========================== */
+.comment-card {
+  padding: 20px;
+  border-bottom: 1px solid #f9fafb;
+  transition: background 0.15s;
+}
+
+.comment-card:last-child {
+  border-bottom: none;
+}
+
+.comment-card:hover {
+  background: #fafafa;
+}
+
+.comment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.comment-post-info {
+  flex: 1;
+}
+
+.comment-post-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.comment-post-title:hover {
+  color: #ea580c;
+}
+
+.comment-info {
+  flex: 1;
+}
+
+.comment-author {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.comment-post-link {
+  font-size: 0.8125rem;
+  color: #f97316;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.comment-post-link:hover {
+  color: #ea580c;
+  text-decoration: underline;
+}
+
+.like-info {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.like-date {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+.comment-date {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.comment-content-box {
+  background: #f9fafb;
+  border-radius: 10px;
+  border-left: 3px solid #f97316;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.comment-text {
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.comment-deleted .comment-text,
+.comment-deleted-text {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* ===========================
+   좋아요한 게시글 그리드
+=========================== */
+.mp-liked-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* ===========================
+   수정 모달
+=========================== */
+.mp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.mp-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.mp-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.mp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.mp-modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.mp-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 50%;
+  font-size: 1rem;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.mp-modal-close:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.mp-modal-body {
+  padding: 24px;
 }
 
 /* ===========================

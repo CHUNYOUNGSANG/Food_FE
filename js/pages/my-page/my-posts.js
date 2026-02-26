@@ -102,6 +102,13 @@ const init = async () => {
 
   // 이벤트 리스너
   attachEventListeners();
+
+  // URL 파라미터로 초기 탭 설정
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab');
+  if (tabParam === 'profile') {
+    switchTab('profile');
+  }
 };
 
 /**

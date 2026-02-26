@@ -10,7 +10,6 @@
 .pd-page {
   background: #f8f9fa;
   min-height: 100vh;
-  padding-top: 64px; /* fixed site-header height */
 }
 
 /* ===== Loading ===== */

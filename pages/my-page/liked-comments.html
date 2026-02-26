@@ -10,277 +10,241 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
+
   <!-- CSS -->
   <link rel="stylesheet" href="../../css/common/reset.css">
   <link rel="stylesheet" href="../../css/common/variables.css">
-  <link rel="stylesheet" href="../../css/common/layout.css">
   <link rel="stylesheet" href="../../css/components/header.css">
   <link rel="stylesheet" href="../../css/components/button.css">
-  <link rel="stylesheet" href="../../css/components/card.css">
   <link rel="stylesheet" href="../../css/components/footer.css">
   <link rel="stylesheet" href="../../css/pages/my-page.css">
 </head>
 
-<body>
+<body class="mp-page">
   <!-- 헤더 -->
   <header id="header" class="site-header"></header>
 
-  <!-- 메인 컨텐츠 -->
-  <main class="container">
-    <!-- 페이지 헤더 -->
-    <div class="page-header">
-      <div class="page-header-content">
-        <div class="page-icon">❤️</div>
-        <div>
-          <h1 class="page-title">좋아요한 댓글</h1>
-          <p class="page-description">
-            내가 좋아요를 누른 댓글을 확인하세요
-          </p>
+  <main class="mp-main">
+
+    <!-- 모바일 전용 탭 -->
+    <div class="mp-mobile-tabs">
+      <a href="/pages/my-page/my-posts.html" class="mp-mobile-tab">
+        <i class="ri-quill-pen-line"></i>내 리뷰
+      </a>
+      <a href="/pages/my-page/liked-posts.html" class="mp-mobile-tab">
+        <i class="ri-heart-line"></i>좋아요
+      </a>
+      <a href="/pages/my-page/my-comments.html" class="mp-mobile-tab">
+        <i class="ri-chat-3-line"></i>내 댓글
+      </a>
+      <a href="/pages/my-page/liked-comments.html" class="mp-mobile-tab active">
+        <i class="ri-heart-line"></i>좋아요 댓글
+      </a>
+    </div>
+
+    <div class="mp-layout">
+
+      <!-- ===== 왼쪽 사이드바 ===== -->
+      <aside class="mp-sidebar-wrap">
+        <div class="mp-sidebar-sticky">
+          <div class="mp-profile-card">
+
+            <!-- 아바타 + 이름 -->
+            <div class="mp-avatar-section">
+              <div class="mp-avatar-wrap">
+                <div id="sidebarAvatar" class="mp-avatar">U</div>
+              </div>
+              <h2 id="sidebarNickname" class="mp-profile-name">닉네임</h2>
+              <p id="sidebarEmail" class="mp-profile-handle">@email</p>
+            </div>
+
+            <!-- 통계 3열 -->
+            <div class="mp-stats-grid">
+              <div class="mp-stat">
+                <div id="sidebarPostCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">리뷰</div>
+              </div>
+              <div class="mp-stat mp-stat-border">
+                <div id="sidebarLikedCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">좋아요</div>
+              </div>
+              <div class="mp-stat">
+                <div id="sidebarCommentCount" class="mp-stat-num">0</div>
+                <div class="mp-stat-label">댓글</div>
+              </div>
+            </div>
+
+            <!-- 네비게이션 -->
+            <nav class="mp-nav">
+              <a href="/pages/my-page/my-posts.html" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-quill-pen-line"></i></div>
+                내 리뷰
+              </a>
+              <a href="/pages/my-page/liked-posts.html" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-heart-line"></i></div>
+                좋아요한 게시글
+              </a>
+              <a href="/pages/my-page/my-comments.html" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-chat-3-line"></i></div>
+                내 댓글
+              </a>
+              <a href="/pages/my-page/liked-comments.html" class="mp-nav-btn active">
+                <div class="mp-nav-icon"><i class="ri-heart-line"></i></div>
+                좋아요한 댓글
+              </a>
+              <a href="/pages/my-page/my-posts.html?tab=profile" class="mp-nav-btn">
+                <div class="mp-nav-icon"><i class="ri-settings-3-line"></i></div>
+                프로필 설정
+              </a>
+            </nav>
+
+            <!-- 로그아웃 -->
+            <div class="mp-logout-wrap">
+              <button id="logoutBtn" class="mp-logout-btn">
+                <div class="mp-nav-icon"><i class="ri-logout-box-r-line"></i></div>
+                로그아웃
+              </button>
+            </div>
+
+          </div>
         </div>
+      </aside>
+
+      <!-- ===== 오른쪽 컨텐츠 ===== -->
+      <div class="mp-content">
+
+        <!-- 섹션 헤더 -->
+        <div class="mp-section-header">
+          <h2 class="mp-section-title">좋아요한 댓글</h2>
+        </div>
+
+        <!-- 로딩 -->
+        <div id="loading" class="mp-loading" style="display: none;">로딩중...</div>
+
+        <!-- 좋아요한 댓글 목록 -->
+        <div id="likedCommentsList" class="mp-list-card"></div>
+
+        <!-- 빈 상태 -->
+        <div id="emptyState" class="mp-empty" style="display: none;">
+          <div class="mp-empty-icon"><i class="ri-heart-line"></i></div>
+          <h3 class="mp-empty-title">좋아요한 댓글이 없어요</h3>
+          <p class="mp-empty-desc">마음에 드는 댓글에 좋아요를 눌러보세요!</p>
+          <a href="/index.html" class="mp-empty-btn">게시글 둘러보기</a>
+        </div>
+
       </div>
-      <a href="/pages/my-page/my-posts.html" class="btn btn-secondary">
-        ← 마이페이지
-      </a>
     </div>
 
-    <!-- 댓글 좋아요 통계 -->
-    <div class="stats-container">
-      <div class="stat-card">
-        <div class="stat-number" id="totalLikes">0</div>
-        <div class="stat-label">좋아요한 댓글</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="todayLikes">0</div>
-        <div class="stat-label">오늘 좋아요</div>
-      </div>
-    </div>
+    <!-- JS가 참조하는 숨김 통계 요소 -->
+    <span id="totalLikes" style="display:none">0</span>
+    <span id="todayLikes" style="display:none">0</span>
 
-    <!-- 로딩 -->
-    <div id="loading" class="loading" style="display: none;">
-      <div class="loading-text">로딩중...</div>
-    </div>
-
-    <!-- 좋아요한 댓글 목록 -->
-    <div id="likedCommentsList" class="comments-list-container">
-      <!-- 댓글이 동적으로 추가됩니다 -->
-    </div>
-
-    <!-- 빈 상태 -->
-    <div id="emptyState" class="empty-state" style="display: none;">
-      <div class="empty-state-icon">❤️</div>
-      <h3 class="empty-state-title">
-        좋아요한 댓글이 없어요
-      </h3>
-      <p class="empty-state-description">
-        마음에 드는 댓글에 좋아요를 눌러보세요!
-      </p>
-      <a href="/index.html" class="btn btn-primary">
-        게시글 둘러보기
-      </a>
-    </div>
   </main>
 
   <!-- 푸터 -->
   <footer class="site-footer">
     <div class="footer-container">
-      <p class="footer-logo">
-        🍽️ 파인잇
-      </p>
-      <p class="footer-copyright">
-        맛있는 순간을 나누는 공간 © 2025
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-wrap">
+            <div class="footer-logo-icon"><i class="ri-restaurant-2-fill"></i></div>
+            <span class="footer-logo-text">파인잇</span>
+          </div>
+          <p class="footer-tagline">당신만의 맛집을 찾고 공유하는 플랫폼</p>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">서비스</h3>
+          <ul class="footer-links-list">
+            <li><a href="/pages/posts/post-list.html" class="footer-link">맛집 탐색</a></li>
+            <li><a href="/pages/category.html" class="footer-link">카테고리</a></li>
+            <li><a href="/pages/restaurants/restaurant-list.html" class="footer-link">맛집 목록</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">고객지원</h3>
+          <ul class="footer-links-list">
+            <li><a href="#" class="footer-link">공지사항</a></li>
+            <li><a href="#" class="footer-link">FAQ</a></li>
+            <li><a href="#" class="footer-link">문의하기</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">소셜 미디어</h3>
+          <div class="footer-social">
+            <a href="#" class="footer-social-btn"><i class="ri-instagram-line"></i></a>
+            <a href="#" class="footer-social-btn"><i class="ri-facebook-circle-line"></i></a>
+            <a href="#" class="footer-social-btn"><i class="ri-youtube-line"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 파인잇. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#" class="footer-link">이용약관</a>
+          <a href="#" class="footer-link">개인정보처리방침</a>
+        </div>
+      </div>
     </div>
   </footer>
 
   <!-- JavaScript -->
   <script type="module" src="../../js/pages/my-page/liked-comments.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
+  <script type="module">
+    import { getUser, getMemberId, clearStorage } from '../../js/utils/storage.js';
+    import { getPostsByMember } from '../../js/services/post-service.js';
+    import { getLikedPostsByMember } from '../../js/services/post-like-service.js';
+    import { getCommentsByMember } from '../../js/services/comment-service.js';
+    import { resolveImageUrl } from '../../js/utils/image-url.js';
 
-  <style>
-    /* 페이지 헤더 */
-    .page-header {
-      background: var(--white);
-      padding: var(--spacing-2xl);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-      margin-bottom: var(--spacing-2xl);
-      border: 1px solid var(--gray-200);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: var(--spacing-lg);
-    }
+    const user = getUser();
+    const memberId = getMemberId();
 
-    .page-header-content {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-lg);
-    }
-
-    .page-icon {
-      width: 64px;
-      height: 64px;
-      background: var(--primary-light);
-      border-radius: var(--radius-lg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-    }
-
-    .page-title {
-      font-size: var(--font-3xl);
-      font-weight: var(--font-bold);
-      color: var(--gray-900);
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .page-description {
-      font-size: var(--font-md);
-      color: var(--gray-600);
-    }
-
-    /* 통계 */
-    .stats-container {
-      display: flex;
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-2xl);
-    }
-
-    .stats-container .stat-card {
-      flex: 1;
-      background: var(--white);
-      padding: var(--spacing-xl);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--gray-200);
-      box-shadow: var(--shadow-md);
-      text-align: center;
-    }
-
-    .stats-container .stat-number {
-      font-size: var(--font-4xl);
-      font-weight: var(--font-bold);
-      color: var(--error-color);
-      margin-bottom: var(--spacing-sm);
-    }
-
-    .stats-container .stat-label {
-      font-size: var(--font-sm);
-      color: var(--gray-600);
-    }
-
-    /* 댓글 목록 컨테이너 */
-    .comments-list-container {
-      background: var(--white);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--gray-200);
-      overflow: hidden;
-    }
-
-    /* 댓글 카드 */
-    .comment-card {
-      padding: var(--spacing-xl);
-      border-bottom: 1px solid var(--gray-200);
-      transition: background-color 0.3s;
-    }
-
-    .comment-card:last-child {
-      border-bottom: none;
-    }
-
-    .comment-card:hover {
-      background: var(--gray-50);
-    }
-
-    .comment-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: var(--spacing-md);
-    }
-
-    .comment-info {
-      flex: 1;
-    }
-
-    .comment-author {
-      font-size: var(--font-md);
-      font-weight: var(--font-semibold);
-      color: var(--gray-900);
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .comment-post-link {
-      font-size: var(--font-sm);
-      color: var(--primary-color);
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-
-    .comment-post-link:hover {
-      color: var(--primary-dark);
-      text-decoration: underline;
-    }
-
-    .like-info {
-      text-align: right;
-    }
-
-    .like-date {
-      font-size: var(--font-sm);
-      color: var(--gray-500);
-    }
-
-    .comment-content-box {
-      background: var(--gray-50);
-      padding: var(--spacing-lg);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--error-color);
-      margin-bottom: var(--spacing-md);
-    }
-
-    .comment-text {
-      font-size: var(--font-md);
-      color: var(--gray-800);
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .unlike-btn {
-      color: var(--error-color);
-      border-color: var(--error-color);
-    }
-
-    .unlike-btn:hover {
-      background: var(--error-color);
-      color: var(--white);
-    }
-
-    /* 반응형 */
-    @media (max-width: 768px) {
-      .page-header {
-        flex-direction: column;
-        align-items: stretch;
+    if (user) {
+      const avatar = document.getElementById('sidebarAvatar');
+      const nickname = document.getElementById('sidebarNickname');
+      const email = document.getElementById('sidebarEmail');
+      if (avatar) {
+        if (user.profileImage) {
+          avatar.style.backgroundImage = `url('${resolveImageUrl(user.profileImage)}')`;
+          avatar.classList.add('has-image');
+          avatar.textContent = '';
+        } else {
+          avatar.textContent = user.nickname ? user.nickname.charAt(0).toUpperCase() : 'U';
+        }
       }
-
-      .page-header-content {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .stats-container {
-        flex-direction: column;
-      }
-
-      .comment-card-header {
-        flex-direction: column;
-        gap: var(--spacing-md);
-      }
+      if (nickname) nickname.textContent = user.nickname || '닉네임';
+      if (email) email.textContent = user.email || '';
     }
-  </style>
+
+    if (memberId) {
+      Promise.all([
+        getPostsByMember(memberId).catch(() => []),
+        getLikedPostsByMember(memberId).catch(() => []),
+        getCommentsByMember(memberId).catch(() => []),
+      ]).then(([posts, liked, comments]) => {
+        const postEl = document.getElementById('sidebarPostCount');
+        const likedEl = document.getElementById('sidebarLikedCount');
+        const commentEl = document.getElementById('sidebarCommentCount');
+        if (postEl) postEl.textContent = Array.isArray(posts) ? posts.length : 0;
+        if (likedEl) likedEl.textContent = Array.isArray(liked) ? liked.length : 0;
+        if (commentEl) commentEl.textContent = Array.isArray(comments) ? comments.length : 0;
+      });
+    }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      clearStorage();
+      window.location.href = '/index.html';
+    });
+  </script>
 </body>
 
 </html>

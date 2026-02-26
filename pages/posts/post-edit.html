@@ -4,144 +4,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 수정 - 파인잇</title>
+  <title>리뷰 수정 - 파인잇</title>
 
   <!-- Favicon -->
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.1.0/remixicon.css">
+
   <!-- CSS -->
   <link rel="stylesheet" href="../../css/common/reset.css">
   <link rel="stylesheet" href="../../css/common/variables.css">
-  <link rel="stylesheet" href="../../css/common/layout.css">
-  <link rel="stylesheet" href="../../css/components/header.css">
-  <link rel="stylesheet" href="../../css/components/button.css">
-  <link rel="stylesheet" href="../../css/components/form.css">
-  <link rel="stylesheet" href="../../css/components/footer.css">
   <link rel="stylesheet" href="../../css/pages/post-create.css">
-  <link rel="stylesheet" href="../../css/pages/post-edit.css">
 </head>
 
-<body>
-  <!-- 헤더 -->
-  <header id="header" class="site-header"></header>
+<body class="pc-page">
+
+  <!-- 커스텀 헤더 (고정) -->
+  <header class="pc-header">
+    <div class="pc-header-inner">
+      <button type="button" id="cancelBtn" class="pc-back-btn">
+        <i class="ri-arrow-left-line"></i>
+        <span>돌아가기</span>
+      </button>
+      <div class="pc-header-center">
+        <div class="pc-header-icon">
+          <i class="ri-edit-2-fill"></i>
+        </div>
+        <span class="pc-header-title-text">리뷰 수정</span>
+      </div>
+      <div class="pc-header-right"></div>
+    </div>
+  </header>
 
   <!-- 메인 컨텐츠 -->
-  <main class="container-sm">
+  <main class="pc-main">
+
     <!-- 로딩 -->
-    <div id="loading" class="loading" style="display: none;">
-      <div class="loading-text">로딩중...</div>
+    <div id="loading" style="display: none; text-align: center; padding: 60px 0; color: #6b7280; font-size: 15px;">
+      로딩중...
     </div>
 
+    <!-- 수정 폼 -->
     <div id="editContent" style="display: none;">
-      <div class="post-create-card">
-        <div class="post-create-header">
-          <h1 class="post-create-title">게시글 수정</h1>
+
+      <!-- 에러 메시지 -->
+      <div id="errorMessage" class="pc-error" style="display: none;"></div>
+
+      <form id="postEditForm">
+
+        <!-- 제목 입력 -->
+        <div class="pc-title-wrap">
+          <input type="text" id="title" class="pc-title-input" placeholder="리뷰 제목을 입력하세요" required maxlength="100">
         </div>
 
-        <form id="postEditForm">
-          <div class="post-create-grid minimalist">
-            <div class="post-create-left left-panel">
-              <div class="category-rating-row">
-                <select id="foodCategory" class="form-select inline-select">
-                  <option value="">카테고리</option>
-                </select>
-                <div class="rating-inline">
-                  <input type="number" id="rating" class="form-input rating-inline-input" placeholder="0.0 ~ 5.0"
-                    min="0" max="5" step="0.1" required>
-                  <div id="ratingStars" class="rating-stars">
-                    <span class="star empty">★</span>
-                    <span class="star empty">★</span>
-                    <span class="star empty">★</span>
-                    <span class="star empty">★</span>
-                    <span class="star empty">★</span>
-                  </div>
-                </div>
-              </div>
-
-              <input type="hidden" id="restaurantId">
-              <div class="title-block">
-                <input type="text" id="title" class="form-input title-input" placeholder="제목을 입력하세요" required
-                  maxlength="100">
-              </div>
-
-              <div class="content-editor">
-                <textarea id="content" class="form-textarea" placeholder="내용을 작성해주세요" required
-                  rows="12"></textarea>
-                <div class="content-tag-bar">
-                  <div id="tagList" class="tag-list"></div>
-                  <input type="text" id="tagInput" class="tag-input" placeholder="#태그입력">
-                </div>
-              </div>
-              <div id="contentCount" class="content-count">0자</div>
+        <!-- 맛집 정보 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-orange">
+              <i class="ri-map-pin-2-fill"></i>
             </div>
-
-            <div class="post-create-right">
-              <div class="side-card">
-                <div class="form-group">
-                  <label for="restaurantAddress">주소</label>
-                  <input type="text" id="restaurantAddress" class="form-input" placeholder="주소나 장소명을 검색하세요"
-                    maxlength="300">
-                  <div id="placeResults" class="place-results" style="display: none;"></div>
-                </div>
-                <div class="form-group">
-                  <label for="kakaoMap">지도</label>
-                  <div id="kakaoMap" class="map-container"></div>
-                </div>
-                <div class="form-group">
-                  <label for="restaurantName">맛집명</label>
-                  <input type="text" id="restaurantName" class="form-input" placeholder="맛집명을 입력하세요"
-                    maxlength="100">
-                </div>
-              </div>
-
-              <div class="side-card">
-                <div class="form-group">
-                  <label for="imageFiles">이미지 업로드 (최대 10장)</label>
-                  <div id="existingImages" class="existing-images" style="display: none;">
-                    <p class="form-help-text">기존 이미지</p>
-                    <div id="existingImageGrid" class="image-preview-grid"></div>
-                  </div>
-                  <input type="file" id="imageFiles" class="form-input" accept="image/*" multiple
-                    style="padding: var(--spacing-sm);">
-                  <div id="imagePreview" class="image-preview-container" style="display: none;"></div>
-                </div>
+            <h3 class="pc-section-title">맛집 정보</h3>
+          </div>
+          <input type="hidden" id="restaurantId">
+          <div class="pc-info-grid">
+            <div class="pc-form-group">
+              <label class="pc-label" for="restaurantName">맛집명</label>
+              <input type="text" id="restaurantName" class="pc-input" placeholder="맛집 이름을 입력하세요" maxlength="100">
+            </div>
+            <div class="pc-form-group">
+              <label class="pc-label" for="foodCategory">카테고리</label>
+              <select id="foodCategory" class="pc-select">
+                <option value="">카테고리 선택</option>
+              </select>
+            </div>
+            <div class="pc-form-group pc-form-full">
+              <label class="pc-label" for="restaurantAddress">주소 검색</label>
+              <div class="pc-address-wrap">
+                <i class="ri-search-line pc-input-icon"></i>
+                <input type="text" id="restaurantAddress" class="pc-input pc-input-with-icon"
+                  placeholder="주소나 장소명을 검색하세요" maxlength="300">
+                <div id="placeResults" class="place-results" style="display: none;"></div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-          <div class="form-actions" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-2xl);">
-            <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">
-              수정 완료
-            </button>
-            <button type="button" id="cancelBtn" class="btn btn-secondary" style="flex: 1;">
-              취소
-            </button>
+        <!-- 맛집 위치 확인 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-blue">
+              <i class="ri-map-2-fill"></i>
+            </div>
+            <h3 class="pc-section-title">맛집 위치 확인</h3>
           </div>
-        </form>
-      </div>
+          <div id="kakaoMap" class="pc-map"></div>
+        </div>
+
+        <!-- 평점 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-yellow">
+              <i class="ri-star-fill"></i>
+            </div>
+            <h3 class="pc-section-title">평점</h3>
+          </div>
+          <div class="pc-rating-wrap">
+            <div id="ratingStars" class="rating-stars pc-rating-stars-lg">
+              <span class="star empty" data-value="1">★</span>
+              <span class="star empty" data-value="2">★</span>
+              <span class="star empty" data-value="3">★</span>
+              <span class="star empty" data-value="4">★</span>
+              <span class="star empty" data-value="5">★</span>
+            </div>
+            <div class="pc-rating-field">
+              <input type="number" id="rating" class="pc-rating-input" placeholder="0.0" min="0" max="5" step="0.1">
+              <span class="pc-rating-max">/ 5.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 사진 첨부 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-green">
+              <i class="ri-image-2-fill"></i>
+            </div>
+            <h3 class="pc-section-title">사진 첨부</h3>
+            <span class="pc-section-hint">최대 10장</span>
+          </div>
+          <!-- 기존 이미지 -->
+          <div id="existingImages" style="display: none;">
+            <p style="font-size: 12px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">기존 이미지</p>
+            <div id="existingImageGrid" class="image-preview-grid" style="margin-bottom: 16px;"></div>
+          </div>
+          <!-- 새 이미지 추가 -->
+          <label for="imageFiles" class="pc-camera-btn">
+            <i class="ri-camera-line"></i>
+            <span>사진 추가</span>
+          </label>
+          <input type="file" id="imageFiles" accept="image/*" multiple style="display: none;">
+          <div id="imagePreview" style="display: none;"></div>
+        </div>
+
+        <!-- 리뷰 내용 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-purple">
+              <i class="ri-edit-2-fill"></i>
+            </div>
+            <h3 class="pc-section-title">리뷰 내용</h3>
+          </div>
+          <textarea id="content" class="pc-textarea"
+            placeholder="맛집에 대한 솔직한 리뷰를 작성해주세요..." required rows="8"></textarea>
+          <div id="contentCount" class="pc-count">0자</div>
+        </div>
+
+        <!-- 태그 -->
+        <div class="pc-section-card">
+          <div class="pc-section-header">
+            <div class="pc-section-icon pc-icon-pink">
+              <i class="ri-price-tag-3-fill"></i>
+            </div>
+            <h3 class="pc-section-title">태그</h3>
+          </div>
+          <div class="pc-tag-area">
+            <div class="pc-tag-input-wrap">
+              <div id="tagList" class="pc-tag-list"></div>
+              <input type="text" id="tagInput" class="pc-tag-input" placeholder="#태그 입력 후 Enter">
+            </div>
+            <div id="tagSuggestions" class="pc-tag-suggestions" style="display: none;"></div>
+          </div>
+        </div>
+
+      </form>
     </div>
+
   </main>
 
-  <!-- 푸터 -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <p class="footer-logo">
-        🍽️ 파인잇
-      </p>
-      <p class="footer-copyright">
-        맛있는 순간을 나누는 공간 © 2025
-      </p>
+  <!-- 하단 고정 바 -->
+  <div class="pc-bottom-bar">
+    <div class="pc-bottom-left"></div>
+    <div class="pc-bottom-right">
+      <button type="submit" id="submitBtn" form="postEditForm" class="pc-submit-btn">
+        <i class="ri-check-line"></i>수정 완료
+      </button>
     </div>
-  </footer>
+  </div>
 
   <!-- JavaScript -->
   <script src="../../js/config/kakao-config.js"></script>
   <script>document.write('<scr'+'ipt src="//dapi.kakao.com/v2/maps/sdk.js?appkey='+window.KAKAO_APP_KEY+'&libraries=services"><\/scr'+'ipt>');</script>
   <script type="module" src="../../js/pages/posts/post-edit.js"></script>
-  <script type="module" src="../../js/components/header.js"></script>
+
+  <!-- 평점 별 클릭으로 rating input 업데이트 -->
+  <script>
+    document.addEventListener('click', function (e) {
+      var star = e.target.closest('#ratingStars .star');
+      if (!star || !star.dataset.value) return;
+      var ratingInput = document.getElementById('rating');
+      ratingInput.value = star.dataset.value;
+      ratingInput.dispatchEvent(new Event('input'));
+    });
+  </script>
+
 </body>
 
 </html>

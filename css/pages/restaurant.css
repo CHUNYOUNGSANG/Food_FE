@@ -7,7 +7,6 @@ body.rd-page {
   background: #f9fafb;
   font-family: 'Noto Sans KR', sans-serif;
   min-height: 100vh;
-  padding-top: 64px; /* 고정 헤더 보상 */
 }
 
 /* ===== Loading ===== */
