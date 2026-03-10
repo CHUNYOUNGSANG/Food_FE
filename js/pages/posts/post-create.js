@@ -8,7 +8,7 @@ import {
   validatePostTitle,
   validatePostContent,
 } from '../../utils/validator.js';
-import { getMemberId, getToken } from '../../utils/storage.js';
+import { getMemberId } from '../../utils/storage.js';
 import {
   searchRestaurants,
   getRestaurantDetail,
@@ -523,7 +523,7 @@ const addTagFromInput = () => {
   const tokens = raw
     .split(/[#\s,]+/)
     .map((token) => token.trim())
-    .filter((token) => token.length >= 2);
+    .filter((token) => token.length >= 1);
   if (tokens.length === 0) {
     tagInput.value = '';
     return;
@@ -892,25 +892,7 @@ const handleSubmit = async (e) => {
  * 이미지 포함 게시글 작성 API
  */
 const createPostWithImages = async (formData) => {
-  const memberId = getMemberId();
-  const token = getToken();
-
-  const headers = {};
-  if (memberId) headers['Member-Id'] = memberId;
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  const response = await fetch('http://localhost:8080/api/posts', {
-    method: 'POST',
-    headers,
-    body: formData, // FormData는 Content-Type 자동 설정
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || '게시글 작성에 실패했습니다.');
-  }
-
-  return await response.json();
+  return await httpClient.postFormData(API_CONFIG.ENDPOINTS.POST_CREATE, formData);
 };
 
 /**

@@ -3,6 +3,7 @@
  */
 
 import { getAllPosts } from '../services/post-service.js';
+import { getAllMembers } from '../services/member-service.js';
 import {
   normalizeRestaurantListResponse,
   searchRestaurants,
@@ -41,7 +42,7 @@ const loadHomeData = async () => {
   const popularGrid = document.getElementById('popularPostsGrid');
 
   try {
-    const posts = await getAllPosts();
+    const [posts, members] = await Promise.all([getAllPosts(), getAllMembers()]);
 
     // 게시글 수 통계 업데이트
     const statEl = document.getElementById('statPostCount');
@@ -49,8 +50,14 @@ const loadHomeData = async () => {
       statEl.textContent = posts.length.toLocaleString();
     }
 
+    // 활동 회원 수 통계 업데이트
+    const memberStatEl = document.getElementById('statMemberCount');
+    if (memberStatEl && members.length > 0) {
+      memberStatEl.textContent = members.length.toLocaleString();
+    }
+
     renderPopularPosts(posts);
-    loadRecommendedRestaurants();
+    loadRecommendedRestaurants(posts);
   } catch (error) {
     console.error('홈 데이터 로드 실패:', error);
     if (popularGrid) {
@@ -111,9 +118,31 @@ const hydratePopularPostCounts = async (posts, grid) => {
 };
 
 /**
+ * 로드된 게시글 목록에서 해당 맛집의 첫 번째 이미지 URL 추출
+ */
+const getRestaurantFirstImage = (restaurantId, posts) => {
+  if (!restaurantId || !posts?.length) return null;
+
+  const post = posts.find((p) => {
+    const rid = p.restaurant?.id ?? p.restaurantId;
+    return rid != null && String(rid) === String(restaurantId) && p.images?.length > 0;
+  });
+
+  if (!post) return null;
+
+  const firstImage = post.images[0];
+  const imgSrc = typeof firstImage === 'string' ? firstImage : firstImage?.fileUrl;
+  if (!imgSrc) return null;
+
+  return imgSrc.startsWith('http') || imgSrc.startsWith('data:')
+    ? imgSrc
+    : `http://localhost:8080${imgSrc}`;
+};
+
+/**
  * 추천 맛집 로드
  */
-const loadRecommendedRestaurants = async () => {
+const loadRecommendedRestaurants = async (posts = []) => {
   const grid = document.getElementById('recommendGrid');
   if (!grid) return;
 
@@ -132,7 +161,11 @@ const loadRecommendedRestaurants = async () => {
       `;
       return;
     }
-    grid.innerHTML = items.slice(0, 4).map((item) => createRestaurantCard(item)).join('');
+
+    const top4 = items.slice(0, 4);
+    grid.innerHTML = top4
+      .map((item) => createRestaurantCard(item, getRestaurantFirstImage(item?.id, posts)))
+      .join('');
   } catch (error) {
     console.error('추천 맛집 로드 실패:', error);
     grid.innerHTML = `
@@ -222,7 +255,7 @@ const createPopularPostCard = (post) => {
 /**
  * 추천 맛집 카드 생성
  */
-const createRestaurantCard = (restaurant) => {
+const createRestaurantCard = (restaurant, imageUrl = null) => {
   const name = restaurant?.name || '맛집명 없음';
   const address = restaurant?.address || '주소 정보 없음';
   const category =
@@ -245,12 +278,20 @@ const createRestaurantCard = (restaurant) => {
     emoji: '🍽️',
   };
 
+  const imgContent = imageUrl
+    ? `<img
+        src="${imageUrl}"
+        alt="${name}"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+      />
+      <div class="recommend-card-img-bg" style="background:${style.bg};display:none;">${style.emoji}</div>`
+    : `<div class="recommend-card-img-bg" style="background:${style.bg}">${style.emoji}</div>`;
+
   return `
     <a href="/pages/restaurants/restaurant-detail.html?id=${restaurant?.id}" class="recommend-card-new">
       <div class="recommend-card-img">
-        <div class="recommend-card-img-bg" style="background:${style.bg}">
-          ${style.emoji}
-        </div>
+        ${imgContent}
         <div class="recommend-category-badge">${category}</div>
       </div>
       <div class="recommend-card-body">

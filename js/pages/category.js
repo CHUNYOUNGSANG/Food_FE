@@ -12,15 +12,21 @@ const CATEGORY_DESCRIPTIONS = {
   일식: '신선한 재료로 만든 일본 요리',
   양식: '서양의 맛을 느낄 수 있는 레스토랑',
   카페: '커피와 디저트를 즐길 수 있는 공간',
+  디저트: '달콤하고 맛있는 디저트 가게를 찾아보세요',
+  분식: '언제나 든든하고 맛있는 분식집',
+  치킨: '바삭하고 맛있는 치킨 전문점',
 };
 
 const normalizeCategory = (category) => {
   if (!category) return '';
   const text = String(category);
-  const parts = text.split('>').map((part) => part.trim());
-  const last = parts[parts.length - 1] || text;
-  const candidates = ['한식', '중식', '일식', '양식', '카페'];
-  return candidates.find((item) => last.includes(item)) || '';
+  const parts = text.split('>').map((part) => part.trim()).filter(Boolean);
+  const candidates = ['한식', '중식', '일식', '양식', '카페', '디저트', '분식', '치킨'];
+  for (const part of parts) {
+    const match = candidates.find((item) => part.includes(item));
+    if (match) return match;
+  }
+  return '';
 };
 
 // 상태 관리

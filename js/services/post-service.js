@@ -15,10 +15,13 @@ const normalizePostsResponse = (response) => {
 const normalizeCategory = (category) => {
   if (!category) return '';
   const text = String(category);
-  const parts = text.split('>').map((part) => part.trim());
-  const last = parts[parts.length - 1] || text;
-  const candidates = ['한식', '중식', '일식', '양식', '카페'];
-  return candidates.find((item) => last.includes(item)) || '';
+  const parts = text.split('>').map((part) => part.trim()).filter(Boolean);
+  const candidates = ['한식', '중식', '일식', '양식', '카페', '디저트', '분식', '치킨'];
+  for (const part of parts) {
+    const match = candidates.find((item) => part.includes(item));
+    if (match) return match;
+  }
+  return '';
 };
 
 /**

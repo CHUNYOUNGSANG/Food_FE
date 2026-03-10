@@ -6,6 +6,23 @@ import httpClient from '../utils/http-client.js';
 import API_CONFIG from '../config/api-config.js';
 
 /**
+ * 전체 회원 목록 조회
+ * @returns {Promise<Array>} 회원 목록
+ */
+export const getAllMembers = async () => {
+  try {
+    const response = await httpClient.get(API_CONFIG.ENDPOINTS.MEMBERS);
+    const unwrapped = response?.data ?? response?.result ?? response?.payload ?? response;
+    if (Array.isArray(unwrapped)) return unwrapped;
+    if (Array.isArray(unwrapped?.content)) return unwrapped.content;
+    return [];
+  } catch (error) {
+    console.error('회원 목록 조회 실패:', error);
+    return [];
+  }
+};
+
+/**
  * 회원 정보 조회
  * @param {number} memberId - 회원 ID
  * @returns {Promise<Object>} 회원 정보
