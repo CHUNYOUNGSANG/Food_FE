@@ -9,6 +9,7 @@ import {
   setMemberNickname,
   setMemberEmail,
   setMemberProfileImage,
+  setMemberRole,
   setToken,
   setRefreshToken,
 } from '../utils/storage.js';
@@ -50,6 +51,9 @@ export const login = async (credentials) => {
     setMemberId(response.member.id);
     setMemberNickname(response.member.nickname);
     setMemberEmail(response.member.email);
+    if (response.member.role) {
+      setMemberRole(response.member.role);
+    }
     if (response.member.profileImage) {
       setMemberProfileImage(response.member.profileImage);
     }

@@ -3,7 +3,7 @@
  * 로그인 상태에 따라 동적으로 헤더 렌더링
  */
 
-import { isLoggedIn, getUser, clearStorage } from '../utils/storage.js';
+import { isLoggedIn, getUser, clearStorage, isAdmin } from '../utils/storage.js';
 import { resolveImageUrl } from '../utils/image-url.js';
 
 /**
@@ -15,6 +15,9 @@ export const renderHeader = () => {
 
   const loggedIn = isLoggedIn();
   const user = getUser();
+  const admin = isAdmin();
+  const mypageUrl = admin ? '/pages/admin/admin-page.html' : '/pages/my-page/my-posts.html';
+  const mypageLabel = admin ? '관리자페이지' : '마이페이지';
   const profileImageUrl = user?.profileImage
     ? resolveImageUrl(user.profileImage)
     : '';
@@ -35,9 +38,10 @@ export const renderHeader = () => {
       </nav>
 
       <div class="user-menu">
+        ${!admin ? `
         <a href="/pages/posts/post-create.html" class="btn-write">
           <i class="ri-edit-2-line"></i>리뷰 작성
-        </a>
+        </a>` : ''}
         ${
           loggedIn
             ? `
@@ -65,14 +69,14 @@ export const renderHeader = () => {
                 <div class="dropdown-info">
                   <div class="dropdown-nickname-row">
                     <span class="dropdown-nickname">${user.nickname}님</span>
-                    <a href="/pages/my-page/my-posts.html" class="dropdown-mypage-link">마이페이지</a>
+                    <a href="${mypageUrl}" class="dropdown-mypage-link">${mypageLabel}</a>
                   </div>
                   <div class="dropdown-email">${user.email || ''}</div>
                 </div>
               </div>
               <div class="dropdown-menu">
-                <a href="/pages/posts/post-create.html" class="dropdown-item">게시글 작성</a>
-                <a href="/pages/my-page/my-posts.html" class="dropdown-item">내 게시글</a>
+                ${!admin ? `<a href="/pages/posts/post-create.html" class="dropdown-item">게시글 작성</a>` : ''}
+                ${!admin ? `<a href="${mypageUrl}" class="dropdown-item">내 게시글</a>` : ''}
               </div>
             </div>
           </div>

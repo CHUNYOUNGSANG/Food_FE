@@ -17,7 +17,7 @@ export const getAllMembers = async () => {
     if (Array.isArray(unwrapped?.content)) return unwrapped.content;
     return [];
   } catch (error) {
-    console.error('회원 목록 조회 실패:', error);
+    console.warn('회원 목록 조회 불가 (백엔드 /api/members 500 에러):', error.message);
     return [];
   }
 };

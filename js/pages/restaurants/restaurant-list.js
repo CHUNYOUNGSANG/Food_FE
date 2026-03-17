@@ -2,6 +2,29 @@ import {
   normalizeRestaurantListResponse,
   searchRestaurants,
 } from '../../services/restaurant-service.js';
+import { getAllPosts } from '../../services/post-service.js';
+
+// 리뷰 게시글에서 식당 ID별 첫 번째 이미지 맵 (restaurantId -> imageUrl)
+const postImageMap = {};
+
+const buildPostImageMap = async () => {
+  try {
+    const posts = await getAllPosts();
+    posts.forEach((post) => {
+      const rid = String(post.restaurant?.id ?? post.restaurantId ?? '');
+      if (!rid || postImageMap[rid]) return;
+      const img = post.images?.[0];
+      const src = typeof img === 'string' ? img : img?.fileUrl;
+      if (!src) return;
+      postImageMap[rid] =
+        src.startsWith('http') || src.startsWith('data:')
+          ? src
+          : `http://localhost:8080${src}`;
+    });
+  } catch (e) {
+    console.warn('리뷰 이미지 로드 실패:', e.message);
+  }
+};
 
 const grid = document.getElementById('restaurantGrid');
 const emptyState = document.getElementById('restaurantEmpty');
@@ -44,7 +67,9 @@ const renderLoadMore = () => {
 };
 
 const createCard = (restaurant) => {
+  const id = restaurant?.id ?? '';
   const imageCandidates = [
+    postImageMap[String(id)],
     restaurant?.imageUrl,
     restaurant?.thumbnailUrl,
     restaurant?.photoUrl,
@@ -61,7 +86,6 @@ const createCard = (restaurant) => {
   const address = restaurant?.address || '주소 정보 없음';
   const category = restaurant?.category || '기타';
   const source = restaurant?.placeUrl || restaurant?.place_url ? '카카오맵' : '등록됨';
-  const id = restaurant?.id ?? '';
 
   const card = document.createElement('a');
   card.className = 'restaurant-card';
@@ -144,4 +168,6 @@ if (searchForm) {
   });
 }
 
-loadRestaurants({ reset: true });
+buildPostImageMap().then(() => {
+  loadRestaurants({ reset: true });
+});

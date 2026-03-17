@@ -75,7 +75,11 @@ const handleSubmit = async (e) => {
     const response = await login({ email, password });
 
     alert(`${response.member.nickname}님, 환영합니다!`);
-    window.location.href = '/index.html';
+    if (response.member.role === 'ADMIN') {
+      window.location.href = '/pages/admin/admin-page.html';
+    } else {
+      window.location.href = '/index.html';
+    }
   } catch (error) {
     console.error('로그인 실패:', error);
     showError(error.message || '이메일 또는 비밀번호가 일치하지 않습니다.');

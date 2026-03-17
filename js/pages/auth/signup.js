@@ -3,9 +3,6 @@
  * 실시간 검증 + 중복 확인 + API 연동
  */
 
-import {
-  validatePasswordInput,
-} from '../../utils/form-validator.js';
 import * as validator from '../../utils/validator.js';
 import httpClient from '../../utils/http-client.js';
 import API_CONFIG from '../../config/api-config.js';
@@ -22,6 +19,7 @@ const imagePreview = document.getElementById('imagePreview');
 const imagePreviewImg = document.getElementById('imagePreviewImg');
 const removeImageBtn = document.getElementById('removeImageBtn');
 const emailValidationMsg = document.getElementById('emailValidationMsg');
+const passwordValidationMsg = document.getElementById('passwordValidationMsg');
 const passwordConfirmValidationMsg = document.getElementById('passwordConfirmValidationMsg');
 const nameValidationMsg = document.getElementById('nameValidationMsg');
 const nicknameValidationMsg = document.getElementById('nicknameValidationMsg');
@@ -118,7 +116,23 @@ const setupRealtimeValidation = () => {
     }
   });
 
-  validatePasswordInput(passwordInput, { showDetailedValidation: false });
+  passwordInput.addEventListener('input', () => {
+    const value = passwordInput.value;
+    if (value === '') {
+      showLabelMessage(passwordValidationMsg, '', '');
+      passwordInput.classList.remove('valid', 'invalid');
+      return;
+    }
+    if (validator.validatePassword(value)) {
+      showLabelMessage(passwordValidationMsg, '안전한 비밀번호입니다', 'success');
+      passwordInput.classList.remove('invalid');
+      passwordInput.classList.add('valid');
+    } else {
+      showLabelMessage(passwordValidationMsg, '8자 이상, 영문과 숫자를 포함해야 합니다', 'error');
+      passwordInput.classList.remove('valid');
+      passwordInput.classList.add('invalid');
+    }
+  });
 
   passwordConfirmInput.addEventListener('input', () => {
     const password = passwordInput.value;

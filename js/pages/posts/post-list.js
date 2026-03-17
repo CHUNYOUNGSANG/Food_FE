@@ -139,12 +139,15 @@ const filterByCategory = async (category) => {
     // 검색어가 있으면 추가 필터링
     const keyword = searchInput ? searchInput.value.trim() : '';
     if (keyword) {
+      const lower = keyword.replace(/^#/, '').toLowerCase();
       filteredPosts = filteredPosts.filter((post) => {
         const title = post.title || '';
         const name = post.restaurant?.name || '';
+        const tags = (post.tags || []).map((t) => String(t).toLowerCase());
         return (
-          title.toLowerCase().includes(keyword.toLowerCase()) ||
-          name.toLowerCase().includes(keyword.toLowerCase())
+          title.toLowerCase().includes(lower) ||
+          name.toLowerCase().includes(lower) ||
+          tags.some((t) => t.includes(lower))
         );
       });
     }
@@ -173,15 +176,17 @@ const handleSearch = async () => {
 
   showLoading();
 
-  const lower = keyword.toLowerCase();
+  const lower = keyword.replace(/^#/, '').toLowerCase();
   filteredPosts = allPosts.filter((post) => {
     const title = post.title || '';
     const name = post.restaurant?.name || '';
     const address = post.restaurant?.address || '';
+    const tags = (post.tags || []).map((t) => String(t).toLowerCase());
     return (
       title.toLowerCase().includes(lower) ||
       name.toLowerCase().includes(lower) ||
-      address.toLowerCase().includes(lower)
+      address.toLowerCase().includes(lower) ||
+      tags.some((t) => t.includes(lower))
     );
   });
 

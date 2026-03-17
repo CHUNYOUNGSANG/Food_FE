@@ -9,6 +9,7 @@ import {
 import { getPost } from '../../services/post-service.js';
 import { formatDate } from '../../utils/date-formatter.js';
 import { resolveImageCandidates } from '../../utils/image-url.js';
+import { isAdmin } from '../../utils/storage.js';
 
 
 // DOM 요소
@@ -74,6 +75,12 @@ const init = async () => {
     renderDetail(detail);
     await loadReviews(id);
     attachEvents();
+    if (isAdmin()) {
+      const reviewLink = document.getElementById('restaurantReviewLink');
+      const emptyReviewLink = document.getElementById('restaurantEmptyReviewLink');
+      if (reviewLink) reviewLink.style.display = 'none';
+      if (emptyReviewLink) emptyReviewLink.style.display = 'none';
+    }
   } catch (error) {
     console.error('맛집 상세 로드 실패:', error);
   } finally {

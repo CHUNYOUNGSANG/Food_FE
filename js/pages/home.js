@@ -3,13 +3,13 @@
  */
 
 import { getAllPosts } from '../services/post-service.js';
-import { getAllMembers } from '../services/member-service.js';
 import {
   normalizeRestaurantListResponse,
   searchRestaurants,
 } from '../services/restaurant-service.js';
 import { getPostLikeCount } from '../services/post-like-service.js';
 import { getCommentsByPost } from '../services/comment-service.js';
+import { isAdmin } from '../utils/storage.js';
 
 /**
  * 페이지 초기화
@@ -17,6 +17,10 @@ import { getCommentsByPost } from '../services/comment-service.js';
 const init = async () => {
   initHeroSearch();
   await loadHomeData();
+  if (isAdmin()) {
+    const ctaBtn = document.getElementById('ctaWriteBtn');
+    if (ctaBtn) ctaBtn.style.display = 'none';
+  }
 };
 
 /**
@@ -42,18 +46,12 @@ const loadHomeData = async () => {
   const popularGrid = document.getElementById('popularPostsGrid');
 
   try {
-    const [posts, members] = await Promise.all([getAllPosts(), getAllMembers()]);
+    const posts = await getAllPosts();
 
     // 게시글 수 통계 업데이트
     const statEl = document.getElementById('statPostCount');
     if (statEl) {
       statEl.textContent = posts.length.toLocaleString();
-    }
-
-    // 활동 회원 수 통계 업데이트
-    const memberStatEl = document.getElementById('statMemberCount');
-    if (memberStatEl && members.length > 0) {
-      memberStatEl.textContent = members.length.toLocaleString();
     }
 
     renderPopularPosts(posts);

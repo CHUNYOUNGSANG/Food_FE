@@ -80,6 +80,23 @@ export const removeRefreshToken = () => {
   localStorage.removeItem('refreshToken');
 };
 
+// Member Role
+export const getMemberRole = () => {
+  return localStorage.getItem('memberRole');
+};
+
+export const setMemberRole = (role) => {
+  localStorage.setItem('memberRole', role);
+};
+
+export const removeMemberRole = () => {
+  localStorage.removeItem('memberRole');
+};
+
+export const isAdmin = () => {
+  return getMemberRole() === 'ADMIN';
+};
+
 // 로그인 여부 확인
 export const isLoggedIn = () => {
   return !!getMemberId() && !!getToken();
@@ -118,6 +135,7 @@ export const clearStorage = () => {
   removeMemberNickname();
   removeMemberEmail();
   removeMemberProfileImage();
+  removeMemberRole();
   removeToken();
   removeRefreshToken();
 };

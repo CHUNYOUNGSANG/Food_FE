@@ -143,7 +143,10 @@
 
           <!-- 비밀번호 -->
           <div class="auth-field">
-            <label class="auth-label" for="password">비밀번호</label>
+            <div class="auth-label-row">
+              <label class="auth-label" for="password">비밀번호</label>
+              <span id="passwordValidationMsg" class="label-help-text"></span>
+            </div>
             <div class="auth-input-wrap">
               <i class="ri-lock-line auth-input-icon"></i>
               <input type="password" id="password" class="auth-input form-input auth-input-pw"
