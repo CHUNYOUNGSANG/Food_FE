@@ -28,9 +28,11 @@ const buildPostImageMap = async () => {
 
 const grid = document.getElementById('restaurantGrid');
 const emptyState = document.getElementById('restaurantEmpty');
-const loadMoreButton = document.getElementById('restaurantLoadMore');
+const infiniteStatus = document.getElementById('restaurantInfiniteStatus');
+const infiniteTrigger = document.getElementById('restaurantInfiniteTrigger');
 const searchForm = document.getElementById('restaurantSearchForm');
 const searchInput = document.getElementById('restaurantSearchInput');
+let infiniteObserver = null;
 
 const state = {
   query: '',
@@ -60,10 +62,29 @@ const renderEmptyState = (show) => {
   emptyState.style.display = show ? 'block' : 'none';
 };
 
-const renderLoadMore = () => {
-  if (!loadMoreButton) return;
-  loadMoreButton.style.display = state.isLast ? 'none' : 'inline-flex';
-  loadMoreButton.disabled = state.isLoading;
+const renderInfiniteState = () => {
+  if (!infiniteStatus || !infiniteTrigger) return;
+
+  if (grid?.children.length === 0 || emptyState?.style.display === 'block') {
+    infiniteStatus.textContent = '';
+    infiniteTrigger.style.display = 'none';
+    return;
+  }
+
+  if (state.isLoading) {
+    infiniteStatus.textContent = '맛집 목록을 불러오는 중입니다...';
+    infiniteTrigger.style.display = 'block';
+    return;
+  }
+
+  if (state.isLast) {
+    infiniteStatus.textContent = '마지막 맛집까지 모두 확인했습니다.';
+    infiniteTrigger.style.display = 'none';
+    return;
+  }
+
+  infiniteStatus.textContent = '스크롤을 내리면 더 불러옵니다.';
+  infiniteTrigger.style.display = 'block';
 };
 
 const createCard = (restaurant) => {
@@ -110,7 +131,7 @@ const loadRestaurants = async ({ reset = false } = {}) => {
   if (!grid || state.isLoading) return;
 
   state.isLoading = true;
-  renderLoadMore();
+  renderInfiniteState();
 
   if (reset) {
     state.page = 0;
@@ -148,17 +169,26 @@ const loadRestaurants = async ({ reset = false } = {}) => {
     }
   } finally {
     state.isLoading = false;
-    renderLoadMore();
+    renderInfiniteState();
   }
 };
 
-if (loadMoreButton) {
-  loadMoreButton.addEventListener('click', () => {
-    if (!state.isLast) {
+const initInfiniteScroll = () => {
+  if (!infiniteTrigger || infiniteObserver) return;
+
+  infiniteObserver = new IntersectionObserver(
+    (entries) => {
+      const [entry] = entries;
+      if (!entry?.isIntersecting || state.isLoading || state.isLast) return;
       loadRestaurants();
-    }
-  });
-}
+    },
+    {
+      rootMargin: '240px 0px',
+    },
+  );
+
+  infiniteObserver.observe(infiniteTrigger);
+};
 
 if (searchForm) {
   searchForm.addEventListener('submit', (event) => {
@@ -169,5 +199,6 @@ if (searchForm) {
 }
 
 buildPostImageMap().then(() => {
+  initInfiniteScroll();
   loadRestaurants({ reset: true });
 });

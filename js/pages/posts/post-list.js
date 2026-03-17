@@ -11,6 +11,8 @@ const loading = document.getElementById('loading');
 const postsGrid = document.getElementById('postsGrid');
 const emptyState = document.getElementById('emptyState');
 const noResults = document.getElementById('noResults');
+const infiniteStatus = document.getElementById('postInfiniteStatus');
+const infiniteTrigger = document.getElementById('postInfiniteTrigger');
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const resetSearchBtn = document.getElementById('resetSearch');
@@ -22,6 +24,11 @@ const todayPostsSpan = document.getElementById('todayPosts');
 let allPosts = [];
 let filteredPosts = [];
 let currentCategory = 'all';
+let renderedCount = 0;
+let isAppending = false;
+
+const POSTS_BATCH_SIZE = 6;
+let infiniteObserver = null;
 
 const normalizeCategory = (category) => {
   if (!category) return '';
@@ -38,7 +45,7 @@ const normalizeCategory = (category) => {
 const init = async () => {
   await loadPosts();
   attachEventListeners();
-  applySearchFromQuery();
+  await applySearchFromQuery();
 };
 
 /**
@@ -55,7 +62,7 @@ const loadPosts = async () => {
     updateStats();
 
     // 게시글 렌더링
-    renderPosts(filteredPosts);
+    await renderPosts(filteredPosts);
   } catch (error) {
     console.error('게시글 로드 실패:', error);
     showEmptyState();
@@ -67,7 +74,69 @@ const loadPosts = async () => {
 /**
  * 게시글 렌더링
  */
-const renderPosts = (posts) => {
+const updateInfiniteState = () => {
+  if (!infiniteStatus || !infiniteTrigger) return;
+
+  if (postsGrid?.style.display === 'none' || filteredPosts.length === 0) {
+    infiniteStatus.textContent = '';
+    infiniteTrigger.style.display = 'none';
+    return;
+  }
+
+  if (isAppending) {
+    infiniteStatus.textContent = '게시글을 더 불러오는 중입니다...';
+    infiniteTrigger.style.display = 'block';
+    return;
+  }
+
+  if (renderedCount >= filteredPosts.length) {
+    infiniteStatus.textContent = '마지막 게시글까지 모두 확인했습니다.';
+    infiniteTrigger.style.display = 'none';
+    return;
+  }
+
+  infiniteStatus.textContent = '스크롤을 내리면 게시글을 더 보여줍니다.';
+  infiniteTrigger.style.display = 'block';
+};
+
+const resetRenderedPosts = () => {
+  renderedCount = 0;
+  isAppending = false;
+  if (postsGrid) {
+    postsGrid.innerHTML = '';
+  }
+  updateInfiniteState();
+};
+
+const renderNextBatch = async () => {
+  if (!postsGrid || isAppending || renderedCount >= filteredPosts.length) {
+    updateInfiniteState();
+    return;
+  }
+
+  isAppending = true;
+  updateInfiniteState();
+
+  const nextPosts = filteredPosts.slice(
+    renderedCount,
+    renderedCount + POSTS_BATCH_SIZE,
+  );
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = nextPosts
+    .map((post, index) => createPostRow(post, renderedCount + index))
+    .join('');
+  const nextRows = Array.from(wrapper.children);
+  nextRows.forEach((row) => postsGrid.appendChild(row));
+  renderedCount += nextPosts.length;
+
+  await Promise.all(nextRows.map((row) => hydrateAvatars(row)));
+  initInlineMaps(nextRows);
+
+  isAppending = false;
+  updateInfiniteState();
+};
+
+const renderPosts = async (posts) => {
   // 검색/필터 결과 숨김
   if (noResults) noResults.style.display = 'none';
   if (emptyState) emptyState.style.display = 'none';
@@ -81,17 +150,16 @@ const renderPosts = (posts) => {
       showNoResults();
     }
     if (postsGrid) postsGrid.style.display = 'none';
+    updateInfiniteState();
     return;
   }
 
   if (postsGrid) {
     postsGrid.style.display = 'flex';
-    postsGrid.innerHTML = posts
-      .map((post, index) => createPostRow(post, index))
-      .join('');
-    hydrateAvatars(postsGrid);
-    initInlineMaps();
   }
+
+  resetRenderedPosts();
+  await renderNextBatch();
 };
 
 /**
@@ -152,7 +220,7 @@ const filterByCategory = async (category) => {
       });
     }
 
-    renderPosts(filteredPosts);
+    await renderPosts(filteredPosts);
   } catch (error) {
     console.error('카테고리 필터링 실패:', error);
   } finally {
@@ -170,7 +238,7 @@ const handleSearch = async () => {
 
   if (!keyword) {
     // 검색어가 없으면 현재 카테고리로 필터링
-    filterByCategory(currentCategory);
+    await filterByCategory(currentCategory);
     return;
   }
 
@@ -197,7 +265,7 @@ const handleSearch = async () => {
     });
   }
 
-  renderPosts(filteredPosts);
+  await renderPosts(filteredPosts);
   hideLoading();
 };
 
@@ -221,12 +289,12 @@ const resetSearch = () => {
   renderPosts(filteredPosts);
 };
 
-const applySearchFromQuery = () => {
+const applySearchFromQuery = async () => {
   const params = new URLSearchParams(window.location.search);
   const search = params.get('search');
   if (searchInput && search) {
     searchInput.value = search;
-    handleSearch();
+    await handleSearch();
   }
 };
 
@@ -274,6 +342,25 @@ const attachEventListeners = () => {
   }
 };
 
+const initInfiniteScroll = () => {
+  if (!infiniteTrigger || infiniteObserver) return;
+
+  infiniteObserver = new IntersectionObserver(
+    (entries) => {
+      const [entry] = entries;
+      if (!entry?.isIntersecting || isAppending || renderedCount >= filteredPosts.length) {
+        return;
+      }
+      renderNextBatch();
+    },
+    {
+      rootMargin: '240px 0px',
+    },
+  );
+
+  infiniteObserver.observe(infiniteTrigger);
+};
+
 const createPostRow = (post, index) => {
   const mapId = `postMap-${post.id || index}`;
   const name = escapeHtml(
@@ -309,11 +396,11 @@ const createPostRow = (post, index) => {
   `;
 };
 
-const initInlineMaps = () => {
+const initInlineMaps = (rows = document.querySelectorAll('.post-row')) => {
   if (!window.kakao || !window.kakao.maps) return;
   const geocoder = new window.kakao.maps.services.Geocoder();
-  const rows = document.querySelectorAll('.post-row');
-  rows.forEach((row) => {
+  const targets = Array.from(rows);
+  targets.forEach((row) => {
     const mapId = row.dataset.mapId;
     const mapEl = mapId ? document.getElementById(mapId) : null;
     if (!mapEl) return;
@@ -364,6 +451,7 @@ const showLoading = () => {
   if (postsGrid) postsGrid.style.display = 'none';
   if (emptyState) emptyState.style.display = 'none';
   if (noResults) noResults.style.display = 'none';
+  updateInfiniteState();
 };
 
 /**
@@ -380,6 +468,7 @@ const showEmptyState = () => {
   if (postsGrid) postsGrid.style.display = 'none';
   if (emptyState) emptyState.style.display = 'flex';
   if (noResults) noResults.style.display = 'none';
+  updateInfiniteState();
 };
 
 /**
@@ -389,7 +478,9 @@ const showNoResults = () => {
   if (postsGrid) postsGrid.style.display = 'none';
   if (emptyState) emptyState.style.display = 'none';
   if (noResults) noResults.style.display = 'block';
+  updateInfiniteState();
 };
 
 // 초기화 실행
+initInfiniteScroll();
 init();
