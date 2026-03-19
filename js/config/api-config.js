@@ -3,7 +3,7 @@
  */
 const API_CONFIG = {
   // 백엔드 서버 URL
-  BASE_URL: 'http://localhost:8080/api',
+  BASE_URL: 'http://52.78.34.150/api',
 
   // 타임아웃 설정 (10초)
   TIMEOUT: 10000,

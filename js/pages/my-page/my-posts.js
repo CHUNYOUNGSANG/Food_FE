@@ -583,7 +583,7 @@ const handlePasswordChange = async (e) => {
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const response = await fetch(
-      `http://localhost:8080/api/members/${currentMemberId}/password`,
+      `http://52.78.34.150/api/members/${currentMemberId}/password`,
       {
         method: 'PUT',
         headers,

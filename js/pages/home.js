@@ -134,7 +134,7 @@ const getRestaurantFirstImage = (restaurantId, posts) => {
 
   return imgSrc.startsWith('http') || imgSrc.startsWith('data:')
     ? imgSrc
-    : `http://localhost:8080${imgSrc}`;
+    : `http://52.78.34.150${imgSrc}`;
 };
 
 /**
@@ -198,12 +198,12 @@ const getPostImageUrl = (post) => {
     if (imgSrc) {
       return imgSrc.startsWith('http') || imgSrc.startsWith('data:')
         ? imgSrc
-        : `http://localhost:8080${imgSrc}`;
+        : `http://52.78.34.150${imgSrc}`;
     }
   } else if (post.imageUrl) {
     return post.imageUrl.startsWith('http') || post.imageUrl.startsWith('data:')
       ? post.imageUrl
-      : `http://localhost:8080${post.imageUrl}`;
+      : `http://52.78.34.150${post.imageUrl}`;
   }
 
   return placeholder;

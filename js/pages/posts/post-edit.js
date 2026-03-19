@@ -230,7 +230,7 @@ const renderExistingImages = (images) => {
     .map(
       (img) => `
     <div class="image-preview-item" data-image-id="${img.id}" ${deleteImageIds.includes(img.id) ? 'style="opacity: 0.3;"' : ''}>
-      <img src="http://localhost:8080${img.fileUrl}" alt="${img.originalFileName}">
+      <img src="http://52.78.34.150${img.fileUrl}" alt="${img.originalFileName}">
       <button type="button" class="image-preview-remove existing-image-delete" data-image-id="${img.id}">
         ${deleteImageIds.includes(img.id) ? '↩' : '×'}
       </button>
@@ -850,7 +850,7 @@ const updatePostWithImages = async (formData) => {
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const response = await fetch(
-    `http://localhost:8080/api/posts/${currentPostId}`,
+    `http://52.78.34.150/api/posts/${currentPostId}`,
     {
       method: 'PUT',
       headers,

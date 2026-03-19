@@ -19,7 +19,7 @@ const buildPostImageMap = async () => {
       postImageMap[rid] =
         src.startsWith('http') || src.startsWith('data:')
           ? src
-          : `http://localhost:8080${src}`;
+          : `http://52.78.34.150${src}`;
     });
   } catch (e) {
     console.warn('리뷰 이미지 로드 실패:', e.message);

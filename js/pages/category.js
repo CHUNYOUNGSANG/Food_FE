@@ -217,13 +217,13 @@ const createPostCard = (post) => {
     if (imgSrc) {
       imageUrl = imgSrc.startsWith('http') || imgSrc.startsWith('data:')
         ? imgSrc
-        : `http://localhost:8080${imgSrc}`;
+        : `http://52.78.34.150${imgSrc}`;
     }
   } else if (post.imageUrl) {
     // 단일 imageUrl 필드가 있는 경우
     imageUrl = post.imageUrl.startsWith('http') || post.imageUrl.startsWith('data:')
       ? post.imageUrl
-      : `http://localhost:8080${post.imageUrl}`;
+      : `http://52.78.34.150${post.imageUrl}`;
   }
 
   const rating = post.rating || 0;
