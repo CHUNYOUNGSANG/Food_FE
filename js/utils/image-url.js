@@ -6,7 +6,8 @@
 import API_CONFIG from '../config/api-config.js';
 
 const API_BASE = API_CONFIG.BASE_URL.replace(/\/$/, '');
-const ORIGIN = API_BASE.replace(/\/api\/?$/, '');
+const SITE_ORIGIN = 'https://fineeat.kro.kr';
+const API_ORIGIN = API_BASE.replace(/\/api\/?$/, '');
 
 const isAbsoluteUrl = (url) =>
   /^https?:\/\//i.test(url) || url.startsWith('data:') || url.startsWith('blob:');
@@ -44,16 +45,19 @@ export const resolveImageCandidates = (url) => {
   const isBareFileName = /^\/[^/]+$/.test(normalized);
   const candidates = [];
 
-  candidates.push(`${ORIGIN}${normalized}`);
+  candidates.push(`${SITE_ORIGIN}${normalized}`);
 
   if (!normalized.startsWith('/api/')) {
     candidates.push(`${API_BASE}${normalized}`);
   }
 
+  candidates.push(`${API_ORIGIN}${normalized}`);
+
   // 업로드 파일명이 경로 없이 넘어오는 경우 보정
   if (isBareFileName && !normalized.startsWith('/uploads/')) {
     const fileName = normalized.replace(/^\//, '');
-    candidates.push(`${ORIGIN}/uploads/post/${fileName}`);
+    candidates.push(`${SITE_ORIGIN}/uploads/post/${fileName}`);
+    candidates.push(`${API_ORIGIN}/uploads/post/${fileName}`);
   }
 
   return [...new Set(candidates)];

@@ -17,6 +17,7 @@ import {
   getToken,
   clearStorage,
 } from '../../utils/storage.js';
+import API_CONFIG from '../../config/api-config.js';
 import { createPostCard } from '../../components/post-card.js';
 import { resolveImageUrl } from '../../utils/image-url.js';
 import { hydrateAvatars } from '../../utils/avatar-loader.js';
@@ -583,7 +584,7 @@ const handlePasswordChange = async (e) => {
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const response = await fetch(
-      `http://52.78.34.150/api/members/${currentMemberId}/password`,
+      `${API_CONFIG.BASE_URL}/members/${currentMemberId}/password`,
       {
         method: 'PUT',
         headers,

@@ -14,6 +14,7 @@ import {
   normalizeRestaurantListResponse,
   searchRestaurants,
 } from '../../services/restaurant-service.js';
+import { resolveImageUrl } from '../../utils/image-url.js';
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -230,7 +231,7 @@ const renderExistingImages = (images) => {
     .map(
       (img) => `
     <div class="image-preview-item" data-image-id="${img.id}" ${deleteImageIds.includes(img.id) ? 'style="opacity: 0.3;"' : ''}>
-      <img src="http://52.78.34.150${img.fileUrl}" alt="${img.originalFileName}">
+      <img src="${resolveImageUrl(img.fileUrl)}" alt="${img.originalFileName}">
       <button type="button" class="image-preview-remove existing-image-delete" data-image-id="${img.id}">
         ${deleteImageIds.includes(img.id) ? '↩' : '×'}
       </button>
@@ -850,7 +851,7 @@ const updatePostWithImages = async (formData) => {
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const response = await fetch(
-    `http://52.78.34.150/api/posts/${currentPostId}`,
+    `${API_CONFIG.BASE_URL}/posts/${currentPostId}`,
     {
       method: 'PUT',
       headers,

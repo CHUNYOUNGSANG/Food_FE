@@ -4,6 +4,7 @@
  */
 
 import { getPostsByCategory } from '../services/post-service.js';
+import { resolveImageUrl } from '../utils/image-url.js';
 
 // 카테고리 설명 매핑
 const CATEGORY_DESCRIPTIONS = {
@@ -215,15 +216,11 @@ const createPostCard = (post) => {
     const imgSrc = typeof firstImage === 'string' ? firstImage : firstImage.fileUrl;
 
     if (imgSrc) {
-      imageUrl = imgSrc.startsWith('http') || imgSrc.startsWith('data:')
-        ? imgSrc
-        : `http://52.78.34.150${imgSrc}`;
+      imageUrl = resolveImageUrl(imgSrc);
     }
   } else if (post.imageUrl) {
     // 단일 imageUrl 필드가 있는 경우
-    imageUrl = post.imageUrl.startsWith('http') || post.imageUrl.startsWith('data:')
-      ? post.imageUrl
-      : `http://52.78.34.150${post.imageUrl}`;
+    imageUrl = resolveImageUrl(post.imageUrl);
   }
 
   const rating = post.rating || 0;

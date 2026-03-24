@@ -10,6 +10,7 @@ import {
 import { getPostLikeCount } from '../services/post-like-service.js';
 import { getCommentsByPost } from '../services/comment-service.js';
 import { isAdmin } from '../utils/storage.js';
+import { resolveImageUrl } from '../utils/image-url.js';
 
 /**
  * 페이지 초기화
@@ -132,9 +133,7 @@ const getRestaurantFirstImage = (restaurantId, posts) => {
   const imgSrc = typeof firstImage === 'string' ? firstImage : firstImage?.fileUrl;
   if (!imgSrc) return null;
 
-  return imgSrc.startsWith('http') || imgSrc.startsWith('data:')
-    ? imgSrc
-    : `http://52.78.34.150${imgSrc}`;
+  return resolveImageUrl(imgSrc);
 };
 
 /**
@@ -196,14 +195,10 @@ const getPostImageUrl = (post) => {
     const firstImage = post.images[0];
     const imgSrc = typeof firstImage === 'string' ? firstImage : firstImage.fileUrl;
     if (imgSrc) {
-      return imgSrc.startsWith('http') || imgSrc.startsWith('data:')
-        ? imgSrc
-        : `http://52.78.34.150${imgSrc}`;
+      return resolveImageUrl(imgSrc);
     }
   } else if (post.imageUrl) {
-    return post.imageUrl.startsWith('http') || post.imageUrl.startsWith('data:')
-      ? post.imageUrl
-      : `http://52.78.34.150${post.imageUrl}`;
+    return resolveImageUrl(post.imageUrl);
   }
 
   return placeholder;

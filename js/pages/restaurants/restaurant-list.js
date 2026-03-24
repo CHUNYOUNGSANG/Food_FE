@@ -3,6 +3,7 @@ import {
   searchRestaurants,
 } from '../../services/restaurant-service.js';
 import { getAllPosts } from '../../services/post-service.js';
+import { resolveImageUrl } from '../../utils/image-url.js';
 
 // 리뷰 게시글에서 식당 ID별 첫 번째 이미지 맵 (restaurantId -> imageUrl)
 const postImageMap = {};
@@ -16,10 +17,7 @@ const buildPostImageMap = async () => {
       const img = post.images?.[0];
       const src = typeof img === 'string' ? img : img?.fileUrl;
       if (!src) return;
-      postImageMap[rid] =
-        src.startsWith('http') || src.startsWith('data:')
-          ? src
-          : `http://52.78.34.150${src}`;
+      postImageMap[rid] = resolveImageUrl(src);
     });
   } catch (e) {
     console.warn('리뷰 이미지 로드 실패:', e.message);
