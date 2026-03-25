@@ -30,9 +30,6 @@ const totalReviewEl = document.getElementById('restaurantReviewCount');
 const gallerySection = document.getElementById('restaurantGallery');
 const galleryGrid = document.getElementById('galleryGrid');
 const reviewSort = document.getElementById('reviewSort');
-const reviewPrev = document.getElementById('reviewPrev');
-const reviewNext = document.getElementById('reviewNext');
-const reviewPageInfo = document.getElementById('reviewPageInfo');
 const reviewPagination = document.getElementById('reviewPagination');
 const modal = document.getElementById('galleryModal');
 const modalImage = document.getElementById('galleryModalImage');
@@ -58,7 +55,7 @@ let marker = null;
 let currentRestaurantId = null;
 let currentPage = 0;
 let totalPages = 0;
-const pageSize = 6;
+const pageSize = 5;
 
 const init = async () => {
   const params = new URLSearchParams(window.location.search);
@@ -154,85 +151,102 @@ const renderDetail = (detail) => {
  * Kakao Places 검색으로 전화번호 가져오기
  */
 const loadKakaoPlaceInfo = (name, address) => {
-  if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
-    return;
-  }
+  if (!window.kakao || !window.kakao.maps) return;
 
-  const ps = new window.kakao.maps.services.Places();
-  const keyword = address ? `${name} ${address}` : name;
+  window.kakao.maps.load(() => {
+    if (!window.kakao.maps.services) return;
 
-  ps.keywordSearch(
-    keyword,
-    (data, status) => {
-      if (status !== window.kakao.maps.services.Status.OK || !data || !data.length) {
-        return;
-      }
+    const ps = new window.kakao.maps.services.Places();
+    const keyword = address ? `${name} ${address}` : name;
 
-      const place = data[0];
-
-      // 전화번호
-      if (place.phone && restaurantPhone) {
-        restaurantPhone.textContent = place.phone;
-        if (restaurantCallBtn) {
-          restaurantCallBtn.href = `tel:${place.phone.replace(/[^0-9]/g, '')}`;
+    ps.keywordSearch(
+      keyword,
+      (data, status) => {
+        if (status !== window.kakao.maps.services.Status.OK || !data || !data.length) {
+          return;
         }
-      }
 
-      // 카카오맵 링크 (placeUrl이 없었을 경우 보완)
-      if (place.place_url) {
-        if (restaurantPlaceLink && restaurantPlaceLink.href === '#') {
-          restaurantPlaceLink.href = place.place_url;
-          restaurantPlaceLink.style.display = 'flex';
-        }
-        if (menuKakaoLink && menuKakaoLink.href === '#') {
-          menuKakaoLink.href = place.place_url;
-          menuKakaoLink.style.display = 'inline';
-        }
-      }
+        const place = data[0];
 
-      // 길찾기 링크 보완
-      if (restaurantNaviLink && place.y && place.x) {
-        restaurantNaviLink.href =
-          `https://map.kakao.com/link/to/${encodeURIComponent(place.place_name || name)},${place.y},${place.x}`;
-      }
-    },
-    { size: 1 },
-  );
+        // 전화번호
+        if (place.phone && restaurantPhone) {
+          restaurantPhone.textContent = place.phone;
+          if (restaurantCallBtn) {
+            restaurantCallBtn.href = `tel:${place.phone.replace(/[^0-9]/g, '')}`;
+          }
+        }
+
+        // 카카오맵 링크 (placeUrl이 없었을 경우 보완)
+        if (place.place_url) {
+          if (restaurantPlaceLink && restaurantPlaceLink.href === '#') {
+            restaurantPlaceLink.href = place.place_url;
+            restaurantPlaceLink.style.display = 'flex';
+          }
+          if (menuKakaoLink && menuKakaoLink.href === '#') {
+            menuKakaoLink.href = place.place_url;
+            menuKakaoLink.style.display = 'inline';
+          }
+        }
+
+        // 길찾기 링크 보완
+        if (restaurantNaviLink && place.y && place.x) {
+          restaurantNaviLink.href =
+            `https://map.kakao.com/link/to/${encodeURIComponent(place.place_name || name)},${place.y},${place.x}`;
+        }
+      },
+      { size: 1 },
+    );
+  });
 };
 
 const renderMap = (latitude, longitude, address) => {
   if (!restaurantMap) return;
-  if (!window.kakao || !window.kakao.maps) return;
 
-  const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
-  map = new window.kakao.maps.Map(restaurantMap, {
-    center: defaultCenter,
-    level: 4,
-  });
-  marker = new window.kakao.maps.Marker({ position: defaultCenter });
-  marker.setMap(map);
+  const initMap = () => {
+    window.kakao.maps.load(() => {
+      const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
+      map = new window.kakao.maps.Map(restaurantMap, {
+        center: defaultCenter,
+        level: 4,
+      });
+      marker = new window.kakao.maps.Marker({ position: defaultCenter });
+      marker.setMap(map);
 
-  if (
-    latitude !== null &&
-    longitude !== null &&
-    latitude !== undefined &&
-    longitude !== undefined
-  ) {
-    const position = new window.kakao.maps.LatLng(latitude, longitude);
-    map.setCenter(position);
-    marker.setPosition(position);
-    return;
-  }
+      if (
+        latitude !== null &&
+        longitude !== null &&
+        latitude !== undefined &&
+        longitude !== undefined
+      ) {
+        const position = new window.kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(position);
+        marker.setPosition(position);
+        return;
+      }
 
-  if (address) {
-    const geocoder = new window.kakao.maps.services.Geocoder();
-    geocoder.addressSearch(address, (result, status) => {
-      if (status !== window.kakao.maps.services.Status.OK) return;
-      const { x, y } = result[0];
-      const position = new window.kakao.maps.LatLng(y, x);
-      map.setCenter(position);
-      marker.setPosition(position);
+      if (address) {
+        const geocoder = new window.kakao.maps.services.Geocoder();
+        geocoder.addressSearch(address, (result, status) => {
+          if (status !== window.kakao.maps.services.Status.OK) return;
+          const { x, y } = result[0];
+          const position = new window.kakao.maps.LatLng(y, x);
+          map.setCenter(position);
+          marker.setPosition(position);
+        });
+      }
     });
+  };
+
+  if (window.kakao && window.kakao.maps) {
+    initMap();
+  } else {
+    const timer = setInterval(() => {
+      if (window.kakao && window.kakao.maps) {
+        clearInterval(timer);
+        initMap();
+      }
+    }, 100);
+    setTimeout(() => clearInterval(timer), 10000);
   }
 };
 
@@ -246,12 +260,7 @@ const loadReviews = async (restaurantId) => {
   if (totalReviewEl) totalReviewEl.textContent = `${total}`;
   if (reviewCountSummary) reviewCountSummary.textContent = `${total}`;
 
-  if (reviewPagination) {
-    reviewPagination.style.display = totalPages > 1 ? 'flex' : 'none';
-  }
-  if (reviewPageInfo) {
-    reviewPageInfo.textContent = `${currentPage + 1} / ${Math.max(totalPages, 1)}`;
-  }
+  renderReviewPagination();
 
   const sortedItems = sortReviews(items, reviewSort?.value || 'latest');
   const avg =
@@ -365,6 +374,29 @@ const escapeHtml = (text) => {
   return div.innerHTML;
 };
 
+const renderReviewPagination = () => {
+  if (!reviewPagination) return;
+  if (totalPages <= 1) {
+    reviewPagination.innerHTML = '';
+    return;
+  }
+
+  let html = `<button class="rd-pg-btn" data-page="${currentPage - 1}" ${currentPage === 0 ? 'disabled' : ''}><i class="ri-arrow-left-s-line"></i></button>`;
+  for (let i = 0; i < totalPages; i++) {
+    html += `<button class="rd-pg-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i + 1}</button>`;
+  }
+  html += `<button class="rd-pg-btn" data-page="${currentPage + 1}" ${currentPage === totalPages - 1 ? 'disabled' : ''}><i class="ri-arrow-right-s-line"></i></button>`;
+
+  reviewPagination.innerHTML = html;
+  reviewPagination.querySelectorAll('.rd-pg-btn:not([disabled])').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentPage = parseInt(btn.dataset.page);
+      loadReviews(currentRestaurantId);
+      reviewPagination.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+};
+
 const sortReviews = (items, sortKey) => {
   const list = [...items];
   switch (sortKey) {
@@ -377,14 +409,13 @@ const sortReviews = (items, sortKey) => {
   }
 };
 
+const GALLERY_INITIAL = 4;
+
 const loadGalleryFromReviews = async (reviews) => {
   if (!gallerySection || !galleryGrid) return;
-  const ids = reviews.map((review) => review.postId).slice(0, 6);
+  const ids = reviews.map((review) => review.postId).slice(0, 10);
   const posts = await Promise.all(ids.map((id) => getPost(id).catch(() => null)));
-  const images = posts
-    .flatMap((post) => extractPostImageUrls(post))
-    .filter(Boolean)
-    .slice(0, 9);
+  const images = posts.flatMap((post) => extractPostImageUrls(post)).filter(Boolean);
 
   if (!images.length) {
     gallerySection.style.display = 'none';
@@ -394,25 +425,64 @@ const loadGalleryFromReviews = async (reviews) => {
   gallerySection.style.display = 'block';
   if (photoCountBadge) photoCountBadge.textContent = `${images.length}장`;
 
-  // 첫 번째 이미지를 히어로 배경으로
   if (restaurantHeroBg) {
     const [primaryHero] = resolveImageCandidates(images[0]);
     restaurantHeroBg.style.backgroundImage = `url('${primaryHero}')`;
   }
 
-  galleryGrid.innerHTML = images
-    .map((url) => {
-      const [primary] = resolveImageCandidates(url);
-      return `
-        <div class="gallery-item">
-          <img src="${primary}" alt="맛집 사진" loading="lazy" data-full="${primary}" />
-        </div>
-      `;
-    })
-    .join('');
+  const remaining = images.length - GALLERY_INITIAL;
 
-  galleryGrid.querySelectorAll('img').forEach((img) => {
-    img.addEventListener('click', () => openModal(img.dataset.full || img.src));
+  const renderThumb = (url, index) => {
+    const [primary] = resolveImageCandidates(url);
+    const isMoreSlot = index === GALLERY_INITIAL - 1 && remaining > 0;
+    const overlay = isMoreSlot
+      ? `<div class="rd-img-more-overlay"><span>+${remaining}장 더보기</span></div>`
+      : '';
+    return `<div class="rd-img-thumb" data-src="${primary}">${overlay}<img src="${primary}" alt="맛집 사진" loading="lazy"></div>`;
+  };
+
+  const initialHTML = images.slice(0, GALLERY_INITIAL).map((url, i) => renderThumb(url, i)).join('');
+  const extraHTML = remaining > 0
+    ? `<div class="rd-img-extra" style="display:none;">${images.slice(GALLERY_INITIAL).map((url) => renderThumb(url, GALLERY_INITIAL)).join('')}</div>`
+    : '';
+
+  galleryGrid.innerHTML = `<div class="rd-img-grid">${initialHTML}${extraHTML}</div>`;
+
+  if (remaining > 0) {
+    const grid = galleryGrid.querySelector('.rd-img-grid');
+    const moreOverlay = galleryGrid.querySelector('.rd-img-more-overlay');
+    const extraWrap = galleryGrid.querySelector('.rd-img-extra');
+
+    moreOverlay.addEventListener('click', () => {
+      moreOverlay.remove();
+      extraWrap.style.display = 'contents';
+
+      const collapseBtn = document.createElement('button');
+      collapseBtn.className = 'rd-img-collapse-btn';
+      collapseBtn.innerHTML = '<i class="ri-arrow-up-s-line"></i>접기';
+      grid.after(collapseBtn);
+
+      collapseBtn.addEventListener('click', () => {
+        extraWrap.style.display = 'none';
+        collapseBtn.remove();
+        const overlay = document.createElement('div');
+        overlay.className = 'rd-img-more-overlay';
+        overlay.innerHTML = `<span>+${remaining}장 더보기</span>`;
+        grid.querySelectorAll('.rd-img-thumb')[GALLERY_INITIAL - 1].appendChild(overlay);
+        overlay.addEventListener('click', () => {
+          overlay.remove();
+          extraWrap.style.display = 'contents';
+          grid.after(collapseBtn);
+        });
+      });
+    });
+  }
+
+  galleryGrid.querySelectorAll('.rd-img-thumb').forEach((thumb, i) => {
+    thumb.addEventListener('click', (e) => {
+      if (e.target.closest('.rd-img-more-overlay')) return;
+      openModal(thumb.dataset.src);
+    });
   });
 };
 
@@ -464,24 +534,21 @@ const normalizeCategory = (category) => {
 
 const attachEvents = () => {
   if (reviewSort) {
-    reviewSort.addEventListener('change', () => loadReviews(currentRestaurantId));
-  }
-  if (reviewPrev) {
-    reviewPrev.addEventListener('click', () => {
-      if (currentPage > 0) {
-        currentPage -= 1;
-        loadReviews(currentRestaurantId);
-      }
+    reviewSort.addEventListener('change', () => {
+      currentPage = 0;
+      loadReviews(currentRestaurantId);
     });
   }
-  if (reviewNext) {
-    reviewNext.addEventListener('click', () => {
-      if (currentPage < totalPages - 1) {
-        currentPage += 1;
-        loadReviews(currentRestaurantId);
-      }
-    });
-  }
+
+  // 리뷰 접기/펼치기
+  const reviewToggleBtn = document.getElementById('reviewToggleBtn');
+  const reviewToggleIcon = document.getElementById('reviewToggleIcon');
+  const reviewBody = document.getElementById('reviewBody');
+  reviewToggleBtn?.addEventListener('click', () => {
+    const isVisible = reviewBody.style.display !== 'none';
+    reviewBody.style.display = isVisible ? 'none' : 'block';
+    reviewToggleIcon.className = isVisible ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line';
+  });
 
   if (modalClose) modalClose.addEventListener('click', closeModal);
   if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);

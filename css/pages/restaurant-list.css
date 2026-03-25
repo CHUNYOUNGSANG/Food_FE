@@ -27,14 +27,6 @@
   border-radius: 20px;
 }
 
-.restaurant-hero-kicker {
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-  margin-bottom: 8px;
-}
-
 .restaurant-hero-title {
   font-size: 36px;
   font-weight: 700;

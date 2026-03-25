@@ -389,7 +389,6 @@ const createPostRow = (post, index) => {
       <div class="post-row-map">
         <div class="map-card">
           <div id="${mapId}" class="post-row-map-canvas"></div>
-          <div class="map-card-address">${address || '주소 정보 없음'}</div>
         </div>
       </div>
     </div>

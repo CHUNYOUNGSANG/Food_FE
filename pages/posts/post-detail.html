@@ -51,14 +51,7 @@
         <div class="pd-hero-bottom">
           <span id="categoryBadge" class="category-badge"></span>
           <h1 id="postTitle" class="pd-title"></h1>
-          <div class="pd-hero-meta">
-            <div id="authorAvatar" class="author-avatar"></div>
-            <span id="authorName" class="pd-author-name"></span>
-            <span class="pd-sep">·</span>
-            <span id="postDate" class="pd-post-date"></span>
-            <span class="pd-sep">·</span>
-            <span id="viewCount" class="pd-view-count-hero"></span>
-          </div>
+          <span id="viewCount" class="pd-view-count-hero"></span>
         </div>
       </div>
     </section>
@@ -66,16 +59,16 @@
     <!-- ===== 메인 컨텐츠 ===== -->
     <main class="pd-main">
 
-      <!-- 맛집 정보 카드 -->
-      <div class="pd-card pd-info-card">
-        <div class="pd-info-row">
-          <div class="pd-restaurant-block">
-            <div id="restaurantName" class="pd-rest-name"></div>
-            <div id="restaurantAddress" class="pd-rest-addr"></div>
+      <!-- 통합 리뷰 카드 -->
+      <div class="pd-card pd-review-card">
+
+        <!-- 작성자 헤더 -->
+        <div class="pd-review-header">
+          <div id="authorAvatar" class="author-avatar pd-review-avatar"></div>
+          <div class="pd-review-author-text">
+            <span id="authorName" class="pd-review-author-name"></span>
+            <span id="restaurantName" class="pd-review-rest-name"></span>
           </div>
-          <span id="ratingBadge" class="rating-badge"></span>
-        </div>
-        <div class="pd-meta-footer">
           <div id="authorActions" class="pd-author-actions" style="display: none;">
             <button id="editBtn" class="pd-btn-ghost">
               <i class="ri-edit-2-line"></i>수정
@@ -85,38 +78,47 @@
             </button>
           </div>
         </div>
-      </div>
 
-      <!-- 이미지 -->
-      <div id="postImageContainer" class="pd-image-container" style="display: none;">
-        <img id="postImage" src="" alt="게시글 이미지" class="pd-image-placeholder">
-      </div>
+        <!-- 이미지 -->
+        <div id="postImageContainer" class="pd-image-container" style="display: none;">
+          <img id="postImage" src="" alt="게시글 이미지" class="pd-image-placeholder">
+        </div>
 
-      <!-- 게시글 내용 -->
-      <div class="pd-card">
+        <!-- 평점 + 날짜 -->
+        <div class="pd-review-rating-row">
+          <span id="ratingBadge"></span>
+          <span id="postDate" class="pd-review-date"></span>
+        </div>
+
+        <!-- 게시글 내용 -->
         <div id="postContent" class="pd-content"></div>
-      </div>
 
-      <!-- 태그 -->
-      <div id="postTags" class="pd-tags" style="display: none;"></div>
+        <!-- 태그 -->
+        <div id="postTags" class="pd-tags" style="display: none;"></div>
+
+        <!-- 좋아요 텍스트 -->
+        <p class="pd-likes-text"><span id="likeCount">0</span>명이 좋아합니다.</p>
+
+        <!-- 구분선 + 액션 버튼 -->
+        <div class="pd-review-actions">
+          <button id="likeBtn" class="pd-review-action-btn">
+            <span id="likeIcon">🤍</span>좋아요
+          </button>
+          <div class="pd-review-action-sep"></div>
+          <button id="shareBtn" class="pd-review-action-btn">
+            <i class="ri-share-line"></i>공유
+          </button>
+        </div>
+
+      </div>
 
       <!-- 지도 -->
       <div class="pd-card post-map-section">
         <h4 class="pd-card-title">
           <i class="ri-map-pin-line"></i>위치
         </h4>
+        <div class="pd-map-addr" id="restaurantAddress"></div>
         <div id="postMap" class="pd-map"></div>
-      </div>
-
-      <!-- 액션 버튼 -->
-      <div class="pd-actions">
-        <button id="likeBtn" class="pd-like-btn">
-          <span id="likeIcon">🤍</span>
-          <span id="likeCount">0</span>
-        </button>
-        <button id="shareBtn" class="pd-share-btn">
-          <i class="ri-share-line"></i>공유
-        </button>
       </div>
 
       <!-- 댓글 섹션 -->
@@ -125,27 +127,38 @@
           <h4 class="pd-card-title">
             <i class="ri-chat-3-line"></i>댓글
           </h4>
-          <span id="commentCount" class="pd-count-badge">0</span>
+          <div class="pd-comment-header-right">
+            <span id="commentCount" class="pd-count-badge">0</span>
+            <button id="commentToggleBtn" class="pd-comment-toggle-btn" aria-label="댓글 접기/펼치기">
+              <i id="commentToggleIcon" class="ri-arrow-up-s-line"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- 댓글 작성 폼 -->
-        <div id="commentFormContainer" class="pd-comment-form-wrap">
-          <form id="commentForm">
-            <textarea id="commentInput" class="pd-comment-textarea"
-              placeholder="댓글을 입력하세요..." rows="3"></textarea>
-            <div class="pd-comment-form-actions">
-              <button type="submit" class="pd-comment-submit">댓글 작성</button>
-            </div>
-          </form>
-        </div>
+        <!-- 토글 가능한 영역 -->
+        <div id="commentBody">
+          <!-- 댓글 작성 폼 -->
+          <div id="commentFormContainer" class="pd-comment-form-wrap">
+            <form id="commentForm">
+              <textarea id="commentInput" class="pd-comment-textarea"
+                placeholder="댓글을 입력하세요..." rows="3"></textarea>
+              <div class="pd-comment-form-actions">
+                <button type="submit" class="pd-comment-submit">댓글 작성</button>
+              </div>
+            </form>
+          </div>
 
-        <!-- 댓글 목록 -->
-        <div id="commentList" class="pd-comment-list"></div>
+          <!-- 댓글 목록 -->
+          <div id="commentList" class="pd-comment-list"></div>
 
-        <!-- 댓글 없음 -->
-        <div id="noComments" class="pd-no-comments" style="display: none;">
-          <div class="pd-no-icon">💬</div>
-          <p class="pd-no-text">아직 댓글이 없어요.<br>첫 댓글을 남겨보세요!</p>
+          <!-- 댓글 없음 -->
+          <div id="noComments" class="pd-no-comments" style="display: none;">
+            <div class="pd-no-icon">💬</div>
+            <p class="pd-no-text">아직 댓글이 없어요.<br>첫 댓글을 남겨보세요!</p>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div id="commentPagination" class="pd-comment-pagination"></div>
         </div>
       </div>
 
@@ -199,9 +212,27 @@
     </div>
   </footer>
 
+  <!-- 라이트박스 -->
+  <div id="lightbox" class="pd-lightbox" style="display:none;" aria-modal="true" role="dialog">
+    <div class="pd-lightbox-backdrop"></div>
+    <button class="pd-lightbox-close" id="lightboxClose" aria-label="닫기"><i class="ri-close-line"></i></button>
+    <button class="pd-lightbox-nav pd-lightbox-prev" id="lightboxPrev" aria-label="이전"><i class="ri-arrow-left-s-line"></i></button>
+    <div class="pd-lightbox-img-wrap">
+      <img id="lightboxImg" src="" alt="">
+    </div>
+    <button class="pd-lightbox-nav pd-lightbox-next" id="lightboxNext" aria-label="다음"><i class="ri-arrow-right-s-line"></i></button>
+    <div class="pd-lightbox-counter"><span id="lightboxCurrent">1</span> / <span id="lightboxTotal">1</span></div>
+  </div>
+
   <!-- JavaScript -->
   <script src="../../js/config/kakao-config.js"></script>
-  <script>document.write('<scr'+'ipt src="//dapi.kakao.com/v2/maps/sdk.js?appkey='+window.KAKAO_APP_KEY+'&libraries=services"><\/scr'+'ipt>');</script>
+  <script>
+    (function () {
+      var s = document.createElement('script');
+      s.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + window.KAKAO_APP_KEY + '&libraries=services&autoload=false';
+      document.head.appendChild(s);
+    })();
+  </script>
   <script type="module" src="../../js/pages/posts/post-detail.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 

@@ -31,11 +31,12 @@ export const renderHeader = () => {
         <span class="logo-text">파인잇</span>
       </a>
 
-      <nav class="site-nav">
-        <a href="/pages/posts/post-list.html" class="nav-link">맛집 탐색</a>
-        <a href="/pages/category.html" class="nav-link">카테고리</a>
-        <a href="/pages/restaurants/restaurant-list.html" class="nav-link">맛집 목록</a>
-      </nav>
+      <form class="header-search-form" id="heroSearchForm">
+        <input type="text" class="header-search-input" placeholder="지역, 음식 또는 식당명을 검색하세요" />
+        <button type="submit" class="header-search-btn">
+          <i class="ri-search-line"></i>
+        </button>
+      </form>
 
       <div class="user-menu">
         ${!admin ? `
@@ -75,8 +76,8 @@ export const renderHeader = () => {
                 </div>
               </div>
               <div class="dropdown-menu">
-                ${!admin ? `<a href="/pages/posts/post-create.html" class="dropdown-item">게시글 작성</a>` : ''}
-                ${!admin ? `<a href="${mypageUrl}" class="dropdown-item">내 게시글</a>` : ''}
+                ${!admin ? `<a href="/pages/posts/post-create.html" class="dropdown-item">리뷰 작성</a>` : ''}
+                ${!admin ? `<a href="${mypageUrl}" class="dropdown-item">내 리뷰</a>` : ''}
               </div>
             </div>
           </div>

@@ -79,24 +79,6 @@
 
     <!-- ── 정보 섹션 ── -->
     <div id="section-info">
-      <!-- 정보 카드 (영업시간, 전화) -->
-      <div class="rd-info-cards">
-        <div class="rd-info-card">
-          <div class="rd-info-icon"><i class="ri-time-line"></i></div>
-          <div class="rd-info-body">
-            <p class="rd-info-label">영업시간</p>
-            <p id="restaurantHours" class="rd-info-val">정보 없음</p>
-          </div>
-        </div>
-        <div class="rd-info-card">
-          <div class="rd-info-icon"><i class="ri-phone-line"></i></div>
-          <div class="rd-info-body">
-            <p class="rd-info-label">전화번호</p>
-            <p id="restaurantPhone" class="rd-info-val">정보 없음</p>
-          </div>
-        </div>
-      </div>
-
       <!-- 주소 행 -->
       <div class="rd-addr-row">
         <i class="ri-map-pin-2-fill"></i>
@@ -145,7 +127,7 @@
         <h4 class="rd-card-title"><i class="ri-image-line"></i>사진</h4>
         <span id="photoCountBadge" class="rd-count-badge">0장</span>
       </div>
-      <div id="galleryGrid" class="rd-gallery-grid"></div>
+      <div id="galleryGrid" class="rd-gallery-container"></div>
     </section>
 
     <!-- ── 댓글 섹션 ── -->
@@ -168,27 +150,31 @@
       <div class="rd-card">
         <div class="rd-card-header">
           <h4 class="rd-card-title"><i class="ri-chat-quote-line"></i>리뷰</h4>
-          <span id="reviewCount" class="rd-count-badge">0개</span>
+          <div class="rd-review-header-right">
+            <span id="reviewCount" class="rd-count-badge">0개</span>
+            <button id="reviewToggleBtn" class="rd-review-toggle-btn" aria-label="리뷰 접기/펼치기">
+              <i id="reviewToggleIcon" class="ri-arrow-up-s-line"></i>
+            </button>
+          </div>
         </div>
-        <div class="rd-sort-row">
-          <select id="reviewSort" class="rd-sort-select">
-            <option value="latest">최신순</option>
-            <option value="rating">평점순</option>
-            <option value="views">조회순</option>
-          </select>
-        </div>
-        <div id="reviewList" class="rd-comment-list"></div>
-        <div id="reviewPagination" class="rd-pagination" style="display: none;">
-          <button id="reviewPrev" class="rd-page-btn">이전</button>
-          <span id="reviewPageInfo" class="rd-page-info">1 / 1</span>
-          <button id="reviewNext" class="rd-page-btn">다음</button>
-        </div>
-        <div id="reviewEmpty" class="rd-empty" style="display: none;">
-          <div class="rd-empty-icon">📝</div>
-          <p class="rd-empty-text">아직 등록된 리뷰가 없어요.</p>
-          <a id="restaurantEmptyReviewLink" href="/pages/posts/post-create.html" class="rd-empty-btn">
-            첫 리뷰 작성하기
-          </a>
+
+        <div id="reviewBody">
+          <div class="rd-sort-row">
+            <select id="reviewSort" class="rd-sort-select">
+              <option value="latest">최신순</option>
+              <option value="rating">평점순</option>
+              <option value="views">조회순</option>
+            </select>
+          </div>
+          <div id="reviewList" class="rd-comment-list"></div>
+          <div id="reviewPagination" class="rd-review-pagination"></div>
+          <div id="reviewEmpty" class="rd-empty" style="display: none;">
+            <div class="rd-empty-icon">📝</div>
+            <p class="rd-empty-text">아직 등록된 리뷰가 없어요.</p>
+            <a id="restaurantEmptyReviewLink" href="/pages/posts/post-create.html" class="rd-empty-btn">
+              첫 리뷰 작성하기
+            </a>
+          </div>
         </div>
       </div>
 
@@ -243,15 +229,10 @@
     </div>
   </footer>
 
-  <!-- 하단 고정 바 -->
-  <div class="rd-bottom-bar">
-    <a id="restaurantCallBtn" href="tel:" class="rd-call-btn">
-      <i class="ri-phone-line"></i>전화
-    </a>
-    <a id="restaurantReviewLink" href="/pages/posts/post-create.html" class="rd-write-btn">
-      <i class="ri-edit-2-line"></i>리뷰 작성하기
-    </a>
-  </div>
+  <!-- 리뷰 작성 FAB -->
+  <a id="restaurantReviewLink" href="/pages/posts/post-create.html" class="rd-review-fab" aria-label="리뷰 작성">
+    <i class="ri-edit-2-line"></i>
+  </a>
 
   <!-- 갤러리 모달 -->
   <div id="galleryModal" class="rd-modal" style="display: none;">
@@ -264,7 +245,13 @@
 
   <!-- Scripts -->
   <script src="../../js/config/kakao-config.js"></script>
-  <script>document.write('<scr' + 'ipt src="//dapi.kakao.com/v2/maps/sdk.js?appkey=' + window.KAKAO_APP_KEY + '&libraries=services"><\/scr' + 'ipt>');</script>
+  <script>
+    (function () {
+      var s = document.createElement('script');
+      s.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + window.KAKAO_APP_KEY + '&libraries=services&autoload=false';
+      document.head.appendChild(s);
+    })();
+  </script>
   <script type="module" src="../../js/pages/restaurants/restaurant-detail.js"></script>
   <script type="module" src="../../js/components/header.js"></script>
 

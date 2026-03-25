@@ -15,6 +15,7 @@ import {
   searchRestaurants,
 } from '../../services/restaurant-service.js';
 import { resolveImageUrl } from '../../utils/image-url.js';
+import { compressImage } from '../../utils/image-compress.js';
 
 // DOM 요소
 const loading = document.getElementById('loading');
@@ -815,8 +816,9 @@ const handleSubmit = async (e) => {
       formData.append('deleteImageIds', id);
     });
 
-    // 새로 추가할 이미지들
-    selectedFiles.forEach((file) => {
+    // 새로 추가할 이미지들 (압축 후 업로드)
+    const compressedFiles = await Promise.all(selectedFiles.map((f) => compressImage(f)));
+    compressedFiles.forEach((file) => {
       formData.append('newImages', file);
     });
 

@@ -12,6 +12,7 @@ import {
   addPostLike,
   removePostLike,
   getPostLikeCount,
+  getLikesByPost,
 } from '../../services/post-like-service.js';
 import {
   addCommentLike,
@@ -117,6 +118,53 @@ let memberId = null;
 let post = null;
 let comments = [];
 let isLiked = false;
+let currentCommentPage = 1;
+const COMMENTS_PER_PAGE = 5;
+
+// 라이트박스
+let lightboxUrls = [];
+let lightboxIndex = 0;
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxPrev = document.getElementById('lightboxPrev');
+const lightboxNext = document.getElementById('lightboxNext');
+const lightboxCurrent = document.getElementById('lightboxCurrent');
+const lightboxTotal = document.getElementById('lightboxTotal');
+const lightboxClose = document.getElementById('lightboxClose');
+
+const openLightbox = (urls, index) => {
+  lightboxUrls = urls;
+  lightboxIndex = index;
+  lightboxTotal.textContent = urls.length;
+  updateLightbox();
+  lightbox.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+
+const closeLightbox = () => {
+  lightbox.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+const updateLightbox = () => {
+  lightboxImg.src = resolveImageUrl(lightboxUrls[lightboxIndex]);
+  lightboxCurrent.textContent = lightboxIndex + 1;
+  lightboxPrev.disabled = lightboxIndex === 0;
+  lightboxNext.disabled = lightboxIndex === lightboxUrls.length - 1;
+};
+
+lightboxClose?.addEventListener('click', closeLightbox);
+lightbox?.querySelector('.pd-lightbox-backdrop')?.addEventListener('click', closeLightbox);
+lightboxPrev?.addEventListener('click', () => { if (lightboxIndex > 0) { lightboxIndex--; updateLightbox(); } });
+lightboxNext?.addEventListener('click', () => { if (lightboxIndex < lightboxUrls.length - 1) { lightboxIndex++; updateLightbox(); } });
+
+document.addEventListener('keydown', (e) => {
+  if (lightbox?.style.display === 'none') return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft' && lightboxIndex > 0) { lightboxIndex--; updateLightbox(); }
+  if (e.key === 'ArrowRight' && lightboxIndex < lightboxUrls.length - 1) { lightboxIndex++; updateLightbox(); }
+});
 
 // 카카오맵
 let kakaoMap = null;
@@ -200,8 +248,8 @@ const renderPost = (post) => {
   // 평점
   if (post.rating) {
     const stars = '⭐'.repeat(Math.round(post.rating));
-    ratingBadge.textContent = `${stars} ${post.rating}`;
-    ratingBadge.className = 'rating-badge';
+    ratingBadge.innerHTML = `<span class="pd-stars">${stars}</span><span class="pd-score">${post.rating}점</span>`;
+    ratingBadge.className = 'pd-rating-display';
   }
 
   // 맛집 정보
@@ -249,17 +297,75 @@ const renderPost = (post) => {
   // 이미지 (images 배열 우선, 없으면 imageUrl 사용)
   const postImageUrls = extractPostImageUrls(post);
   if (postImageUrls.length > 0) {
-    const imagesHTML = postImageUrls
-      .map((url) => {
-        const [primary, fallback] = resolveImageCandidates(url);
-        const fallbackAttr = fallback ? `data-fallback="${fallback}"` : '';
-        const onError =
-          "if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.style.display='none';}";
-        return `<img src="${primary}" ${fallbackAttr} onerror="${onError}" alt="${post.title}" style="max-width:100%; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">`;
-      })
+    const INITIAL_COUNT = 4;
+    const remaining = postImageUrls.length - INITIAL_COUNT;
+    const onError =
+      "if(this.dataset.fallback){this.src=this.dataset.fallback;this.removeAttribute('data-fallback');}else{this.parentElement.style.display='none';}";
+
+    const renderThumb = (url, index) => {
+      const [primary, fallback] = resolveImageCandidates(url);
+      const fallbackAttr = fallback ? `data-fallback="${fallback}"` : '';
+      const isMoreSlot = index === INITIAL_COUNT - 1 && remaining > 0;
+      const moreOverlay = isMoreSlot
+        ? `<div class="pd-img-more-overlay"><span>+${remaining}장 더보기</span></div>`
+        : '';
+      return `<div class="pd-img-thumb">${moreOverlay}<img src="${primary}" ${fallbackAttr} onerror="${onError}" alt="${post.title}"></div>`;
+    };
+
+    const initialHTML = postImageUrls
+      .slice(0, INITIAL_COUNT)
+      .map((url, i) => renderThumb(url, i))
       .join('');
-    postImageContainer.innerHTML = imagesHTML;
+
+    const extraHTML = remaining > 0
+      ? `<div class="pd-img-extra" style="display:none;">${postImageUrls.slice(INITIAL_COUNT).map((url) => renderThumb(url, INITIAL_COUNT)).join('')}</div>`
+      : '';
+
+    postImageContainer.innerHTML = `<div class="pd-img-grid">${initialHTML}${extraHTML}</div>`;
     postImageContainer.style.display = 'block';
+
+    if (remaining > 0) {
+      const grid = postImageContainer.querySelector('.pd-img-grid');
+      const moreOverlay = postImageContainer.querySelector('.pd-img-more-overlay');
+      const extraWrap = postImageContainer.querySelector('.pd-img-extra');
+
+      moreOverlay.addEventListener('click', () => {
+        moreOverlay.remove();
+        extraWrap.style.display = 'contents';
+
+        // 접기 버튼 추가
+        const collapseBtn = document.createElement('button');
+        collapseBtn.className = 'pd-img-collapse-btn';
+        collapseBtn.innerHTML = '<i class="ri-arrow-up-s-line"></i>접기';
+        grid.after(collapseBtn);
+
+        collapseBtn.addEventListener('click', () => {
+          extraWrap.style.display = 'none';
+          collapseBtn.remove();
+
+          // 더보기 오버레이 복원
+          const lastThumb = grid.querySelectorAll('.pd-img-thumb')[INITIAL_COUNT - 1];
+          const overlay = document.createElement('div');
+          overlay.className = 'pd-img-more-overlay';
+          overlay.innerHTML = `<span>+${remaining}장 더보기</span>`;
+          lastThumb.appendChild(overlay);
+
+          overlay.addEventListener('click', () => {
+            overlay.remove();
+            extraWrap.style.display = 'contents';
+            grid.after(collapseBtn);
+          });
+        });
+      });
+    }
+
+    // 이미지 클릭 → 라이트박스
+    postImageContainer.querySelectorAll('.pd-img-thumb').forEach((thumb, i) => {
+      thumb.addEventListener('click', (e) => {
+        if (e.target.closest('.pd-img-more-overlay')) return;
+        openLightbox(postImageUrls, i);
+      });
+    });
   } else {
     postImageContainer.innerHTML = '';
     postImageContainer.style.display = 'none';
@@ -290,38 +396,48 @@ const renderPostMap = (post) => {
     return;
   }
 
-  if (!window.kakao || !window.kakao.maps) {
-    console.warn('카카오맵 SDK가 로드되지 않았습니다.');
-    postMapSection.style.display = 'none';
-    return;
-  }
+  const initKakaoMap = () => {
+    window.kakao.maps.load(() => {
+      if (!kakaoMap) {
+        const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
+        kakaoMap = new window.kakao.maps.Map(postMap, {
+          center: defaultCenter,
+          level: 4,
+        });
+        kakaoMarker = new window.kakao.maps.Marker({ position: defaultCenter });
+        kakaoMarker.setMap(kakaoMap);
+        kakaoGeocoder = new window.kakao.maps.services.Geocoder();
+      }
 
-  if (!kakaoMap) {
-    const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780);
-    kakaoMap = new window.kakao.maps.Map(postMap, {
-      center: defaultCenter,
-      level: 4,
+      if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
+        const position = new window.kakao.maps.LatLng(latitude, longitude);
+        kakaoMap.setCenter(position);
+        kakaoMarker.setPosition(position);
+        return;
+      }
+
+      if (address) {
+        kakaoGeocoder.addressSearch(address, (result, status) => {
+          if (status !== window.kakao.maps.services.Status.OK) return;
+          const { x, y } = result[0];
+          const position = new window.kakao.maps.LatLng(y, x);
+          kakaoMap.setCenter(position);
+          kakaoMarker.setPosition(position);
+        });
+      }
     });
-    kakaoMarker = new window.kakao.maps.Marker({ position: defaultCenter });
-    kakaoMarker.setMap(kakaoMap);
-    kakaoGeocoder = new window.kakao.maps.services.Geocoder();
-  }
+  };
 
-  if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
-    const position = new window.kakao.maps.LatLng(latitude, longitude);
-    kakaoMap.setCenter(position);
-    kakaoMarker.setPosition(position);
-    return;
-  }
-
-  if (address) {
-    kakaoGeocoder.addressSearch(address, (result, status) => {
-      if (status !== window.kakao.maps.services.Status.OK) return;
-      const { x, y } = result[0];
-      const position = new window.kakao.maps.LatLng(y, x);
-      kakaoMap.setCenter(position);
-      kakaoMarker.setPosition(position);
-    });
+  if (window.kakao && window.kakao.maps) {
+    initKakaoMap();
+  } else {
+    const timer = setInterval(() => {
+      if (window.kakao && window.kakao.maps) {
+        clearInterval(timer);
+        initKakaoMap();
+      }
+    }, 100);
+    setTimeout(() => clearInterval(timer), 10000);
   }
 };
 
@@ -343,48 +459,107 @@ const loadComments = async () => {
 };
 
 /**
- * 댓글 렌더링
+ * 댓글 렌더링 (최신순, 페이지네이션)
  */
-const renderComments = (comments) => {
-  if (comments.length === 0) {
+const renderComments = (allComments) => {
+  const pagination = document.getElementById('commentPagination');
+
+  if (allComments.length === 0) {
     commentList.style.display = 'none';
     noComments.style.display = 'block';
+    if (pagination) pagination.innerHTML = '';
     return;
   }
 
   commentList.style.display = 'block';
   noComments.style.display = 'none';
 
-  // 댓글을 부모 댓글과 대댓글로 분류
-  const parentComments = comments.filter((c) => !c.parentCommentId);
-  const repliesMap = {};
+  // 최신순 정렬
+  const sorted = [...allComments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  comments.forEach((comment) => {
+  // 부모 댓글 / 대댓글 분류
+  const parentComments = sorted.filter((c) => !c.parentCommentId);
+  const repliesMap = {};
+  sorted.forEach((comment) => {
     if (comment.parentCommentId) {
-      if (!repliesMap[comment.parentCommentId]) {
-        repliesMap[comment.parentCommentId] = [];
-      }
+      if (!repliesMap[comment.parentCommentId]) repliesMap[comment.parentCommentId] = [];
       repliesMap[comment.parentCommentId].push(comment);
     }
   });
 
+  // 페이지네이션
+  const totalPages = Math.ceil(parentComments.length / COMMENTS_PER_PAGE);
+  if (currentCommentPage > totalPages) currentCommentPage = totalPages;
+  const start = (currentCommentPage - 1) * COMMENTS_PER_PAGE;
+  const pageParents = parentComments.slice(start, start + COMMENTS_PER_PAGE);
+
   // HTML 생성
   let html = '';
-  parentComments.forEach((comment) => {
+  pageParents.forEach((comment) => {
     html += createCommentHTML(comment, false);
-
-    // 대댓글이 있으면 추가
     const replies = repliesMap[comment.id] || [];
-    replies.forEach((reply) => {
-      html += createCommentHTML(reply, true);
-    });
+    if (replies.length > 0) {
+      html += `
+        <button class="pd-replies-toggle" data-target="replies-${comment.id}">
+          <i class="ri-chat-1-line"></i>답글 ${replies.length}개
+          <i class="pd-replies-toggle-icon ri-arrow-down-s-line"></i>
+        </button>
+        <div class="pd-replies-wrap" id="replies-${comment.id}" style="display:none;">
+      `;
+      replies.forEach((reply) => { html += createCommentHTML(reply, true); });
+      html += `</div>`;
+    }
   });
 
   commentList.innerHTML = html;
-
-  // 이벤트 리스너 재등록
   attachCommentEventListeners();
   hydrateAvatars(commentList);
+
+  // 답글 접기/펼치기
+  commentList.querySelectorAll('.pd-replies-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const wrap = document.getElementById(btn.dataset.target);
+      const icon = btn.querySelector('.pd-replies-toggle-icon');
+      const isVisible = wrap.style.display !== 'none';
+      wrap.style.display = isVisible ? 'none' : 'block';
+      icon.className = `pd-replies-toggle-icon ${isVisible ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line'}`;
+      btn.classList.toggle('expanded', !isVisible);
+    });
+  });
+
+  // 페이지네이션 렌더링
+  renderCommentPagination(parentComments.length, totalPages);
+};
+
+/**
+ * 댓글 페이지네이션 렌더링
+ */
+const renderCommentPagination = (total, totalPages) => {
+  const pagination = document.getElementById('commentPagination');
+  if (!pagination) return;
+
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+
+  let html = `<button class="pd-page-btn" data-page="${currentCommentPage - 1}" ${currentCommentPage === 1 ? 'disabled' : ''}><i class="ri-arrow-left-s-line"></i></button>`;
+
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="pd-page-btn ${i === currentCommentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+  }
+
+  html += `<button class="pd-page-btn" data-page="${currentCommentPage + 1}" ${currentCommentPage === totalPages ? 'disabled' : ''}><i class="ri-arrow-right-s-line"></i></button>`;
+
+  pagination.innerHTML = html;
+
+  pagination.querySelectorAll('.pd-page-btn:not([disabled])').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentCommentPage = parseInt(btn.dataset.page);
+      renderComments(comments);
+      commentList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 };
 
 /**
@@ -656,10 +831,42 @@ const loadLikeStatus = async () => {
     isLiked = likeData.isLiked;
     likeCount.textContent = likeData.likeCount;
 
-    // 좋아요 아이콘 업데이트
     updateLikeButton();
+    await updateLikesText(likeData.likeCount);
   } catch (error) {
     console.error('좋아요 상태 로드 실패:', error);
+  }
+};
+
+/**
+ * 좋아요 텍스트 업데이트 (첫 번째 좋아요한 회원 닉네임 포함)
+ */
+const updateLikesText = async (count) => {
+  const likesTextEl = document.querySelector('.pd-likes-text');
+  if (!likesTextEl) return;
+
+  if (!count || count === 0) {
+    likesTextEl.style.display = 'none';
+    return;
+  }
+
+  likesTextEl.style.display = 'block';
+
+  try {
+    const likers = await getLikesByPost(postId);
+    const firstLiker = Array.isArray(likers) && likers.length > 0
+      ? (likers[0]?.memberNickname || likers[0]?.nickname || likers[0]?.member?.nickname || null)
+      : null;
+
+    if (firstLiker && count > 1) {
+      likesTextEl.innerHTML = `<strong>${firstLiker}</strong>님 외 ${count - 1}명이 좋아합니다.`;
+    } else if (firstLiker) {
+      likesTextEl.innerHTML = `<strong>${firstLiker}</strong>님이 좋아합니다.`;
+    } else {
+      likesTextEl.innerHTML = `<span id="likeCount">${count}</span>명이 좋아합니다.`;
+    }
+  } catch {
+    likesTextEl.innerHTML = `<span id="likeCount">${count}</span>명이 좋아합니다.`;
   }
 };
 
@@ -669,12 +876,10 @@ const loadLikeStatus = async () => {
 const updateLikeButton = () => {
   if (isLiked) {
     likeIcon.textContent = '❤️';
-    likeBtn.style.borderColor = 'var(--error-color)';
-    likeBtn.style.color = 'var(--error-color)';
+    likeBtn.classList.add('liked');
   } else {
     likeIcon.textContent = '🤍';
-    likeBtn.style.borderColor = 'var(--gray-300)';
-    likeBtn.style.color = 'var(--gray-700)';
+    likeBtn.classList.remove('liked');
   }
 };
 
@@ -702,6 +907,7 @@ const handleLikeToggle = async () => {
     alert(error.message || '좋아요 처리에 실패했습니다.');
   }
 };
+
 
 /**
  * 댓글 작성
@@ -826,6 +1032,16 @@ const attachEventListeners = () => {
 
   // 댓글 작성
   commentForm.addEventListener('submit', handleCommentSubmit);
+
+  // 댓글 접기/펼치기
+  const commentToggleBtn = document.getElementById('commentToggleBtn');
+  const commentToggleIcon = document.getElementById('commentToggleIcon');
+  const commentBody = document.getElementById('commentBody');
+  commentToggleBtn?.addEventListener('click', () => {
+    const isVisible = commentBody.style.display !== 'none';
+    commentBody.style.display = isVisible ? 'none' : 'block';
+    commentToggleIcon.className = isVisible ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line';
+  });
 };
 
 /**

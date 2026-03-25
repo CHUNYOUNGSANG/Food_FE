@@ -4,6 +4,7 @@
 
 import httpClient from '../../utils/http-client.js';
 import API_CONFIG from '../../config/api-config.js';
+import { compressImage } from '../../utils/image-compress.js';
 import {
   validatePostTitle,
   validatePostContent,
@@ -565,6 +566,9 @@ const renderTags = () => {
   tagList.querySelectorAll('.tag-remove').forEach((btn) => {
     btn.addEventListener('click', () => removeTag(btn.dataset.tag));
   });
+
+  const pcTagCount = document.getElementById('pcTagCount');
+  if (pcTagCount) pcTagCount.textContent = selectedTags.length;
 };
 
 const renderTagSuggestions = (tags) => {
@@ -709,6 +713,9 @@ const handleImageSelect = (e) => {
  * 이미지 미리보기 렌더링
  */
 const renderImagePreviews = () => {
+  const pcImageCount = document.getElementById('pcImageCount');
+  if (pcImageCount) pcImageCount.textContent = selectedFiles.length;
+
   if (selectedFiles.length === 0) {
     imagePreview.style.display = 'none';
     return;
@@ -855,8 +862,9 @@ const handleSubmit = async (e) => {
   if (rating !== null) formData.append('rating', rating);
   formData.append('content', content);
 
-    // 이미지 파일들 추가
-    selectedFiles.forEach((file) => {
+    // 이미지 파일들 추가 (압축 후 업로드)
+    const compressedFiles = await Promise.all(selectedFiles.map((f) => compressImage(f)));
+    compressedFiles.forEach((file) => {
       formData.append('images', file);
     });
 

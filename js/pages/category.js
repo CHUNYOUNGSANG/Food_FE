@@ -3,7 +3,7 @@
  * 카테고리별 게시글 목록 표시
  */
 
-import { getPostsByCategory } from '../services/post-service.js';
+import { getAllPosts, getPostsByCategory } from '../services/post-service.js';
 import { resolveImageUrl } from '../utils/image-url.js';
 
 // 카테고리 설명 매핑
@@ -31,7 +31,7 @@ const normalizeCategory = (category) => {
 };
 
 // 상태 관리
-let currentCategory = '한식';
+let currentCategory = '전체';
 let currentSort = 'latest';
 let allPosts = [];
 
@@ -43,7 +43,7 @@ const init = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const categoryParam = urlParams.get('category');
 
-  if (categoryParam && CATEGORY_DESCRIPTIONS[categoryParam]) {
+  if (categoryParam && (categoryParam === '전체' || CATEGORY_DESCRIPTIONS[categoryParam])) {
     currentCategory = categoryParam;
   }
 
@@ -139,7 +139,9 @@ const loadPosts = async () => {
     if (emptyState) emptyState.style.display = 'none';
 
     // 카테고리별 게시글 가져오기
-    allPosts = await getPostsByCategory(currentCategory);
+    allPosts = currentCategory === '전체'
+      ? await getAllPosts()
+      : await getPostsByCategory(currentCategory);
 
     // 로딩 숨기기
     if (loadingState) loadingState.style.display = 'none';

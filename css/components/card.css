@@ -123,16 +123,6 @@
   gap: var(--spacing-xs);
 }
 
-.post-card-content {
-  font-size: var(--font-sm);
-  color: var(--gray-600);
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-}
 
 /* 카드 푸터 */
 .post-card-footer {

@@ -33,6 +33,14 @@
   <!-- 헤더 -->
   <header id="header" class="site-header"></header>
 
+  <!-- 서브 네비게이션 -->
+  <nav class="site-subnav">
+    <ul class="site-subnav-list">
+      <li><a href="/pages/posts/post-list.html">리뷰 목록</a></li>
+      <li><a href="/pages/restaurants/restaurant-list.html">맛집 목록</a></li>
+    </ul>
+  </nav>
+
   <!-- 메인 컨텐츠 -->
   <main class="home-container">
 
@@ -44,32 +52,12 @@
       <div class="hero-content">
         <h1 class="hero-title">당신만의 <span class="hero-title-highlight">맛집</span>을<br>찾아보세요</h1>
         <p class="hero-subtitle">전국의 숨은 맛집부터 핫플레이스까지, 실시간 리뷰와 함께 공유하는 맛집 플랫폼</p>
-        <div class="hero-search-wrap">
-          <form class="hero-search-form" id="heroSearchForm">
-            <input type="text" class="hero-search-input" placeholder="맛집, 지역, 음식 종류로 검색해보세요" />
-            <button type="submit" class="hero-search-btn">
-              <i class="ri-search-line"></i>
-            </button>
-          </form>
-        </div>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <div class="hero-stat-number" id="statPostCount">-</div>
-            <div class="hero-stat-label">맛집 리뷰</div>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div class="hero-stat">
-            <div class="hero-stat-number">156</div>
-            <div class="hero-stat-label">지역</div>
-          </div>
-        </div>
       </div>
     </section>
 
     <!-- 카테고리 섹션 -->
     <section class="category-section">
       <div class="section-container">
-        <h2 class="section-title-center">카테고리별 탐색</h2>
         <div class="category-grid-new">
           <a href="/pages/category.html?category=한식" class="category-btn">
             <div class="category-btn-icon" style="background:#fff7ed;color:#ea580c;">
@@ -128,7 +116,7 @@
       <div class="section-container">
         <div class="section-header-row">
           <h2 class="section-title-left">인기 맛집 리뷰</h2>
-          <a href="/pages/posts/post-list.html" class="view-all-link">전체보기<i class="ri-arrow-right-line"></i></a>
+          <a href="/pages/posts/post-list.html" class="view-all-link">더보기<i class="ri-arrow-right-line"></i></a>
         </div>
         <div class="popular-posts-grid" id="popularPostsGrid">
           <!-- 인기 게시글이 동적으로 추가됨 -->

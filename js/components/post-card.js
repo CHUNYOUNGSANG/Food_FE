@@ -189,7 +189,7 @@ export const createPostCard = (post) => {
                     : ''
                 }
                 
-                <p class="post-card-content">${escapeHtml(content)}</p>
+                ${restaurant?.address ? `<p class="map-card-address">${escapeHtml(restaurant.address)}</p>` : ''}
                 
                 <div class="post-card-footer">
                     <div class="post-card-author">
