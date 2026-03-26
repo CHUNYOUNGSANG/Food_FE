@@ -39,7 +39,7 @@ export const renderHeader = () => {
       </form>
 
       <nav class="header-inline-nav" aria-label="주요 메뉴">
-        <a href="/pages/posts/post-list.html" class="header-inline-link">게시글 목록</a>
+        <a href="/pages/posts/post-list.html" class="header-inline-link">리뷰 목록</a>
         <a href="/pages/restaurants/restaurant-list.html" class="header-inline-link">맛집 목록</a>
       </nav>
 
