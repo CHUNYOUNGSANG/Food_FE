@@ -129,7 +129,7 @@ const createLikedCommentCard = (like) => {
 
             <div style="display: flex; justify-content: flex-end; gap: var(--spacing-sm);">
                 <button class="btn btn-secondary btn-small view-post-btn" data-post-id="${like.postId}">
-                    게시글 보기
+                    리뷰 보기
                 </button>
                 <button class="btn btn-outline btn-small unlike-btn" data-comment-id="${like.commentId}">
                     좋아요 취소
@@ -143,7 +143,7 @@ const createLikedCommentCard = (like) => {
  * 이벤트 리스너 등록
  */
 const attachEventListeners = () => {
-  // 게시글로 이동
+  // 리뷰로 이동
   document
     .querySelectorAll('.comment-post-link, .view-post-btn')
     .forEach((element) => {

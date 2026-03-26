@@ -119,7 +119,7 @@ const createCommentCard = (comment) => {
             <div class="comment-card-header">
                 <div class="comment-post-info">
                     <div class="comment-post-title" data-post-id="${comment.postId}">
-                        📝 게시글로 이동
+                        📝 리뷰로 이동
                     </div>
                     <div class="comment-date">
                         ${formatDate(comment.createdAt)}
@@ -169,7 +169,7 @@ const createCommentCard = (comment) => {
  * 이벤트 리스너 등록
  */
 const attachCommentEventListeners = () => {
-  // 게시글로 이동
+  // 리뷰로 이동
   document.querySelectorAll('.comment-post-title').forEach((title) => {
     title.addEventListener('click', () => {
       const postId = title.dataset.postId;
