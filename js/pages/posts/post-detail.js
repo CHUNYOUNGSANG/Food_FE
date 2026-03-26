@@ -98,13 +98,18 @@ const postImage = document.getElementById('postImage');
 const postContent = document.getElementById('postContent');
 const postMap = document.getElementById('postMap');
 const postMapSection = postMap ? postMap.closest('.post-map-section') : null;
+const copyAddressBtn = document.getElementById('copyAddressBtn');
+const directionsBtn = document.getElementById('directionsBtn');
 const authorActions = document.getElementById('authorActions');
 const editBtn = document.getElementById('editBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 const likeBtn = document.getElementById('likeBtn');
+const commentActionBtn = document.getElementById('commentActionBtn');
+const commentActionCount = document.getElementById('commentActionCount');
 const likeIcon = document.getElementById('likeIcon');
 const likeCount = document.getElementById('likeCount');
 const shareBtn = document.getElementById('shareBtn');
+const commentsCard = document.getElementById('commentsCard');
 const commentFormContainer = document.getElementById('commentFormContainer');
 const commentForm = document.getElementById('commentForm');
 const commentInput = document.getElementById('commentInput');
@@ -255,6 +260,12 @@ const renderPost = (post) => {
   // 맛집 정보
   restaurantName.textContent = post.restaurant?.name || '';
   restaurantAddress.textContent = post.restaurant?.address || '주소 정보 없음';
+  if (directionsBtn) {
+    const directionsQuery = encodeURIComponent(
+      post.restaurant?.name || post.restaurant?.address || post.title || '',
+    );
+    directionsBtn.href = `https://map.kakao.com/link/search/${directionsQuery}`;
+  }
   renderPostMap(post);
 
   // 태그
@@ -441,6 +452,23 @@ const renderPostMap = (post) => {
   }
 };
 
+const handleCopyAddress = async () => {
+  const address = post?.restaurant?.address;
+
+  if (!address) {
+    alert('복사할 주소 정보가 없습니다.');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(address);
+    alert('주소가 복사되었습니다.');
+  } catch (error) {
+    console.error('주소 복사 실패:', error);
+    alert('주소 복사에 실패했습니다.');
+  }
+};
+
 /**
  * 댓글 로드
  */
@@ -450,6 +478,7 @@ const loadComments = async () => {
 
     // 댓글 개수 업데이트
     commentCount.textContent = comments.length;
+    if (commentActionCount) commentActionCount.textContent = comments.length;
 
     // 댓글 렌더링
     renderComments(comments);
@@ -1017,6 +1046,20 @@ const handleShare = () => {
 };
 
 /**
+ * 댓글 영역으로 이동
+ */
+const handleCommentAction = () => {
+  const commentBody = document.getElementById('commentBody');
+  const commentToggleIcon = document.getElementById('commentToggleIcon');
+
+  if (commentsCard) commentsCard.style.display = 'block';
+  if (commentBody) commentBody.style.display = 'block';
+  if (commentToggleIcon) commentToggleIcon.className = 'ri-arrow-up-s-line';
+
+  commentsCard?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+/**
  * 이벤트 리스너 등록
  */
 const attachEventListeners = () => {
@@ -1030,6 +1073,12 @@ const attachEventListeners = () => {
   // 공유
   shareBtn.addEventListener('click', handleShare);
 
+  // 댓글 이동
+  commentActionBtn?.addEventListener('click', handleCommentAction);
+
+  // 주소 복사
+  copyAddressBtn?.addEventListener('click', handleCopyAddress);
+
   // 댓글 작성
   commentForm.addEventListener('submit', handleCommentSubmit);
 
@@ -1038,9 +1087,9 @@ const attachEventListeners = () => {
   const commentToggleIcon = document.getElementById('commentToggleIcon');
   const commentBody = document.getElementById('commentBody');
   commentToggleBtn?.addEventListener('click', () => {
-    const isVisible = commentBody.style.display !== 'none';
-    commentBody.style.display = isVisible ? 'none' : 'block';
-    commentToggleIcon.className = isVisible ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line';
+    if (commentsCard) commentsCard.style.display = 'none';
+    if (commentBody) commentBody.style.display = 'block';
+    if (commentToggleIcon) commentToggleIcon.className = 'ri-arrow-up-s-line';
   });
 };
 

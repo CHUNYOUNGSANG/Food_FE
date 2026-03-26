@@ -54,6 +54,104 @@ let allPosts = [];
 let allMembers = [];
 
 /**
+ * 게시글 관련 통계 UI 업데이트
+ */
+const updatePostStats = () => {
+  const totalPosts = allPosts.length;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayCount = allPosts.filter((post) => {
+    const createdAt = new Date(post.createdAt);
+    createdAt.setHours(0, 0, 0, 0);
+    return createdAt.getTime() === today.getTime();
+  }).length;
+
+  if (postCountBadge) postCountBadge.textContent = `${totalPosts}개`;
+
+  const statTotalPosts = document.getElementById('statTotalPosts');
+  if (statTotalPosts) statTotalPosts.textContent = totalPosts.toLocaleString();
+
+  const dashTotalPosts = document.getElementById('dashTotalPosts');
+  if (dashTotalPosts) dashTotalPosts.textContent = totalPosts.toLocaleString();
+
+  const statTodayPosts = document.getElementById('statTodayPosts');
+  if (statTodayPosts) statTodayPosts.textContent = todayCount.toLocaleString();
+
+  const dashTodayPosts = document.getElementById('dashTodayPosts');
+  if (dashTodayPosts) dashTodayPosts.textContent = todayCount.toLocaleString();
+};
+
+/**
+ * 게시글 삭제 후 관리자 화면 동기화
+ */
+const syncPostViewsAfterDelete = (postId) => {
+  [postsGrid, commentsPostList, document.getElementById('recentPostsList')].forEach((container) => {
+    if (!container) return;
+    container.querySelectorAll(`[data-post-id="${postId}"]`).forEach((element) => element.remove());
+  });
+
+  updatePostStats();
+  updateCommentBadge();
+
+  if (allPosts.length === 0) {
+    postsGrid.style.display = 'none';
+    postsEmptyState.style.display = 'block';
+
+    commentsPostList.style.display = 'none';
+    commentsEmptyState.style.display = 'block';
+
+    const recentPostsList = document.getElementById('recentPostsList');
+    if (recentPostsList) {
+      recentPostsList.innerHTML = '<p style="color:#9ca3af;text-align:center;padding:24px;">게시글이 없습니다.</p>';
+    }
+    return;
+  }
+
+  if (postsGrid.children.length === 0) {
+    const sorted = [...allPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    postsGrid.innerHTML = sorted.map((post) => createAdminPostRow(post)).join('');
+    postsGrid.style.display = 'block';
+    postsEmptyState.style.display = 'none';
+    hydrateAvatars(postsGrid);
+    attachPostDeleteListeners(postsGrid);
+  }
+
+  if (commentsPostList.children.length === 0) {
+    const sorted = [...allPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    commentsPostList.innerHTML = sorted.map((post) => createCommentPostItem(post)).join('');
+    commentsPostList.style.display = 'block';
+    commentsEmptyState.style.display = 'none';
+
+    commentsPostList.querySelectorAll('.comment-post-toggle').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const currentPostId = btn.dataset.postId;
+        const commentsBox = document.getElementById(`comments-box-${currentPostId}`);
+        const icon = btn.querySelector('.toggle-icon');
+
+        if (commentsBox.style.display === 'none') {
+          commentsBox.style.display = 'block';
+          icon.style.transform = 'rotate(180deg)';
+          if (!commentsBox.dataset.loaded) {
+            commentsBox.innerHTML = '<p style="color:#9ca3af;padding:12px 0;font-size:13px;">로딩중...</p>';
+            try {
+              const comments = await getCommentsByPost(currentPostId);
+              commentsBox.dataset.loaded = 'true';
+              renderComments(commentsBox, currentPostId, comments);
+              updateCommentBadge();
+            } catch {
+              commentsBox.innerHTML = '<p style="color:#ef4444;padding:12px 0;font-size:13px;">댓글을 불러오지 못했습니다.</p>';
+            }
+          }
+        } else {
+          commentsBox.style.display = 'none';
+          icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+  }
+};
+
+/**
  * 초기화
  */
 const init = async () => {
@@ -111,29 +209,14 @@ const loadDashboard = async () => {
     allPosts = posts;
     allMembers = members;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayCount = posts.filter((p) => {
-      const d = new Date(p.createdAt);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime() === today.getTime();
-    }).length;
-
     // 사이드바 통계
-    const statTotalPosts = document.getElementById('statTotalPosts');
     const statTotalMembers = document.getElementById('statTotalMembers');
-    const statTodayPosts = document.getElementById('statTodayPosts');
-    if (statTotalPosts) statTotalPosts.textContent = posts.length.toLocaleString();
     if (statTotalMembers && members.length > 0) statTotalMembers.textContent = members.length.toLocaleString();
-    if (statTodayPosts) statTodayPosts.textContent = todayCount.toLocaleString();
 
     // 대시보드 카드
-    const dashTotalPosts = document.getElementById('dashTotalPosts');
     const dashTotalMembers = document.getElementById('dashTotalMembers');
-    const dashTodayPosts = document.getElementById('dashTodayPosts');
-    if (dashTotalPosts) dashTotalPosts.textContent = posts.length.toLocaleString();
     if (dashTotalMembers) dashTotalMembers.textContent = members.length > 0 ? members.length.toLocaleString() : '-';
-    if (dashTodayPosts) dashTodayPosts.textContent = todayCount.toLocaleString();
+    updatePostStats();
 
     // 최근 게시글 5개
     const recentPostsList = document.getElementById('recentPostsList');
@@ -338,7 +421,7 @@ const loadAllComments = async () => {
 const createCommentPostItem = (post) => {
   const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('ko-KR') : '-';
   return `
-    <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:8px;overflow:hidden;">
+    <div data-post-id="${post.id}" style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:8px;overflow:hidden;">
       <button class="comment-post-toggle" data-post-id="${post.id}"
         style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer;text-align:left;gap:12px;">
         <div style="flex:1;min-width:0;">
@@ -432,12 +515,7 @@ const attachPostDeleteListeners = (container) => {
       try {
         await deletePost(postId);
         allPosts = allPosts.filter((p) => String(p.id) !== String(postId));
-        btn.closest('[data-post-id]').remove();
-        if (postCountBadge) postCountBadge.textContent = `${allPosts.length}개`;
-        const statTotalPosts = document.getElementById('statTotalPosts');
-        if (statTotalPosts) statTotalPosts.textContent = allPosts.length.toLocaleString();
-        const dashTotalPosts = document.getElementById('dashTotalPosts');
-        if (dashTotalPosts) dashTotalPosts.textContent = allPosts.length.toLocaleString();
+        syncPostViewsAfterDelete(postId);
       } catch (error) {
         alert(error.message || '게시글 삭제에 실패했습니다.');
       }

@@ -38,6 +38,11 @@ export const renderHeader = () => {
         </button>
       </form>
 
+      <nav class="header-inline-nav" aria-label="주요 메뉴">
+        <a href="/pages/posts/post-list.html" class="header-inline-link">게시글 목록</a>
+        <a href="/pages/restaurants/restaurant-list.html" class="header-inline-link">맛집 목록</a>
+      </nav>
+
       <div class="user-menu">
         ${!admin ? `
         <a href="/pages/posts/post-create.html" class="btn-write">
@@ -78,12 +83,10 @@ export const renderHeader = () => {
               <div class="dropdown-menu">
                 ${!admin ? `<a href="/pages/posts/post-create.html" class="dropdown-item">리뷰 작성</a>` : ''}
                 ${!admin ? `<a href="${mypageUrl}" class="dropdown-item">내 리뷰</a>` : ''}
+                <button id="logoutBtn" class="dropdown-item dropdown-logout-btn" type="button">로그아웃</button>
               </div>
             </div>
           </div>
-          <button id="logoutBtn" class="btn-header-outline">
-            로그아웃
-          </button>
         `
             : `
           <a href="/pages/auth/login.html" class="btn-header-outline">

@@ -48,7 +48,6 @@ const ratingStarsDisplay = document.getElementById('ratingStarsDisplay');
 const reviewCountSummary = document.getElementById('reviewCountSummary');
 const photoCountBadge = document.getElementById('photoCountBadge');
 const copyAddressBtn = document.getElementById('copyAddressBtn');
-const menuKakaoLink = document.getElementById('menuKakaoLink');
 
 let map = null;
 let marker = null;
@@ -108,11 +107,6 @@ const renderDetail = (detail) => {
     if (restaurantPlaceLink) {
       restaurantPlaceLink.href = detail.placeUrl;
       restaurantPlaceLink.style.display = 'flex';
-    }
-    // 메뉴 카카오 링크
-    if (menuKakaoLink) {
-      menuKakaoLink.href = detail.placeUrl;
-      menuKakaoLink.style.display = 'inline';
     }
     // 길찾기 링크
     if (restaurantNaviLink && detail.name) {
@@ -181,10 +175,6 @@ const loadKakaoPlaceInfo = (name, address) => {
           if (restaurantPlaceLink && restaurantPlaceLink.href === '#') {
             restaurantPlaceLink.href = place.place_url;
             restaurantPlaceLink.style.display = 'flex';
-          }
-          if (menuKakaoLink && menuKakaoLink.href === '#') {
-            menuKakaoLink.href = place.place_url;
-            menuKakaoLink.style.display = 'inline';
           }
         }
 

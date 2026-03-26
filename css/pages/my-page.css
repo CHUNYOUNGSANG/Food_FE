@@ -547,34 +547,46 @@
 
 /* 이미지 미리보기 */
 .mp-image-preview {
-  position: relative;
-  display: inline-block;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 12px;
+  padding: 8px 10px 8px 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
 }
 
 .mp-image-preview img {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #e5e7eb;
 }
 
 .mp-image-remove {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 22px;
-  height: 22px;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
   background: #ef4444;
   color: white;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.mp-image-remove:hover {
+  opacity: 0.92;
+  transform: scale(1.05);
 }
 
 /* ===========================

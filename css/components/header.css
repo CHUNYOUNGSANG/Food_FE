@@ -109,35 +109,28 @@ body {
   color: #c2410c;
 }
 
-/* 서브 네비게이션 */
-.site-subnav {
-  background-color: #e5e5e5;
+/* 인라인 네비게이션 */
+.header-inline-nav {
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 44px;
-  width: 100%;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-.site-subnav-list {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.site-subnav-list li a {
-  display: block;
-  padding: 0 20px;
-  line-height: 44px;
+.header-inline-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
   font-size: 0.875rem;
   color: #374151;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.2s;
+  border-radius: 10px;
+  transition: color 0.2s, background 0.2s;
 }
 
-.site-subnav-list li a:hover {
+.header-inline-link:hover {
+  background: #fff7ed;
   color: #ea580c;
 }
 
@@ -380,6 +373,22 @@ body {
   color: #ea580c;
 }
 
+.dropdown-logout-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  border-top: 1px solid #f3f4f6;
+  color: #dc2626;
+}
+
+.dropdown-logout-btn:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
 /* 모바일 반응형 */
 @media (max-width: 768px) {
   .header-container {
@@ -390,16 +399,16 @@ body {
     max-width: none;
   }
 
+  .header-inline-nav {
+    display: none;
+  }
+
   .btn-write span {
     display: none;
   }
 
   .btn-write {
     padding: 8px;
-  }
-
-  .site-subnav {
-    display: none;
   }
 }
 
