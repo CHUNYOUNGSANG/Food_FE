@@ -14,6 +14,26 @@ import {
   setRefreshToken,
 } from '../utils/storage.js';
 
+export const persistLoginResponse = (response) => {
+  if (!response?.accessToken || !response?.refreshToken || !response?.member) {
+    throw new Error('로그인 응답 형식이 올바르지 않습니다.');
+  }
+
+  setToken(response.accessToken);
+  setRefreshToken(response.refreshToken);
+  setMemberId(response.member.id);
+  setMemberNickname(response.member.nickname);
+  setMemberEmail(response.member.email);
+  if (response.member.role) {
+    setMemberRole(response.member.role);
+  }
+  if (response.member.profileImage) {
+    setMemberProfileImage(response.member.profileImage);
+  }
+
+  return response;
+};
+
 /**
  * 회원가입
  * @param {Object} data - 회원가입 데이터
@@ -43,24 +63,27 @@ export const login = async (credentials) => {
       API_CONFIG.ENDPOINTS.MEMBER_LOGIN,
       credentials,
     );
-
-    // 로그인 성공 시 JWT 토큰 및 회원 정보 저장
-    // 백엔드 LoginResponseDto: { accessToken, refreshToken, member: {...} }
-    setToken(response.accessToken);
-    setRefreshToken(response.refreshToken);
-    setMemberId(response.member.id);
-    setMemberNickname(response.member.nickname);
-    setMemberEmail(response.member.email);
-    if (response.member.role) {
-      setMemberRole(response.member.role);
-    }
-    if (response.member.profileImage) {
-      setMemberProfileImage(response.member.profileImage);
-    }
-
-    return response;
+    return persistLoginResponse(response);
   } catch (error) {
     console.error('로그인 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * OAuth 인가 코드 로그인
+ * @param {string} provider - OAuth 제공자
+ * @param {string} code - 인가 코드
+ * @returns {Promise<Object>} 회원 정보
+ */
+export const loginWithOAuthCode = async (provider, code) => {
+  try {
+    const response = await httpClient.get(
+      `/oauth/${provider}?code=${encodeURIComponent(code)}`,
+    );
+    return persistLoginResponse(response);
+  } catch (error) {
+    console.error(`${provider} OAuth 로그인 실패:`, error);
     throw error;
   }
 };

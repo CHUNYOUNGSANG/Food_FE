@@ -3,6 +3,7 @@
  */
 
 import { getAllPosts } from '../services/post-service.js';
+import { loginWithOAuthCode } from '../services/auth-service.js';
 import {
   normalizeRestaurantListResponse,
   searchRestaurants,
@@ -11,16 +12,42 @@ import { getPostLikeCount } from '../services/post-like-service.js';
 import { getCommentsByPost } from '../services/comment-service.js';
 import { isAdmin } from '../utils/storage.js';
 import { resolveImageUrl } from '../utils/image-url.js';
+import { renderHeader } from '../components/header.js';
 
 /**
  * 페이지 초기화
  */
 const init = async () => {
+  await handleOAuthCallback();
   initHeroSearch();
   await loadHomeData();
   if (isAdmin()) {
     const ctaBtn = document.getElementById('ctaWriteBtn');
     if (ctaBtn) ctaBtn.style.display = 'none';
+  }
+};
+
+const handleOAuthCallback = async () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+
+  if (!code) return;
+
+  try {
+    const response = await loginWithOAuthCode('kakao', code);
+    const cleanedUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, document.title, cleanedUrl);
+    renderHeader();
+
+    if (response?.member?.role === 'ADMIN') {
+      window.location.href = '/pages/admin/admin-page.html';
+      return;
+    }
+  } catch (error) {
+    console.error('카카오 로그인 처리 실패:', error);
+    const cleanedUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, document.title, cleanedUrl);
+    alert(error.message || '카카오 로그인에 실패했습니다.');
   }
 };
 

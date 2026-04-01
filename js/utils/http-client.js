@@ -20,6 +20,30 @@ class HttpClient {
   }
 
   /**
+   * fetch에 전달할 최종 URL 생성
+   * @param {string} url - 상대/절대 URL
+   * @returns {string} 최종 요청 URL
+   */
+  _buildUrl(url) {
+    if (!url || typeof url !== 'string') {
+      throw new Error('API 요청 URL이 올바르지 않습니다.');
+    }
+
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    if (!API_CONFIG.BASE_URL) {
+      throw new Error('API 서버 주소가 설정되지 않았습니다.');
+    }
+
+    const baseUrl = API_CONFIG.BASE_URL.replace(/\/+$/, '');
+    const path = url.startsWith('/') ? url : `/${url}`;
+
+    return `${baseUrl}${path}`;
+  }
+
+  /**
    * 토큰 갱신
    * @returns {Promise<boolean>} 갱신 성공 여부
    */
@@ -38,7 +62,7 @@ class HttpClient {
         }
 
         const response = await fetch(
-          `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.MEMBER_REFRESH}`,
+          this._buildUrl(API_CONFIG.ENDPOINTS.MEMBER_REFRESH),
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -74,10 +98,12 @@ class HttpClient {
   async request(url, options = {}) {
     const memberId = getMemberId();
     const token = getToken();
+    const method = (options.method || 'GET').toUpperCase();
+    const hasBody = options.body !== undefined && options.body !== null;
 
     // 기본 설정 병합
     const mergedHeaders = {
-      ...API_CONFIG.HEADERS,
+      ...(hasBody ? API_CONFIG.HEADERS : { Accept: 'application/json' }),
       ...options.headers,
       // Member-Id 헤더 추가
       ...(memberId && { 'Member-Id': memberId.toString() }),
@@ -94,13 +120,16 @@ class HttpClient {
 
     const config = {
       ...options,
+      method,
       headers: mergedHeaders,
     };
 
     try {
-      console.log(`[HTTP ${config.method || 'GET'}] ${url}`);
+      const requestUrl = this._buildUrl(url);
 
-      let response = await fetch(`${API_CONFIG.BASE_URL}${url}`, config);
+      console.log(`[HTTP ${config.method || 'GET'}] ${requestUrl}`);
+
+      let response = await fetch(requestUrl, config);
 
       // 401 Unauthorized - 토큰 갱신 시도
       if (response.status === 401) {
@@ -114,7 +143,7 @@ class HttpClient {
             ...config.headers,
             Authorization: `Bearer ${newToken}`,
           };
-          response = await fetch(`${API_CONFIG.BASE_URL}${url}`, config);
+          response = await fetch(requestUrl, config);
         } else {
           // 갱신 실패 - 로그아웃 처리
           console.error('[HTTP] 토큰 갱신 실패 - 로그인 페이지로 이동');

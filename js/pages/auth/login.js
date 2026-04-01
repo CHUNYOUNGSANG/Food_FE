@@ -4,6 +4,7 @@
 
 import { login } from '../../services/auth-service.js';
 import { validateEmail, validatePassword } from '../../utils/validator.js';
+import { getOAuthStartUrl } from '../../utils/oauth.js';
 
 // DOM 요소
 const loginForm = document.getElementById('loginForm');
@@ -13,6 +14,8 @@ const loginBtn = document.getElementById('loginBtn');
 const loginBtnText = document.getElementById('loginBtnText');
 const loginBtnIcon = document.getElementById('loginBtnIcon');
 const errorMessage = document.getElementById('errorMessage');
+const kakaoLoginBtn = document.getElementById('kakaoLoginBtn');
+const naverLoginBtn = document.getElementById('naverLoginBtn');
 
 /**
  * 초기화
@@ -29,6 +32,8 @@ const attachEventListeners = () => {
   loginForm.addEventListener('submit', handleSubmit);
   emailInput.addEventListener('input', hideError);
   passwordInput.addEventListener('input', hideError);
+  kakaoLoginBtn?.addEventListener('click', () => handleOAuthLogin('kakao'));
+  naverLoginBtn?.addEventListener('click', () => handleOAuthLogin('naver'));
 };
 
 /**
@@ -103,6 +108,16 @@ const showError = (message) => {
  */
 const hideError = () => {
   errorMessage.style.display = 'none';
+};
+
+const handleOAuthLogin = (provider) => {
+  try {
+    hideError();
+    window.location.href = getOAuthStartUrl(provider);
+  } catch (error) {
+    console.error(`${provider} OAuth 시작 실패:`, error);
+    showError(error.message || '소셜 로그인 설정을 확인해주세요.');
+  }
 };
 
 init();

@@ -1,11 +1,27 @@
 /**
  * API 기본 설정
  */
-const API_HOST = 'api.fineeat.kro.kr';
+const API_ENV = (() => {
+  if (typeof window === 'undefined') return 'production';
+
+  const { hostname } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'development';
+  }
+
+  return 'production';
+})();
+
+const API_BASE_URLS = {
+  development: 'http://localhost:8080/api',
+  production: 'https://api.fineeat.kro.kr/api',
+};
 
 const API_CONFIG = {
+  ENV: API_ENV,
+
   // 백엔드 서버 URL
-  BASE_URL: `https://${API_HOST}/api`,
+  BASE_URL: API_BASE_URLS[API_ENV],
 
   // 타임아웃 설정 (10초)
   TIMEOUT: 10000,

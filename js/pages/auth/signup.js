@@ -6,6 +6,7 @@
 import * as validator from '../../utils/validator.js';
 import httpClient from '../../utils/http-client.js';
 import API_CONFIG from '../../config/api-config.js';
+import { getOAuthStartUrl } from '../../utils/oauth.js';
 
 // DOM 요소
 const signupForm = document.getElementById('signupForm');
@@ -28,6 +29,8 @@ const checkNicknameBtn = document.getElementById('checkNicknameBtn');
 const signupBtn = document.getElementById('signupBtn');
 const signupBtnText = document.getElementById('signupBtnText');
 const signupBtnIcon = document.getElementById('signupBtnIcon');
+const kakaoSignupBtn = document.getElementById('kakaoSignupBtn');
+const naverSignupBtn = document.getElementById('naverSignupBtn');
 
 // 중복 확인 상태
 let emailChecked = false;
@@ -46,6 +49,8 @@ const init = () => {
 
   profileImageInput.addEventListener('change', handleImagePreview);
   removeImageBtn.addEventListener('click', handleRemoveImage);
+  kakaoSignupBtn?.addEventListener('click', () => handleOAuthLogin('kakao'));
+  naverSignupBtn?.addEventListener('click', () => handleOAuthLogin('naver'));
 
   emailInput.addEventListener('input', () => {
     emailChecked = false;
@@ -414,6 +419,15 @@ const showLabelMessage = (spanEl, message, type) => {
     spanEl.classList.add('label-validation-error');
   } else if (type === 'success') {
     spanEl.classList.add('label-validation-success');
+  }
+};
+
+const handleOAuthLogin = (provider) => {
+  try {
+    window.location.href = getOAuthStartUrl(provider);
+  } catch (error) {
+    console.error(`${provider} OAuth 시작 실패:`, error);
+    alert(error.message || '소셜 로그인 설정을 확인해주세요.');
   }
 };
 

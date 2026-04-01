@@ -287,11 +287,6 @@
   background: #f3f4f6;
 }
 
-.auth-social-icon {
-  width: 16px;
-  height: 16px;
-}
-
 .auth-kakao-icon {
   width: 16px;
   height: 16px;
@@ -306,6 +301,40 @@
 .auth-kakao-icon i {
   font-size: 0.625rem;
   color: #111;
+}
+
+.auth-kakao-btn {
+  background: #fff9c4;
+  border-color: #facc15;
+  color: #3f3f46;
+}
+
+.auth-kakao-btn:hover {
+  background: #fef08a;
+}
+
+.auth-naver-icon {
+  width: 16px;
+  height: 16px;
+  background: #03c75a;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.auth-naver-btn {
+  background: #ecfdf3;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.auth-naver-btn:hover {
+  background: #dcfce7;
 }
 
 /* 회원가입 스위치 */
